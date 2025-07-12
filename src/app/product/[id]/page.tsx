@@ -109,8 +109,13 @@ interface PageProps {
     id: string
   }
 }
+type Props = {
+  params: {
+    id: string
+  }
+}
 
-export default function ProductDetailPage({ params }: PageProps) {
+export default function ProductDetailPage({ params }: Props) {
 
   const [selectedQuantity, setSelectedQuantity] = useState(2)
   const [selectedDelivery, setSelectedDelivery] = useState('pickup')
