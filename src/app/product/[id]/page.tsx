@@ -102,7 +102,16 @@ const mockReviews = [
   }
 ]
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+import { type Metadata } from 'next'
+
+interface PageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function ProductDetailPage({ params }: PageProps) {
+
   const [selectedQuantity, setSelectedQuantity] = useState(2)
   const [selectedDelivery, setSelectedDelivery] = useState('pickup')
   const [showFullDescription, setShowFullDescription] = useState(false)
