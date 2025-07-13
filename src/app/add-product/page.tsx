@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { LocationPicker } from '@/components/LocationSystem'
+type UserType = 'registered_producer' | 'casual_seller';
 
 interface Location {
   lat: number;
@@ -57,13 +58,19 @@ const getSubcategories = (categoryId: string): string[] => {
   return subcategoryMap[categoryId] || []
 }
 
-const currentUser = {
+const currentUser: {
+  name: string;
+  type: UserType;
+  monthlyAds: number;
+  monthlyPushes: number;
+  activeAds: number;
+} = {
   name: 'Kiss Margit',
-  type: 'registered_producer' as const,
+  type: 'registered_producer',
   monthlyAds: 2,
   monthlyPushes: 1,
   activeAds: 1
-}
+};
 
 export default function AddProductPage() {
   const [step, setStep] = useState<number>(1)
