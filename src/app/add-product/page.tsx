@@ -49,7 +49,7 @@ const categories = [
   },
   { 
     id: 'rural_marketplace', 
-    name: 'Falusi marketplace', 
+    name: 'Gazdatér', 
     icon: '🐄',
     emojis: [
       // Élő állat
