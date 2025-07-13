@@ -12,6 +12,7 @@ interface Location {
   city: string;
   country: string;
 }
+
 // Frissített kategóriák
 const categories = [
   { 
@@ -19,10 +20,15 @@ const categories = [
     name: 'Romlandó termékek', 
     icon: '🥬',
     emojis: [
+      // Gyümölcs
       '🍎', '🍊', '🍌', '🍇', '🍓', '🍒', '🥝', '🍑', '🍍', '🥭', '🍉', '🫐', '🥥',
+      // Zöldség  
       '🥕', '🥒', '🍅', '🥬', '🥦', '🌶️', '🫒', '🌽', '🥔', '🧄', '🧅', '🥑', '🍆', '🫑',
+      // Tojás
       '🥚', '🐣',
+      // Hús
       '🥩', '🍖', '🐔', '🐄', '🐷', '🦆', '🐟', '🦐', '🦀',
+      // Tejtermék
       '🥛', '🧀', '🧈', '🍳', '🥯'
     ]
   },
@@ -31,11 +37,17 @@ const categories = [
     name: 'Tartós termékek', 
     icon: '🍯',
     emojis: [
+      // Lekvár
       '🍯', '🫙', '🍓', '🍑', '🍇', '🍊', '🍋', '🥝',
+      // Szörp
       '🧃', '🍹', '🥤', '🍋', '🍓', '🍑',
+      // Méz
       '🍯', '🐝', '🌻', '🌼',
+      // Tea
       '🌿', '🍃', '🌱', '🌼', '🌸', '☕', '🫖',
+      // Gyógynövény
       '🌿', '🍃', '🌱', '🧄', '🧅', '🌶️',
+      // Füstöltáru
       '🥓', '🌭', '🍖', '🐟', '🧀'
     ]
   },
@@ -50,8 +62,11 @@ const categories = [
     name: 'Piactér', 
     icon: '🐄',
     emojis: [
+      // Élő állat
       '🐄', '🐷', '🐔', '🐑', '🐐', '🦆', '🐰', '🐴', '🐈', '🐕',
+      // Gabona
       '🌾', '🌽', '🫘', '🥜', '🌰',
+      // Eszközök
       '🛠️', '⚒️', '🪓', '🔨', '⛏️', '🪚', '🧰', '📦', '🚜', '🔧'
     ]
   },
@@ -71,8 +86,10 @@ const getSubcategories = (categoryId: string) => {
     'cosmetics': ['Szappan', 'Krém', 'Balzsam', 'Olaj', 'Gyertya'],
     'rural_marketplace': ['Élő állat', 'Gabona', 'Eszközök', 'Takarmány'],
     'bakery': ['Kenyér', 'Péksütemény', 'Torta', 'Sütemény']
+  }
   
   return subcategoryMap[categoryId as keyof typeof subcategoryMap] || []
+}
 
 // Mock felhasználó adatok
 const currentUser = {
@@ -81,6 +98,7 @@ const currentUser = {
   monthlyAds: 2,
   monthlyPushes: 1,
   activeAds: 1
+}
 
 export default function AddProductPage() {
   const [step, setStep] = useState(1)
@@ -108,6 +126,7 @@ export default function AddProductPage() {
     monthlyAds: currentUser.type === 'casual_seller' && currentUser.monthlyAds >= 5,
     monthlyPushes: currentUser.type === 'casual_seller' && currentUser.monthlyPushes >= 3,
     activeAds: currentUser.type === 'casual_seller' && currentUser.activeAds >= 3
+  }
 
   const handleImageUpload = (e: any) => {
     const files = Array.from(e.target.files || [])
@@ -120,6 +139,7 @@ export default function AddProductPage() {
 
   const handleLocationSelect = (selectedLocation: Location) => {
     setLocation(selectedLocation);
+  }
 
   const handleSubmit = () => {
     console.log('Termék feltöltése:', {
@@ -128,6 +148,7 @@ export default function AddProductPage() {
       sendPushNotification, pushRadius
     })
     alert('Termék sikeresen feltöltve! (Demo)')
+  }
 
   const selectedCategoryData = categories.find(cat => cat.id === category)
 
@@ -705,42 +726,21 @@ export default function AddProductPage() {
                   }}>
                     Ár *
                   </label>
-                 <input
-  type="number"
-  value={price}
-  onChange={(e) => setPrice(e.target.value)}
-  placeholder="800"
-  style={{
-    width: '100%',
-    padding: '12px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '14px',
-    outline: 'none',
-    boxSizing: 'border-box'
-  }}
-/>
-
-<select
-  value={unit}
-  onChange={(e) => setUnit(e.target.value)}
-  style={{
-    width: '100%',
-    padding: '12px',
-    border: '2px solid #e5e7eb',
-    borderRadius: '8px',
-    fontSize: '14px',
-    outline: 'none',
-    boxSizing: 'border-box'
-  }}
->
-  <option value="kg">kg</option>
-  <option value="db">db</option>
-  <option value="üveg">üveg</option>
-  <option value="csomag">csomag</option>
-  <option value="liter">liter</option>
-</select>
-
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="800"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
                 </div>
               </div>
               
@@ -1084,6 +1084,7 @@ export default function AddProductPage() {
                       {isLimitReached.monthlyPushes 
                         ? '⚠️ Elérted a havi push értesítések limitjét (3/hó)'
                         : 'Értesítsd a környékbelieket az új termékről'
+                      }
                     </p>
                   </div>
                 </label>
@@ -1177,6 +1178,7 @@ export default function AddProductPage() {
                       (step === 1 && (!productName || !category || !description || !location)) ||
                       (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
                       (step === 3 && !price)
+                    }
                     style={{
                       background: 'linear-gradient(135deg, #16a34a, #15803d)',
                       color: 'white',
@@ -1243,6 +1245,7 @@ export default function AddProductPage() {
                     (step === 1 && (!productName || !category || !description || !location)) ||
                     (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
                     (step === 3 && !price)
+                  }
                   style={{
                     background: (
                       (step === 1 && (!productName || !category || !description || !location)) ||
@@ -1331,18 +1334,24 @@ export default function AddProductPage() {
       <style jsx>{`
         .desktop-nav {
           display: flex !important;
+        }
         .mobile-nav {
           display: none !important;
+        }
         
         @media (max-width: 768px) {
           .desktop-nav {
             display: none !important;
+          }
           .mobile-nav {
             display: flex !important;
+          }
+        }
       `}</style>
     </div>
   )
-                  
+}
+                  />
                 </div>
                 <div>
                   <label style={{
