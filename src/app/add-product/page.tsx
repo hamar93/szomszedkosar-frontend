@@ -11,7 +11,6 @@ interface Location {
   address: string;
   city: string;
   country: string;
-}
 
 // Frissített kategóriák
 const categories = [
@@ -75,7 +74,6 @@ const categories = [
     name: 'Pékáruk', 
     icon: '🍞',
     emojis: ['🍞', '🥖', '🥨', '🧇', '🍰', '🎂', '🥧', '🧁', '🍪', '🥐']
-  }
 ]
 
 // Alkategóriák
@@ -86,10 +84,8 @@ const getSubcategories = (categoryId: string) => {
     'cosmetics': ['Szappan', 'Krém', 'Balzsam', 'Olaj', 'Gyertya'],
     'rural_marketplace': ['Élő állat', 'Gabona', 'Eszközök', 'Takarmány'],
     'bakery': ['Kenyér', 'Péksütemény', 'Torta', 'Sütemény']
-  }
   
   return subcategoryMap[categoryId as keyof typeof subcategoryMap] || []
-}
 
 // Mock felhasználó adatok
 const currentUser = {
@@ -98,7 +94,6 @@ const currentUser = {
   monthlyAds: 2,
   monthlyPushes: 1,
   activeAds: 1
-}
 
 export default function AddProductPage() {
   const [step, setStep] = useState(1)
@@ -126,7 +121,6 @@ export default function AddProductPage() {
     monthlyAds: currentUser.type === 'casual_seller' && currentUser.monthlyAds >= 5,
     monthlyPushes: currentUser.type === 'casual_seller' && currentUser.monthlyPushes >= 3,
     activeAds: currentUser.type === 'casual_seller' && currentUser.activeAds >= 3
-  }
 
   const handleImageUpload = (e: any) => {
     const files = Array.from(e.target.files || [])
@@ -139,7 +133,6 @@ export default function AddProductPage() {
 
   const handleLocationSelect = (selectedLocation: Location) => {
     setLocation(selectedLocation);
-  }
 
   const handleSubmit = () => {
     console.log('Termék feltöltése:', {
@@ -148,7 +141,6 @@ export default function AddProductPage() {
       sendPushNotification, pushRadius
     })
     alert('Termék sikeresen feltöltve! (Demo)')
-  }
 
   const selectedCategoryData = categories.find(cat => cat.id === category)
 
@@ -324,6 +316,7 @@ export default function AddProductPage() {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
+                />
               </div>
 
               {/* LocationPicker - Már mobilbarát */}
@@ -464,6 +457,7 @@ export default function AddProductPage() {
                     boxSizing: 'border-box',
                     resize: 'vertical'
                   }}
+                />
               </div>
             </div>
           )}
@@ -572,6 +566,7 @@ export default function AddProductPage() {
                       onChange={handleImageUpload}
                       style={{ display: 'none' }}
                       id="image-upload"
+                    />
                     <label
                       htmlFor="image-upload"
                       style={{
@@ -625,6 +620,7 @@ export default function AddProductPage() {
                                 height: '100%',
                                 objectFit: 'cover'
                               }}
+                            />
                             <button
                               onClick={() => removeImage(index)}
                               style={{
@@ -736,6 +732,7 @@ export default function AddProductPage() {
     outline: 'none',
     boxSizing: 'border-box'
   }}
+/>
 
 <select
   value={unit}
@@ -785,6 +782,7 @@ export default function AddProductPage() {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
+                />
               </div>
               
               {/* Bio termék - Mobilbarát checkbox */}
@@ -809,6 +807,7 @@ export default function AddProductPage() {
                       marginTop: '2px',
                       flexShrink: 0
                     }}
+                  />
                   <div>
                     <span style={{
                       fontSize: '14px',
@@ -864,6 +863,7 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
+                    />
                     <span style={{ fontSize: '14px' }}>🚚 Személyes átvétel</span>
                   </label>
                   <label style={{
@@ -886,6 +886,7 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
+                    />
                     <span style={{ fontSize: '14px', lineHeight: '1.3' }}>🚗 Házhozszállítás (környéken)</span>
                   </label>
                   <label style={{
@@ -908,6 +909,7 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
+                    />
                     <span style={{ fontSize: '14px', lineHeight: '1.3' }}>📦 Postai küldés (tartós termékek)</span>
                   </label>
                 </div>
@@ -1077,6 +1079,7 @@ export default function AddProductPage() {
                       marginTop: '2px',
                       flexShrink: 0
                     }}
+                  />
                   <div>
                     <span style={{
                       fontSize: '14px',
@@ -1094,7 +1097,6 @@ export default function AddProductPage() {
                       {isLimitReached.monthlyPushes 
                         ? '⚠️ Elérted a havi push értesítések limitjét (3/hó)'
                         : 'Értesítsd a környékbelieket az új termékről'
-                      }
                     </p>
                   </div>
                 </label>
@@ -1121,6 +1123,7 @@ export default function AddProductPage() {
                         width: '100%',
                         accentColor: '#fbbf24'
                       }}
+                    />
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -1187,7 +1190,6 @@ export default function AddProductPage() {
                       (step === 1 && (!productName || !category || !description || !location)) ||
                       (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
                       (step === 3 && !price)
-                    }
                     style={{
                       background: 'linear-gradient(135deg, #16a34a, #15803d)',
                       color: 'white',
@@ -1254,7 +1256,6 @@ export default function AddProductPage() {
                     (step === 1 && (!productName || !category || !description || !location)) ||
                     (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
                     (step === 3 && !price)
-                  }
                   style={{
                     background: (
                       (step === 1 && (!productName || !category || !description || !location)) ||
@@ -1343,26 +1344,38 @@ export default function AddProductPage() {
       <style jsx>{`
         .desktop-nav {
           display: flex !important;
-        }
         .mobile-nav {
           display: none !important;
-        }
         
         @media (max-width: 768px) {
           .desktop-nav {
             display: none !important;
-          }
           .mobile-nav {
             display: flex !important;
-          }
-        }
       `}</style>
     </div>
   )
-}
                   
-    </div>
-  )
-}
-
-export default AddProductPage
+                </div>
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Mértékegység
+                  </label>
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
