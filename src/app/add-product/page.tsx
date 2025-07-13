@@ -11,7 +11,7 @@ interface Location {
   address: string;
   city: string;
   country: string;
-
+}
 // Frissített kategóriák
 const categories = [
   { 
