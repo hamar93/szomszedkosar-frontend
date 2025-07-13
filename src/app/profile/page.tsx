@@ -210,15 +210,7 @@ export default function ProfilePage() {
       }}>
         
         {/* RESPONSIVE GRID - Ez a kulcs! */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr', // Mobil: 1 oszlop
-          gap: '24px',
-          // Desktop: 2 oszlop
-          '@media (min-width: 1024px)': {
-            gridTemplateColumns: '350px 1fr'
-          }
-        }} className="responsive-grid">
+       <div className="grid gap-6 grid-cols-1 lg:grid-cols-[350px_1fr]">
           
           {/* Bal oldal - profil info - Most felül lesz mobilon */}
           <div style={{

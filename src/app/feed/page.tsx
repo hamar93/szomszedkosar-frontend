@@ -120,7 +120,7 @@ const feedData: FeedItem[] = [
     event: {
       name: 'Bakonyi barna csirke',
       date: 'Jövő kedd',
-      price: 'Fajtiszta csirke',
+      products: ['Fajtiszta csirke'],
       emoji: '🐔'
     },
     message: 'János B. Bakonyi barna elérendelhető jövő kedddtől',
