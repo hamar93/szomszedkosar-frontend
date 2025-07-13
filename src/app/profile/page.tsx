@@ -139,7 +139,7 @@ export default function ProfilePage() {
       background: 'linear-gradient(135deg, #f0fdf4 0%, #fefcf3 50%, #fff7ed 100%)'
     }}>
       
-      {/* Header */}
+      {/* Header - Mobilbarát */}
       <div style={{
         background: 'white',
         borderBottom: '1px solid #e5e7eb',
@@ -148,16 +148,16 @@ export default function ProfilePage() {
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
-          padding: '24px 16px'
+          padding: '16px 16px' // Csökkentett padding mobilra
         }}>
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            flexDirection: 'column', // Mobil: oszloposan
+            gap: '12px'
           }}>
             <div>
               <h1 style={{
-                fontSize: '28px',
+                fontSize: '24px', // Kisebb címméret mobilra
                 fontWeight: '700',
                 color: '#1f2937',
                 margin: '0 0 8px 0'
@@ -190,8 +190,10 @@ export default function ProfilePage() {
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center', // Centráljuk mobilon
                   gap: '8px',
-                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)'
+                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
+                  alignSelf: 'stretch' // Teljes szélességben mobilon
                 }}
               >
                 ➕ Új termék
@@ -204,39 +206,47 @@ export default function ProfilePage() {
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '32px 16px'
+        padding: '16px' // Egységes padding
       }}>
         
+        {/* RESPONSIVE GRID - Ez a kulcs! */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '350px 1fr',
-          gap: '32px'
-        }}>
+          gridTemplateColumns: '1fr', // Mobil: 1 oszlop
+          gap: '24px',
+          // Desktop: 2 oszlop
+          '@media (min-width: 1024px)': {
+            gridTemplateColumns: '350px 1fr'
+          }
+        }} className="responsive-grid">
           
-          {/* Bal oldal - profil info */}
-          <div>
+          {/* Bal oldal - profil info - Most felül lesz mobilon */}
+          <div style={{
+            // Desktop-en bal oldali oszlop, mobilon felül
+            order: '1'
+          }}>
             
-            {/* Profil kártya */}
+            {/* Profil kártya - Mobiloptimalizált */}
             <div style={{
               background: 'white',
               borderRadius: '20px',
-              padding: '32px',
-              marginBottom: '24px',
+              padding: '24px', // Kisebb padding mobilon
+              marginBottom: '20px',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
               textAlign: 'center'
             }}>
               
-              {/* Avatar és alapadatok */}
+              {/* Avatar és alapadatok - Kisebb mobilon */}
               <div style={{
-                width: '100px',
-                height: '100px',
+                width: '80px', // Kisebb avatar mobilon
+                height: '80px',
                 background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '48px',
-                margin: '0 auto 20px'
+                fontSize: '40px', // Kisebb emoji
+                margin: '0 auto 16px'
               }}>
                 {mockUser.avatar}
               </div>
@@ -245,11 +255,12 @@ export default function ProfilePage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexWrap: 'wrap', // Tördelés mobilon
                 gap: '8px',
                 marginBottom: '8px'
               }}>
                 <h2 style={{
-                  fontSize: '24px',
+                  fontSize: '20px', // Kisebb cím mobilon
                   fontWeight: '700',
                   color: '#1f2937',
                   margin: 0
@@ -271,30 +282,30 @@ export default function ProfilePage() {
               </div>
               
               <div style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 color: '#6b7280',
                 marginBottom: '16px'
               }}>
                 📍 {mockUser.location}
               </div>
               
+              {/* Statisztikák - Responsive grid */}
               <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '16px',
-                marginBottom: '20px'
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)', // 3 oszlop
+                gap: '12px',
+                marginBottom: '16px'
               }}>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{
-                    fontSize: '20px',
+                    fontSize: '18px', // Kisebb szám mobilon
                     fontWeight: '700',
                     color: '#16a34a'
                   }}>
                     {mockUser.rating}
                   </div>
                   <div style={{
-                    fontSize: '12px',
+                    fontSize: '11px', // Még kisebb szöveg
                     color: '#6b7280'
                   }}>
                     ⭐ Értékelés
@@ -302,14 +313,14 @@ export default function ProfilePage() {
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{
-                    fontSize: '20px',
+                    fontSize: '18px',
                     fontWeight: '700',
                     color: '#16a34a'
                   }}>
                     {mockUser.totalSales}
                   </div>
                   <div style={{
-                    fontSize: '12px',
+                    fontSize: '11px',
                     color: '#6b7280'
                   }}>
                     📦 Eladás
@@ -317,14 +328,14 @@ export default function ProfilePage() {
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{
-                    fontSize: '20px',
+                    fontSize: '18px',
                     fontWeight: '700',
                     color: '#16a34a'
                   }}>
                     {mockUser.memberSince}
                   </div>
                   <div style={{
-                    fontSize: '12px',
+                    fontSize: '11px',
                     color: '#6b7280'
                   }}>
                     📅 Tag óta
@@ -333,14 +344,15 @@ export default function ProfilePage() {
               </div>
               
               <p style={{
-                fontSize: '14px',
+                fontSize: '13px', // Kisebb szöveg mobilon
                 color: '#4b5563',
-                lineHeight: '1.5',
-                margin: '0 0 20px 0'
+                lineHeight: '1.4',
+                margin: '0 0 16px 0'
               }}>
                 {mockUser.bio}
               </p>
               
+              {/* Gombok - Egymás alatt mobilon */}
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -373,17 +385,17 @@ export default function ProfilePage() {
               </div>
             </div>
             
-            {/* NAV szabályok (csak casual_seller esetén) */}
+            {/* NAV szabályok - Mobilon is jól látható */}
             {mockUser.type === 'casual_seller' && remainingLimits && (
               <div style={{
                 background: '#fef3c7',
                 borderRadius: '16px',
-                padding: '20px',
-                marginBottom: '24px',
+                padding: '16px', // Kisebb padding
+                marginBottom: '20px',
                 border: '2px solid #fbbf24'
               }}>
                 <h3 style={{
-                  fontSize: '16px',
+                  fontSize: '14px', // Kisebb cím
                   fontWeight: '600',
                   color: '#92400e',
                   marginBottom: '12px',
@@ -395,15 +407,15 @@ export default function ProfilePage() {
                 </h3>
                 
                 <div style={{
-                  fontSize: '14px',
+                  fontSize: '12px', // Kisebb szöveg
                   color: '#92400e',
-                  lineHeight: '1.5'
+                  lineHeight: '1.4'
                 }}>
-                  <div style={{ marginBottom: '8px' }}>
+                  <div style={{ marginBottom: '6px' }}>
                     📅 <strong>Havi hirdetések:</strong> {mockUser.limits.monthlyAds}/{mockUser.limits.maxMonthlyAds} 
                     ({remainingLimits.monthlyAds} maradt)
                   </div>
-                  <div style={{ marginBottom: '8px' }}>
+                  <div style={{ marginBottom: '6px' }}>
                     📢 <strong>Havi push értesítések:</strong> {mockUser.limits.monthlyPushes}/{mockUser.limits.maxMonthlyPushes} 
                     ({remainingLimits.monthlyPushes} maradt)
                   </div>
@@ -416,15 +428,16 @@ export default function ProfilePage() {
                 {(remainingLimits.monthlyAds === 0 || remainingLimits.activeAds === 0) && (
                   <div style={{
                     marginTop: '12px',
-                    padding: '12px',
+                    padding: '8px',
                     background: '#fee2e2',
                     borderRadius: '8px',
                     border: '1px solid #fecaca'
                   }}>
                     <p style={{
-                      fontSize: '12px',
+                      fontSize: '11px',
                       color: '#dc2626',
-                      margin: 0
+                      margin: 0,
+                      lineHeight: '1.3'
                     }}>
                       ⚠️ Elérted a havi limitet. További hirdetésekhez regisztrálj őstermelőként vagy vállalkozóként.
                     </p>
@@ -433,18 +446,18 @@ export default function ProfilePage() {
               </div>
             )}
             
-            {/* Gyors statisztikák */}
+            {/* Gyors statisztikák - Kompaktabb mobilon */}
             <div style={{
               background: 'white',
               borderRadius: '16px',
-              padding: '20px',
+              padding: '16px',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
             }}>
               <h3 style={{
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: '600',
                 color: '#1f2937',
-                marginBottom: '16px'
+                marginBottom: '12px'
               }}>
                 📊 Statisztikák
               </h3>
@@ -452,8 +465,8 @@ export default function ProfilePage() {
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px',
-                fontSize: '14px'
+                gap: '8px',
+                fontSize: '12px'
               }}>
                 <div style={{
                   display: 'flex',
@@ -493,80 +506,91 @@ export default function ProfilePage() {
             </div>
           </div>
           
-          {/* Jobb oldal - tartalom */}
-          <div>
+          {/* Jobb oldal - tartalom - Mobilon alul */}
+          <div style={{
+            order: '2'
+          }}>
             
-            {/* Tabok */}
+            {/* Tabok - Responsive scrollozható mobilon */}
             <div style={{
               background: 'white',
               borderRadius: '20px',
               padding: '8px',
-              marginBottom: '24px',
+              marginBottom: '20px',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-              display: 'flex',
-              gap: '8px'
+              overflowX: 'auto' // Scroll mobilon ha szükséges
             }}>
-              {[
-                { key: 'products', label: '📦 Termékeim', count: mockProducts.length },
-                { key: 'reviews', label: '💬 Értékelések', count: mockReviews.length },
-                { key: 'stats', label: '📊 Részletes statisztikák', count: null },
-                { key: 'settings', label: '⚙️ Beállítások', count: null }
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as any)}
-                  style={{
-                    flex: 1,
-                    background: activeTab === tab.key ? '#16a34a' : 'transparent',
-                    color: activeTab === tab.key ? 'white' : '#6b7280',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '12px 16px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  {tab.label}
-                  {tab.count !== null && (
-                    <span style={{
-                      background: activeTab === tab.key ? 'rgba(255,255,255,0.2)' : '#e5e7eb',
+              <div style={{
+                display: 'flex',
+                gap: '6px',
+                minWidth: 'max-content' // Prevents shrinking
+              }}>
+                {[
+                  { key: 'products', label: '📦 Termékeim', count: mockProducts.length },
+                  { key: 'reviews', label: '💬 Értékelések', count: mockReviews.length },
+                  { key: 'stats', label: '📊 Statisztikák', count: null },
+                  { key: 'settings', label: '⚙️ Beállítások', count: null }
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as any)}
+                    style={{
+                      flex: '1',
+                      minWidth: 'max-content', // Prevents shrinking
+                      background: activeTab === tab.key ? '#16a34a' : 'transparent',
                       color: activeTab === tab.key ? 'white' : '#6b7280',
+                      border: 'none',
                       borderRadius: '12px',
-                      padding: '2px 6px',
-                      fontSize: '12px'
-                    }}>
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              ))}
+                      padding: '10px 12px', // Kisebb padding mobilon
+                      fontSize: '13px', // Kisebb szöveg
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      whiteSpace: 'nowrap' // Nincs tördelés
+                    }}
+                  >
+                    {tab.label}
+                    {tab.count !== null && (
+                      <span style={{
+                        background: activeTab === tab.key ? 'rgba(255,255,255,0.2)' : '#e5e7eb',
+                        color: activeTab === tab.key ? 'white' : '#6b7280',
+                        borderRadius: '12px',
+                        padding: '2px 6px',
+                        fontSize: '11px'
+                      }}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
             
-            {/* Termékek tab */}
+            {/* Termékek tab - Mobilbarát kártya nézet */}
             {activeTab === 'products' && (
               <div style={{
                 background: 'white',
                 borderRadius: '20px',
-                padding: '24px',
+                padding: '20px',
                 boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
               }}>
                 
-                {/* Termék szűrők */}
+                {/* Termék szűrők - Mobilbarát */}
                 <div style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '24px'
+                  flexDirection: 'column',
+                  gap: '16px',
+                  marginBottom: '20px'
                 }}>
+                  {/* Szűrők - Responsive */}
                   <div style={{
                     display: 'flex',
-                    gap: '12px'
+                    flexWrap: 'wrap', // Tördelés mobilon
+                    gap: '8px'
                   }}>
                     {[
                       { key: 'all', label: 'Összes', count: mockProducts.length },
@@ -582,13 +606,13 @@ export default function ProfilePage() {
                           border: '2px solid',
                           borderColor: productFilter === filter.key ? '#16a34a' : '#e5e7eb',
                           borderRadius: '8px',
-                          padding: '8px 16px',
-                          fontSize: '14px',
+                          padding: '6px 12px', // Kisebb padding
+                          fontSize: '12px', // Kisebb szöveg
                           fontWeight: '600',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '6px'
+                          gap: '4px'
                         }}
                       >
                         {filter.label}
@@ -597,7 +621,7 @@ export default function ProfilePage() {
                           color: productFilter === filter.key ? 'white' : '#6b7280',
                           borderRadius: '12px',
                           padding: '2px 6px',
-                          fontSize: '12px'
+                          fontSize: '10px'
                         }}>
                           {filter.count}
                         </span>
@@ -605,20 +629,23 @@ export default function ProfilePage() {
                     ))}
                   </div>
                   
+                  {/* Új termék gomb - Mobilon teljes szélességben */}
                   {canAddProduct() && (
                     <Link
                       href="/add-product"
                       style={{
                         background: '#16a34a',
                         color: 'white',
-                        padding: '8px 16px',
+                        padding: '10px 16px',
                         borderRadius: '8px',
                         fontSize: '14px',
                         fontWeight: '600',
                         textDecoration: 'none',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px'
+                        justifyContent: 'center',
+                        gap: '6px',
+                        alignSelf: 'stretch' // Teljes szélességben
                       }}
                     >
                       ➕ Új termék
@@ -626,18 +653,18 @@ export default function ProfilePage() {
                   )}
                 </div>
                 
-                {/* Termékek listája */}
+                {/* Termékek listája - KÁRTYA NÉZET MOBILON */}
                 <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr', // Mobil: 1 oszlop
                   gap: '16px'
                 }}>
                   {filteredProducts.map((product) => (
                     <div key={product.id} style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      gap: '20px',
-                      padding: '20px',
+                      flexDirection: 'column', // Mobilon oszloposan
+                      gap: '16px',
+                      padding: '16px',
                       border: '2px solid #f3f4f6',
                       borderRadius: '16px',
                       transition: 'all 0.2s ease',
@@ -652,104 +679,112 @@ export default function ProfilePage() {
                       e.currentTarget.style.background = 'white'
                     }}>
                       
-                      {/* Státusz címkék */}
+                      {/* Felső sor: emoji + info + státusz */}
                       <div style={{
-                        position: 'absolute',
-                        top: '12px',
-                        right: '12px',
                         display: 'flex',
-                        gap: '4px'
+                        alignItems: 'flex-start',
+                        gap: '12px'
                       }}>
-                        {product.urgent && (
-                          <span style={{
-                            background: '#fbbf24',
-                            color: 'white',
-                            padding: '4px 8px',
-                            borderRadius: '6px',
-                            fontSize: '10px',
-                            fontWeight: '600'
+                        {/* Termék emoji */}
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
+                          background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '30px',
+                          flexShrink: 0
+                        }}>
+                          {product.emoji}
+                        </div>
+                        
+                        {/* Termék információ */}
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            color: '#1f2937',
+                            marginBottom: '4px'
                           }}>
-                            🔥 SÜRGŐS
-                          </span>
-                        )}
-                        <span style={{
-                          background: product.status === 'active' ? '#16a34a' : product.status === 'sold_out' ? '#dc2626' : '#6b7280',
-                          color: 'white',
-                          padding: '4px 8px',
-                          borderRadius: '6px',
-                          fontSize: '10px',
-                          fontWeight: '600'
-                        }}>
-                          {product.status === 'active' ? 'AKTÍV' : product.status === 'sold_out' ? 'ELFOGYOTT' : 'INAKTÍV'}
-                        </span>
-                      </div>
-                      
-                      {/* Termék emoji */}
-                      <div style={{
-                        width: '80px',
-                        height: '80px',
-                        background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '40px',
-                        flexShrink: 0
-                      }}>
-                        {product.emoji}
-                      </div>
-                      
-                      {/* Termék információ */}
-                      <div style={{ flex: 1 }}>
-                        <h4 style={{
-                          fontSize: '18px',
-                          fontWeight: '600',
-                          color: '#1f2937',
-                          marginBottom: '8px'
-                        }}>
-                          {product.name}
-                        </h4>
-                        
-                        <div style={{
-                          fontSize: '20px',
-                          fontWeight: '700',
-                          color: '#16a34a',
-                          marginBottom: '12px'
-                        }}>
-                          {product.price} Ft/{product.unit}
-                        </div>
-                        
-                        <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                          gap: '16px',
-                          fontSize: '14px',
-                          color: '#6b7280'
-                        }}>
-                          <div>👀 {product.views} megtekintés</div>
-                          <div>❤️ {product.interested} érdeklődő</div>
-                          <div>📦 {product.sold} eladva</div>
-                          <div>📅 {product.createdAt}</div>
+                            {product.name}
+                          </h4>
+                          
+                          <div style={{
+                            fontSize: '18px',
+                            fontWeight: '700',
+                            color: '#16a34a',
+                            marginBottom: '8px'
+                          }}>
+                            {product.price} Ft/{product.unit}
+                          </div>
+                          
+                          {/* Státusz címkék */}
+                          <div style={{
+                            display: 'flex',
+                            gap: '4px',
+                            flexWrap: 'wrap'
+                          }}>
+                            {product.urgent && (
+                              <span style={{
+                                background: '#fbbf24',
+                                color: 'white',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                fontWeight: '600'
+                              }}>
+                                🔥 SÜRGŐS
+                              </span>
+                            )}
+                            <span style={{
+                              background: product.status === 'active' ? '#16a34a' : product.status === 'sold_out' ? '#dc2626' : '#6b7280',
+                              color: 'white',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              fontSize: '10px',
+                              fontWeight: '600'
+                            }}>
+                              {product.status === 'active' ? 'AKTÍV' : product.status === 'sold_out' ? 'ELFOGYOTT' : 'INAKTÍV'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Műveletek */}
+                      {/* Statisztikák - Responsive grid */}
                       <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)', // 2 oszlop mobilon
                         gap: '8px',
-                        alignItems: 'flex-end'
+                        fontSize: '12px',
+                        color: '#6b7280'
+                      }}>
+                        <div>👀 {product.views} megtekintés</div>
+                        <div>❤️ {product.interested} érdeklődő</div>
+                        <div>📦 {product.sold} eladva</div>
+                        <div>📅 {product.createdAt}</div>
+                      </div>
+                      
+                      {/* Műveletek - Mobilbarát gombok */}
+                      <div style={{
+                        display: 'flex',
+                        gap: '8px',
+                        flexWrap: 'wrap'
                       }}>
                         <Link
                           href={`/product/${product.id}`}
                           style={{
                             background: '#f3f4f6',
                             color: '#374151',
-                            padding: '6px 12px',
+                            padding: '8px 12px',
                             borderRadius: '6px',
                             fontSize: '12px',
                             fontWeight: '600',
-                            textDecoration: 'none'
+                            textDecoration: 'none',
+                            flex: '1',
+                            textAlign: 'center',
+                            minWidth: '80px'
                           }}
                         >
                           👁️ Megtekintés
@@ -758,11 +793,13 @@ export default function ProfilePage() {
                           background: '#16a34a',
                           color: 'white',
                           border: 'none',
-                          padding: '6px 12px',
+                          padding: '8px 12px',
                           borderRadius: '6px',
                           fontSize: '12px',
                           fontWeight: '600',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          flex: '1',
+                          minWidth: '80px'
                         }}>
                           ✏️ Szerkesztés
                         </button>
@@ -771,11 +808,13 @@ export default function ProfilePage() {
                             background: '#dc2626',
                             color: 'white',
                             border: 'none',
-                            padding: '6px 12px',
+                            padding: '8px 12px',
                             borderRadius: '6px',
                             fontSize: '12px',
                             fontWeight: '600',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            flex: '1',
+                            minWidth: '60px'
                           }}>
                             🗑️ Törlés
                           </button>
@@ -787,14 +826,14 @@ export default function ProfilePage() {
                   {filteredProducts.length === 0 && (
                     <div style={{
                       textAlign: 'center',
-                      padding: '60px 20px',
+                      padding: '40px 20px',
                       color: '#6b7280'
                     }}>
                       <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-                      <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
                         Nincs termék
                       </h3>
-                      <p>Még nem adtál fel terméket ebben a kategóriában.</p>
+                      <p style={{ fontSize: '14px', marginBottom: '16px' }}>Még nem adtál fel terméket ebben a kategóriában.</p>
                       {canAddProduct() && (
                         <Link
                           href="/add-product"
@@ -806,8 +845,7 @@ export default function ProfilePage() {
                             fontSize: '14px',
                             fontWeight: '600',
                             textDecoration: 'none',
-                            display: 'inline-block',
-                            marginTop: '16px'
+                            display: 'inline-block'
                           }}
                         >
                           ➕ Első termék hozzáadása
@@ -819,19 +857,19 @@ export default function ProfilePage() {
               </div>
             )}
             
-            {/* Értékelések tab */}
+            {/* Értékelések tab - Mobiloptimalizált */}
             {activeTab === 'reviews' && (
               <div style={{
                 background: 'white',
                 borderRadius: '20px',
-                padding: '24px',
+                padding: '20px',
                 boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{
-                  fontSize: '20px',
+                  fontSize: '18px',
                   fontWeight: '600',
                   color: '#1f2937',
-                  marginBottom: '24px'
+                  marginBottom: '20px'
                 }}>
                   Értékelések ({mockReviews.length})
                 </h3>
@@ -843,14 +881,14 @@ export default function ProfilePage() {
                 }}>
                   {mockReviews.map((review) => (
                     <div key={review.id} style={{
-                      padding: '20px',
+                      padding: '16px',
                       border: '1px solid #e5e7eb',
                       borderRadius: '12px'
                     }}>
                       <div style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start',
+                        flexDirection: 'column', // Mobilon oszloposan
+                        gap: '12px',
                         marginBottom: '12px'
                       }}>
                         <div style={{
@@ -871,15 +909,16 @@ export default function ProfilePage() {
                             {review.avatar}
                           </div>
                           
-                          <div>
+                          <div style={{ flex: 1 }}>
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '8px',
+                              flexWrap: 'wrap',
+                              gap: '6px',
                               marginBottom: '4px'
                             }}>
                               <span style={{
-                                fontSize: '16px',
+                                fontSize: '15px',
                                 fontWeight: '600',
                                 color: '#1f2937'
                               }}>
@@ -902,6 +941,7 @@ export default function ProfilePage() {
                             <div style={{
                               display: 'flex',
                               alignItems: 'center',
+                              flexWrap: 'wrap',
                               gap: '8px'
                             }}>
                               <div style={{ display: 'flex' }}>
@@ -915,7 +955,7 @@ export default function ProfilePage() {
                                 ))}
                               </div>
                               <span style={{
-                                fontSize: '14px',
+                                fontSize: '12px',
                                 color: '#6b7280'
                               }}>
                                 {review.date}
@@ -930,16 +970,17 @@ export default function ProfilePage() {
                           padding: '4px 8px',
                           borderRadius: '6px',
                           fontSize: '12px',
-                          fontWeight: '600'
+                          fontWeight: '600',
+                          alignSelf: 'flex-start'
                         }}>
                           {review.product}
                         </span>
                       </div>
                       
                       <p style={{
-                        fontSize: '15px',
+                        fontSize: '14px',
                         color: '#4b5563',
-                        lineHeight: '1.6',
+                        lineHeight: '1.5',
                         margin: 0
                       }}>
                         {review.comment}
@@ -950,28 +991,29 @@ export default function ProfilePage() {
               </div>
             )}
             
-            {/* Statisztikák tab */}
+            {/* Statisztikák tab - Mobiloptimalizált */}
             {activeTab === 'stats' && (
               <div style={{
                 background: 'white',
                 borderRadius: '20px',
-                padding: '24px',
+                padding: '20px',
                 boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{
-                  fontSize: '20px',
+                  fontSize: '18px',
                   fontWeight: '600',
                   color: '#1f2937',
-                  marginBottom: '24px'
+                  marginBottom: '20px'
                 }}>
                   Részletes statisztikák
                 </h3>
                 
+                {/* Responsive statisztika kártyák */}
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                  gap: '20px',
-                  marginBottom: '32px'
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', // Responsive grid
+                  gap: '16px',
+                  marginBottom: '24px'
                 }}>
                   {[
                     { title: 'Havi bevétel', value: '45,000 Ft', change: '+12%', color: '#16a34a', icon: '💰' },
@@ -982,7 +1024,7 @@ export default function ProfilePage() {
                     <div key={index} style={{
                       background: '#f8fafc',
                       borderRadius: '12px',
-                      padding: '20px',
+                      padding: '16px',
                       border: `2px solid ${stat.color}20`
                     }}>
                       <div style={{
@@ -991,20 +1033,20 @@ export default function ProfilePage() {
                         justifyContent: 'space-between',
                         marginBottom: '8px'
                       }}>
-                        <span style={{ fontSize: '24px' }}>{stat.icon}</span>
+                        <span style={{ fontSize: '20px' }}>{stat.icon}</span>
                         <span style={{
                           background: stat.color,
                           color: 'white',
                           padding: '2px 6px',
                           borderRadius: '4px',
-                          fontSize: '12px',
+                          fontSize: '10px',
                           fontWeight: '600'
                         }}>
                           {stat.change}
                         </span>
                       </div>
                       <div style={{
-                        fontSize: '24px',
+                        fontSize: '20px',
                         fontWeight: '700',
                         color: stat.color,
                         marginBottom: '4px'
@@ -1012,7 +1054,7 @@ export default function ProfilePage() {
                         {stat.value}
                       </div>
                       <div style={{
-                        fontSize: '14px',
+                        fontSize: '12px',
                         color: '#6b7280',
                         fontWeight: '600'
                       }}>
@@ -1025,20 +1067,21 @@ export default function ProfilePage() {
                 <div style={{
                   background: '#f8fafc',
                   borderRadius: '12px',
-                  padding: '20px'
+                  padding: '16px'
                 }}>
                   <h4 style={{
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: '600',
                     color: '#1f2937',
-                    marginBottom: '16px'
+                    marginBottom: '12px'
                   }}>
                     📈 Havi teljesítmény
                   </h4>
                   <p style={{
-                    fontSize: '14px',
+                    fontSize: '13px',
                     color: '#6b7280',
-                    margin: 0
+                    margin: 0,
+                    lineHeight: '1.4'
                   }}>
                     Itt jelennek meg a részletes grafikonok és elemzések a forgalmadról.
                   </p>
@@ -1046,19 +1089,19 @@ export default function ProfilePage() {
               </div>
             )}
             
-            {/* Beállítások tab */}
+            {/* Beállítások tab - Mobiloptimalizált */}
             {activeTab === 'settings' && (
               <div style={{
                 background: 'white',
                 borderRadius: '20px',
-                padding: '24px',
+                padding: '20px',
                 boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{
-                  fontSize: '20px',
+                  fontSize: '18px',
                   fontWeight: '600',
                   color: '#1f2937',
-                  marginBottom: '24px'
+                  marginBottom: '20px'
                 }}>
                   Beállítások
                 </h3>
@@ -1066,17 +1109,17 @@ export default function ProfilePage() {
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '24px'
+                  gap: '20px'
                 }}>
                   
                   {/* Profil beállítások */}
                   <div style={{
-                    padding: '20px',
+                    padding: '16px',
                     border: '1px solid #e5e7eb',
                     borderRadius: '12px'
                   }}>
                     <h4 style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: '#1f2937',
                       marginBottom: '16px'
@@ -1084,15 +1127,16 @@ export default function ProfilePage() {
                       👤 Profil információk
                     </h4>
                     
+                    {/* Responsive form layout */}
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '16px'
+                      gridTemplateColumns: '1fr', // Mobil: 1 oszlop
+                      gap: '12px'
                     }}>
                       <div>
                         <label style={{
                           display: 'block',
-                          fontSize: '14px',
+                          fontSize: '12px',
                           fontWeight: '600',
                           color: '#374151',
                           marginBottom: '6px'
@@ -1101,13 +1145,14 @@ export default function ProfilePage() {
                         </label>
                         <input
                           type="text"
-                          value={mockUser.name}
+                          defaultValue={mockUser.name}
                           style={{
                             width: '100%',
                             padding: '8px 12px',
                             border: '1px solid #d1d5db',
                             borderRadius: '6px',
-                            fontSize: '14px'
+                            fontSize: '14px',
+                            boxSizing: 'border-box'
                           }}
                         />
                       </div>
@@ -1115,7 +1160,7 @@ export default function ProfilePage() {
                       <div>
                         <label style={{
                           display: 'block',
-                          fontSize: '14px',
+                          fontSize: '12px',
                           fontWeight: '600',
                           color: '#374151',
                           marginBottom: '6px'
@@ -1124,40 +1169,42 @@ export default function ProfilePage() {
                         </label>
                         <input
                           type="text"
-                          value={mockUser.phone}
+                          defaultValue={mockUser.phone}
                           style={{
                             width: '100%',
                             padding: '8px 12px',
                             border: '1px solid #d1d5db',
                             borderRadius: '6px',
-                            fontSize: '14px'
+                            fontSize: '14px',
+                            boxSizing: 'border-box'
                           }}
                         />
                       </div>
-                    </div>
-                    
-                    <div style={{ marginTop: '16px' }}>
-                      <label style={{
-                        display: 'block',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#374151',
-                        marginBottom: '6px'
-                      }}>
-                        Bemutatkozás
-                      </label>
-                      <textarea
-                        value={mockUser.bio}
-                        rows={3}
-                        style={{
-                          width: '100%',
-                          padding: '8px 12px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          resize: 'vertical'
-                        }}
-                      />
+                      
+                      <div>
+                        <label style={{
+                          display: 'block',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          color: '#374151',
+                          marginBottom: '6px'
+                        }}>
+                          Bemutatkozás
+                        </label>
+                        <textarea
+                          defaultValue={mockUser.bio}
+                          rows={3}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            resize: 'vertical',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
                     </div>
                     
                     <button style={{
@@ -1165,11 +1212,12 @@ export default function ProfilePage() {
                       color: 'white',
                       border: 'none',
                       borderRadius: '6px',
-                      padding: '8px 16px',
+                      padding: '10px 16px',
                       fontSize: '14px',
                       fontWeight: '600',
                       cursor: 'pointer',
-                      marginTop: '16px'
+                      marginTop: '16px',
+                      width: '100%' // Teljes szélességben mobilon
                     }}>
                       Mentés
                     </button>
@@ -1177,12 +1225,12 @@ export default function ProfilePage() {
                   
                   {/* Értesítési beállítások */}
                   <div style={{
-                    padding: '20px',
+                    padding: '16px',
                     border: '1px solid #e5e7eb',
                     borderRadius: '12px'
                   }}>
                     <h4 style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: '#1f2937',
                       marginBottom: '16px'
@@ -1203,16 +1251,16 @@ export default function ProfilePage() {
                       ].map((setting, index) => (
                         <label key={index} style={{
                           display: 'flex',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           gap: '12px',
                           cursor: 'pointer'
                         }}>
                           <input
                             type="checkbox"
                             defaultChecked={setting.checked}
-                            style={{ accentColor: '#16a34a' }}
+                            style={{ accentColor: '#16a34a', marginTop: '2px' }}
                           />
-                          <span style={{ fontSize: '14px' }}>{setting.label}</span>
+                          <span style={{ fontSize: '13px', lineHeight: '1.4' }}>{setting.label}</span>
                         </label>
                       ))}
                     </div>
@@ -1220,12 +1268,12 @@ export default function ProfilePage() {
                   
                   {/* Adatvédelem */}
                   <div style={{
-                    padding: '20px',
+                    padding: '16px',
                     border: '1px solid #e5e7eb',
                     borderRadius: '12px'
                   }}>
                     <h4 style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: '#1f2937',
                       marginBottom: '16px'
@@ -1236,18 +1284,19 @@ export default function ProfilePage() {
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '12px'
+                      gap: '8px'
                     }}>
                       <button style={{
                         background: 'white',
                         color: '#374151',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        padding: '8px 16px',
-                        fontSize: '14px',
+                        padding: '10px 16px',
+                        fontSize: '13px',
                         fontWeight: '600',
                         cursor: 'pointer',
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        width: '100%'
                       }}>
                         🔑 Jelszó megváltoztatása
                       </button>
@@ -1256,11 +1305,12 @@ export default function ProfilePage() {
                         color: '#374151',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
-                        padding: '8px 16px',
-                        fontSize: '14px',
+                        padding: '10px 16px',
+                        fontSize: '13px',
                         fontWeight: '600',
                         cursor: 'pointer',
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        width: '100%'
                       }}>
                         📄 Adatletöltés (GDPR)
                       </button>
@@ -1269,11 +1319,12 @@ export default function ProfilePage() {
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
-                        padding: '8px 16px',
-                        fontSize: '14px',
+                        padding: '10px 16px',
+                        fontSize: '13px',
                         fontWeight: '600',
                         cursor: 'pointer',
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        width: '100%'
                       }}>
                         🗑️ Fiók törlése
                       </button>
@@ -1285,6 +1336,21 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      {/* CSS for responsive grid */}
+      <style jsx>{`
+        .responsive-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+        
+        @media (min-width: 1024px) {
+          .responsive-grid {
+            grid-template-columns: 350px 1fr;
+          }
+        }
+      `}</style>
     </div>
   )
 }

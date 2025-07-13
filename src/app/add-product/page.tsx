@@ -2,6 +2,16 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { LocationPicker } from '@/components/LocationSystem'
+
+// LocationPicker típusok importálása
+interface Location {
+  lat: number;
+  lng: number;
+  address: string;
+  city: string;
+  country: string;
+}
 
 // Frissített kategóriák
 const categories = [
@@ -49,7 +59,7 @@ const categories = [
   },
   { 
     id: 'rural_marketplace', 
-    name: 'Gazdatér', 
+    name: 'Piactér', 
     icon: '🐄',
     emojis: [
       // Élő állat
@@ -96,9 +106,10 @@ export default function AddProductPage() {
   const [category, setCategory] = useState('')
   const [subcategory, setSubcategory] = useState('')
   const [description, setDescription] = useState('')
+  const [location, setLocation] = useState<Location | null>(null)
   const [useImage, setUseImage] = useState('emoji')
   const [selectedEmoji, setSelectedEmoji] = useState('')
-const [uploadedImages, setUploadedImages] = useState<File[]>([])
+  const [uploadedImages, setUploadedImages] = useState<File[]>([])
   const [price, setPrice] = useState('')
   const [unit, setUnit] = useState('kg')
   const [quantity, setQuantity] = useState('')
@@ -119,16 +130,20 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
 
   const handleImageUpload = (e: any) => {
     const files = Array.from(e.target.files || [])
-    setUploadedImages((prev: any) => [...prev, ...files].slice(0, 5))
+    setUploadedImages((prev: File[]) => [...prev, ...files].slice(0, 5))
   }
 
   const removeImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index))
   }
 
+  const handleLocationSelect = (selectedLocation: Location) => {
+    setLocation(selectedLocation);
+  }
+
   const handleSubmit = () => {
     console.log('Termék feltöltése:', {
-      productName, category, subcategory, description, useImage, selectedEmoji, 
+      productName, category, subcategory, description, location, useImage, selectedEmoji, 
       uploadedImages, price, unit, quantity, isOrganic, deliveryOptions,
       sendPushNotification, pushRadius
     })
@@ -143,7 +158,7 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
       background: 'linear-gradient(135deg, #f0fdf4 0%, #fefcf3 50%, #fff7ed 100%)'
     }}>
       
-      {/* Header */}
+      {/* Header - Mobiloptimalizált */}
       <div style={{
         background: 'white',
         borderBottom: '1px solid #e5e7eb',
@@ -153,17 +168,17 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
         <div style={{
           maxWidth: '800px',
           margin: '0 auto',
-          padding: '24px 16px'
+          padding: '16px' // Egységes padding minden eszközön
         }}>
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            flexDirection: 'column', // Mobil: oszloposan
+            gap: '12px',
             marginBottom: '16px'
           }}>
             <div>
               <h1 style={{
-                fontSize: '28px',
+                fontSize: '24px', // Kisebb cím mobilon
                 fontWeight: '700',
                 color: '#1f2937',
                 margin: '0 0 8px 0'
@@ -189,47 +204,51 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 background: 'white',
                 border: '2px solid #e5e7eb',
                 borderRadius: '12px',
-                padding: '8px 16px',
+                padding: '10px 16px',
                 fontSize: '14px',
                 fontWeight: '600',
                 textDecoration: 'none',
-                color: '#6b7280'
+                color: '#6b7280',
+                textAlign: 'center', // Centrálás mobilon
+                alignSelf: 'stretch' // Teljes szélesség mobilon
               }}
             >
               ← Vissza a profilba
             </Link>
           </div>
           
-          {/* Progress bar */}
+          {/* Progress bar - Mobiloptimalizált */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '6px', // Kisebb gap mobilon
             marginBottom: '8px'
           }}>
             {[1, 2, 3, 4].map((stepNum) => (
               <div key={stepNum} style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '6px', // Kisebb gap
+                flex: '1' // Egyenlő elosztás
               }}>
                 <div style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '28px', // Kisebb kör mobilon
+                  height: '28px',
                   borderRadius: '50%',
                   background: step >= stepNum ? '#16a34a' : '#e5e7eb',
                   color: step >= stepNum ? 'white' : '#9ca3af',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: '600'
+                  fontSize: '12px', // Kisebb szöveg
+                  fontWeight: '600',
+                  flexShrink: 0
                 }}>
                   {stepNum}
                 </div>
                 {stepNum < 4 && (
                   <div style={{
-                    width: '40px',
+                    flex: '1',
                     height: '2px',
                     background: step > stepNum ? '#16a34a' : '#e5e7eb'
                   }}></div>
@@ -238,11 +257,13 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
             ))}
           </div>
           
+          {/* Step labels - Mobilbarát */}
           <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '12px',
-            color: '#6b7280'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            fontSize: '10px', // Még kisebb szöveg mobilon
+            color: '#6b7280',
+            textAlign: 'center'
           }}>
             <span>Alapadatok</span>
             <span>Kép/Ikon</span>
@@ -252,40 +273,40 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
         </div>
       </div>
 
-      {/* Form tartalma */}
+      {/* Form tartalma - Mobiloptimalizált */}
       <div style={{
         maxWidth: '800px',
-        margin: '32px auto',
-        padding: '0 16px'
+        margin: '0 auto',
+        padding: '16px' // Egységes padding mindenhol
       }}>
         <div style={{
           background: 'white',
-          borderRadius: '24px',
-          padding: '32px',
-          boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
+          borderRadius: '20px', // Kisebb border radius mobilon
+          padding: '20px', // Kisebb padding mobilon
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
           border: '2px solid #f8fafc'
         }}>
           
-          {/* STEP 1: Alapadatok */}
+          {/* STEP 1: Alapadatok - Mobiloptimalizált */}
           {step === 1 && (
             <div>
               <h2 style={{
-                fontSize: '24px',
+                fontSize: '20px', // Kisebb cím
                 fontWeight: '600',
                 color: '#1f2937',
-                marginBottom: '24px'
+                marginBottom: '20px'
               }}>
                 Termék alapadatok
               </h2>
               
-              {/* Termék név */}
-              <div style={{ marginBottom: '24px' }}>
+              {/* Termék név - Mobilbarát */}
+              <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '16px',
+                  fontSize: '14px', // Kisebb label
                   fontWeight: '600',
                   color: '#374151',
-                  marginBottom: '8px'
+                  marginBottom: '6px'
                 }}>
                   Termék neve *
                 </label>
@@ -296,21 +317,39 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   placeholder="pl. Friss meggy, Házi lekvár, Bio sajt..."
                   style={{
                     width: '100%',
-                    padding: '16px',
+                    padding: '12px', // Kisebb padding
                     border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
+                    borderRadius: '8px', // Kisebb border radius
+                    fontSize: '14px', // Kisebb szöveg
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
                 />
               </div>
+
+              {/* LocationPicker - Már mobilbarát */}
+              <LocationPicker onLocationSelect={handleLocationSelect} />
               
-              {/* Kategória választás */}
-              <div style={{ marginBottom: '24px' }}>
+              {/* Kiválasztott helyszín - Mobiloptimalizált */}
+              {location && (
+                <div style={{ 
+                  marginBottom: '20px',
+                  padding: '10px',
+                  backgroundColor: '#f0fdf4',
+                  borderRadius: '8px',
+                  border: '1px solid #16a34a'
+                }}>
+                  <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>
+                    ✅ Kiválasztott helyszín: {location.address}
+                  </div>
+                </div>
+              )}
+              
+              {/* Kategória választás - Responsive grid */}
+              <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   color: '#374151',
                   marginBottom: '12px'
@@ -319,8 +358,8 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 </label>
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                  gap: '12px',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', // Kisebb min-width mobilra
+                  gap: '10px',
                   marginBottom: '16px'
                 }}>
                   {categories.map((cat) => (
@@ -335,20 +374,21 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                         background: category === cat.id ? '#dcfce7' : 'white',
                         border: '2px solid #e5e7eb',
                         borderColor: category === cat.id ? '#16a34a' : '#e5e7eb',
-                        borderRadius: '12px',
-                        padding: '16px 12px',
+                        borderRadius: '10px',
+                        padding: '12px 8px', // Kisebb padding
                         cursor: 'pointer',
                         textAlign: 'center',
                         transition: 'all 0.2s ease'
                       }}
                     >
-                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '20px', marginBottom: '6px' }}>
                         {cat.icon}
                       </div>
                       <div style={{
-                        fontSize: '12px',
+                        fontSize: '11px', // Kisebb szöveg
                         fontWeight: '600',
-                        color: category === cat.id ? '#15803d' : '#6b7280'
+                        color: category === cat.id ? '#15803d' : '#6b7280',
+                        lineHeight: '1.2'
                       }}>
                         {cat.name}
                       </div>
@@ -356,12 +396,12 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   ))}
                 </div>
                 
-                {/* Alkategória választás */}
+                {/* Alkategória - Responsive */}
                 {category && (
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: '600',
                       color: '#374151',
                       marginBottom: '8px'
@@ -370,7 +410,7 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     </label>
                     <div style={{
                       display: 'flex',
-                      gap: '8px',
+                      gap: '6px',
                       flexWrap: 'wrap'
                     }}>
                       {getSubcategories(category).map((sub) => (
@@ -383,9 +423,9 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                             color: subcategory === sub ? '#15803d' : '#6b7280',
                             border: '1px solid #e5e7eb',
                             borderColor: subcategory === sub ? '#16a34a' : '#e5e7eb',
-                            borderRadius: '8px',
-                            padding: '6px 12px',
-                            fontSize: '12px',
+                            borderRadius: '6px',
+                            padding: '5px 10px', // Kisebb padding
+                            fontSize: '11px', // Kisebb szöveg
                             fontWeight: '600',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
@@ -399,14 +439,14 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 )}
               </div>
               
-              {/* Leírás */}
-              <div style={{ marginBottom: '32px' }}>
+              {/* Leírás - Mobiloptimalizált */}
+              <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   color: '#374151',
-                  marginBottom: '8px'
+                  marginBottom: '6px'
                 }}>
                   Leírás *
                 </label>
@@ -417,10 +457,10 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   rows={4}
                   style={{
                     width: '100%',
-                    padding: '16px',
+                    padding: '12px',
                     border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
                     outline: 'none',
                     boxSizing: 'border-box',
                     resize: 'vertical'
@@ -430,25 +470,25 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
             </div>
           )}
           
-          {/* STEP 2: Kép/Ikon választás */}
+          {/* STEP 2: Kép/Ikon - Mobiloptimalizált */}
           {step === 2 && (
             <div>
               <h2 style={{
-                fontSize: '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
-                marginBottom: '24px'
+                marginBottom: '20px'
               }}>
                 Termék képe
               </h2>
               
-              {/* Képfeltöltés vagy emoji választás */}
-              <div style={{ marginBottom: '32px' }}>
+              {/* Képfeltöltás választók - Mobilbarát */}
+              <div style={{ marginBottom: '24px' }}>
                 <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                  gap: '16px',
-                  marginBottom: '24px'
+                  display: 'flex',
+                  flexDirection: 'column', // Mobil: oszloposan
+                  gap: '12px',
+                  marginBottom: '20px'
                 }}>
                   
                   {/* Saját kép feltöltése */}
@@ -458,26 +498,27 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                       background: useImage === 'photo' ? '#dcfce7' : 'white',
                       border: '3px solid #e5e7eb',
                       borderColor: useImage === 'photo' ? '#16a34a' : '#e5e7eb',
-                      borderRadius: '16px',
-                      padding: '24px',
+                      borderRadius: '12px',
+                      padding: '16px',
                       cursor: 'pointer',
                       textAlign: 'center',
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📸</div>
+                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>📸</div>
                     <h3 style={{
-                      fontSize: '18px',
+                      fontSize: '16px',
                       fontWeight: '600',
                       color: '#1f2937',
-                      marginBottom: '8px'
+                      marginBottom: '6px'
                     }}>
                       Saját kép feltöltése
                     </h3>
                     <p style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: '#6b7280',
-                      margin: 0
+                      margin: 0,
+                      lineHeight: '1.3'
                     }}>
                       Mutasd meg a valódi termékek minőségét (max 5 kép)
                     </p>
@@ -490,38 +531,39 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                       background: useImage === 'emoji' ? '#dcfce7' : 'white',
                       border: '3px solid #e5e7eb',
                       borderColor: useImage === 'emoji' ? '#16a34a' : '#e5e7eb',
-                      borderRadius: '16px',
-                      padding: '24px',
+                      borderRadius: '12px',
+                      padding: '16px',
                       cursor: 'pointer',
                       textAlign: 'center',
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>😊</div>
+                    <div style={{ fontSize: '32px', marginBottom: '12px' }}>😊</div>
                     <h3 style={{
-                      fontSize: '18px',
+                      fontSize: '16px',
                       fontWeight: '600',
                       color: '#1f2937',
-                      marginBottom: '8px'
+                      marginBottom: '6px'
                     }}>
                       Emoji ikon
                     </h3>
                     <p style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: '#6b7280',
-                      margin: 0
+                      margin: 0,
+                      lineHeight: '1.3'
                     }}>
                       Gyors és egyszerű megoldás
                     </p>
                   </div>
                 </div>
                 
-                {/* Képfeltöltés interface */}
+                {/* Képfeltöltés interface - Mobiloptimalizált */}
                 {useImage === 'photo' && (
                   <div style={{
                     border: '2px dashed #d1d5db',
-                    borderRadius: '16px',
-                    padding: '32px',
+                    borderRadius: '12px',
+                    padding: '20px',
                     textAlign: 'center',
                     background: '#fafafa'
                   }}>
@@ -540,41 +582,42 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                         display: 'inline-block'
                       }}
                     >
-                      <div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div>
+                      <div style={{ fontSize: '32px', marginBottom: '12px' }}>📁</div>
                       <div style={{
                         background: '#16a34a',
                         color: 'white',
-                        borderRadius: '12px',
-                        padding: '12px 24px',
-                        fontSize: '16px',
+                        borderRadius: '8px',
+                        padding: '10px 20px',
+                        fontSize: '14px',
                         fontWeight: '600',
                         display: 'inline-block'
                       }}>
                         Képek kiválasztása
                       </div>
                       <p style={{
-                        fontSize: '14px',
+                        fontSize: '12px',
                         color: '#6b7280',
-                        marginTop: '12px'
+                        marginTop: '8px',
+                        lineHeight: '1.3'
                       }}>
                         JPG, PNG, max 5MB/kép, max 5 kép
                       </p>
                     </label>
                     
-                    {/* Feltöltött képek előnézete */}
+                    {/* Feltöltött képek - Mobilbarát grid */}
                     {uploadedImages.length > 0 && (
                       <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-                        gap: '12px',
-                        marginTop: '24px'
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', // Kisebb képek mobilon
+                        gap: '8px',
+                        marginTop: '16px'
                       }}>
-                        {uploadedImages.map((file: any, index) => (
+                        {uploadedImages.map((file: File, index) => (
                           <div key={index} style={{
                             position: 'relative',
                             aspectRatio: '1',
                             background: '#e5e7eb',
-                            borderRadius: '8px',
+                            borderRadius: '6px',
                             overflow: 'hidden'
                           }}>
                             <img
@@ -590,16 +633,16 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                               onClick={() => removeImage(index)}
                               style={{
                                 position: 'absolute',
-                                top: '4px',
-                                right: '4px',
+                                top: '2px',
+                                right: '2px',
                                 background: '#dc2626',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '50%',
-                                width: '24px',
-                                height: '24px',
+                                width: '20px',
+                                height: '20px',
                                 cursor: 'pointer',
-                                fontSize: '12px'
+                                fontSize: '10px'
                               }}
                             >
                               ×
@@ -611,21 +654,21 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   </div>
                 )}
                 
-                {/* Emoji választás */}
+                {/* Emoji választás - Mobiloptimalizált grid */}
                 {useImage === 'emoji' && selectedCategoryData && (
                   <div>
                     <h4 style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: '#374151',
-                      marginBottom: '16px'
+                      marginBottom: '12px'
                     }}>
                       Válassz ikont a(z) "{selectedCategoryData.name}" kategóriához:
                     </h4>
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(60px, 1fr))',
-                      gap: '12px'
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(50px, 1fr))', // Kisebb cellák mobilon
+                      gap: '8px'
                     }}>
                       {selectedCategoryData.emojis.map((emoji, index) => (
                         <button
@@ -636,10 +679,10 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                             background: selectedEmoji === emoji ? '#dcfce7' : 'white',
                             border: '2px solid #e5e7eb',
                             borderColor: selectedEmoji === emoji ? '#16a34a' : '#e5e7eb',
-                            borderRadius: '12px',
-                            padding: '16px',
+                            borderRadius: '8px',
+                            padding: '10px',
                             cursor: 'pointer',
-                            fontSize: '32px',
+                            fontSize: '24px', // Kisebb emoji mobilon
                             textAlign: 'center',
                             aspectRatio: '1'
                           }}
@@ -654,32 +697,32 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
             </div>
           )}
           
-          {/* STEP 3 és 4 ugyanaz mint korábban... */}
+          {/* STEP 3: Árazás - Mobiloptimalizált */}
           {step === 3 && (
             <div>
               <h2 style={{
-                fontSize: '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
-                marginBottom: '24px'
+                marginBottom: '20px'
               }}>
                 Árazás és részletek
               </h2>
               
-              {/* Ár és mértékegység */}
+              {/* Ár és mértékegység - Responsive grid */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr',
-                gap: '16px',
-                marginBottom: '24px'
+                gap: '12px',
+                marginBottom: '20px'
               }}>
                 <div>
                   <label style={{
                     display: 'block',
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: '600',
                     color: '#374151',
-                    marginBottom: '8px'
+                    marginBottom: '6px'
                   }}>
                     Ár *
                   </label>
@@ -690,34 +733,10 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     placeholder="800"
                     style={{
                       width: '100%',
-                      padding: '16px',
+                      padding: '12px',
                       border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    color: '#374151',
-                    marginBottom: '8px'
-                  }}>
-                    Mértékegység
-                  </label>
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '16px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
                       outline: 'none',
                       boxSizing: 'border-box'
                     }}
@@ -731,14 +750,14 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 </div>
               </div>
               
-              {/* Mennyiség */}
-              <div style={{ marginBottom: '24px' }}>
+              {/* Mennyiség - Mobiloptimalizált */}
+              <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'block',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   color: '#374151',
-                  marginBottom: '8px'
+                  marginBottom: '6px'
                 }}>
                   Elérhető mennyiség
                 </label>
@@ -749,46 +768,52 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   placeholder="pl. 15 kg elérhető, 10 üveg készleten"
                   style={{
                     width: '100%',
-                    padding: '16px',
+                    padding: '12px',
                     border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
                 />
               </div>
               
-              {/* Bio termék */}
-              <div style={{ marginBottom: '24px' }}>
+              {/* Bio termék - Mobilbarát checkbox */}
+              <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'flex',
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
                   gap: '12px',
                   cursor: 'pointer',
                   background: '#f8fafc',
-                  padding: '16px',
-                  borderRadius: '12px',
+                  padding: '12px',
+                  borderRadius: '8px',
                   border: '2px solid #e5e7eb'
                 }}>
                   <input
                     type="checkbox"
                     checked={isOrganic}
                     onChange={(e) => setIsOrganic(e.target.checked)}
-                    style={{ accentColor: '#16a34a', transform: 'scale(1.2)' }}
+                    style={{ 
+                      accentColor: '#16a34a', 
+                      transform: 'scale(1.2)',
+                      marginTop: '2px',
+                      flexShrink: 0
+                    }}
                   />
                   <div>
                     <span style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: '#1f2937'
                     }}>
                       🌱 Bio/Vegyszermentes termék
                     </span>
                     <p style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: '#6b7280',
-                      margin: '4px 0 0 0'
+                      margin: '4px 0 0 0',
+                      lineHeight: '1.3'
                     }}>
                       Vegyszermentes, természetes módon termelt
                     </p>
@@ -796,10 +821,10 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 </label>
               </div>
               
-              {/* Szállítási opciók */}
-              <div style={{ marginBottom: '32px' }}>
+              {/* Szállítási opciók - Mobiloptimalizált */}
+              <div style={{ marginBottom: '24px' }}>
                 <h3 style={{
-                  fontSize: '18px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   color: '#374151',
                   marginBottom: '12px'
@@ -809,13 +834,14 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px'
+                  gap: '10px'
                 }}>
                   <label style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     gap: '12px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    padding: '8px'
                   }}>
                     <input
                       type="checkbox"
@@ -824,15 +850,21 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                         ...deliveryOptions,
                         pickup: e.target.checked
                       })}
-                      style={{ accentColor: '#16a34a', transform: 'scale(1.2)' }}
+                      style={{ 
+                        accentColor: '#16a34a', 
+                        transform: 'scale(1.2)',
+                        marginTop: '2px',
+                        flexShrink: 0
+                      }}
                     />
-                    <span style={{ fontSize: '16px' }}>🚚 Személyes átvétel</span>
+                    <span style={{ fontSize: '14px' }}>🚚 Személyes átvétel</span>
                   </label>
                   <label style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     gap: '12px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    padding: '8px'
                   }}>
                     <input
                       type="checkbox"
@@ -841,15 +873,21 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                         ...deliveryOptions,
                         delivery: e.target.checked
                       })}
-                      style={{ accentColor: '#16a34a', transform: 'scale(1.2)' }}
+                      style={{ 
+                        accentColor: '#16a34a', 
+                        transform: 'scale(1.2)',
+                        marginTop: '2px',
+                        flexShrink: 0
+                      }}
                     />
-                    <span style={{ fontSize: '16px' }}>🚗 Házhozszállítás (környéken)</span>
+                    <span style={{ fontSize: '14px', lineHeight: '1.3' }}>🚗 Házhozszállítás (környéken)</span>
                   </label>
                   <label style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     gap: '12px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    padding: '8px'
                   }}>
                     <input
                       type="checkbox"
@@ -858,55 +896,61 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                         ...deliveryOptions,
                         shipping: e.target.checked
                       })}
-                      style={{ accentColor: '#16a34a', transform: 'scale(1.2)' }}
+                      style={{ 
+                        accentColor: '#16a34a', 
+                        transform: 'scale(1.2)',
+                        marginTop: '2px',
+                        flexShrink: 0
+                      }}
                     />
-                    <span style={{ fontSize: '16px' }}>📦 Postai küldés (tartós termékek)</span>
+                    <span style={{ fontSize: '14px', lineHeight: '1.3' }}>📦 Postai küldés (tartós termékek)</span>
                   </label>
                 </div>
               </div>
             </div>
           )}
           
-          {/* STEP 4: Publikálás */}
+          {/* STEP 4: Publikálás - Mobiloptimalizált */}
           {step === 4 && (
             <div>
               <h2 style={{
-                fontSize: '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
-                marginBottom: '24px'
+                marginBottom: '20px'
               }}>
                 Publikálás és értesítések
               </h2>
               
-              {/* Termék előnézete */}
+              {/* Termék előnézete - Mobilbarát */}
               <div style={{
                 background: '#f8fafc',
-                borderRadius: '16px',
-                padding: '24px',
-                marginBottom: '24px',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px',
                 border: '2px solid #e5e7eb'
               }}>
                 <h3 style={{
-                  fontSize: '18px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   color: '#374151',
-                  marginBottom: '16px'
+                  marginBottom: '12px'
                 }}>
                   Termék előnézete
                 </h3>
                 
                 <div style={{
                   display: 'flex',
-                  gap: '20px',
-                  alignItems: 'flex-start'
+                  flexDirection: 'column', // Mobil: oszloposan
+                  gap: '12px'
                 }}>
-                  {/* Termék képe/ikonja */}
+                  {/* Termék képe/ikonja - Mobilon felül */}
                   <div style={{
+                    alignSelf: 'center',
                     width: '80px',
                     height: '80px',
                     background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-                    borderRadius: '16px',
+                    borderRadius: '12px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -920,10 +964,10 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     {useImage === 'emoji' && selectedEmoji}
                   </div>
                   
-                  {/* Termék info */}
-                  <div style={{ flex: 1 }}>
+                  {/* Termék info - Centrált mobilon */}
+                  <div style={{ textAlign: 'center' }}>
                     <h4 style={{
-                      fontSize: '20px',
+                      fontSize: '18px',
                       fontWeight: '600',
                       color: '#1f2937',
                       marginBottom: '8px'
@@ -932,59 +976,81 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     </h4>
                     <div style={{
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
-                      gap: '16px',
+                      gap: '6px',
                       marginBottom: '8px'
                     }}>
                       <span style={{
-                        fontSize: '18px',
+                        fontSize: '16px',
                         fontWeight: '700',
                         color: '#16a34a'
                       }}>
                         {price ? `${price} Ft/${unit}` : 'Ár nincs megadva'}
                       </span>
-                      {isOrganic && (
-                        <span style={{
-                          background: '#16a34a',
-                          color: 'white',
-                          padding: '2px 6px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          🌱 BIO
-                        </span>
-                      )}
-                      {subcategory && (
-                        <span style={{
-                          background: '#f0fdf4',
-                          color: '#16a34a',
-                          padding: '2px 6px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          {subcategory}
-                        </span>
-                      )}
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}>
+                        {isOrganic && (
+                          <span style={{
+                            background: '#16a34a',
+                            color: 'white',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontSize: '10px',
+                            fontWeight: '600'
+                          }}>
+                            🌱 BIO
+                          </span>
+                        )}
+                        {subcategory && (
+                          <span style={{
+                            background: '#f0fdf4',
+                            color: '#16a34a',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            fontSize: '10px',
+                            fontWeight: '600'
+                          }}>
+                            {subcategory}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <p style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: '#6b7280',
-                      margin: 0
+                      margin: '0 0 8px 0',
+                      lineHeight: '1.3'
                     }}>
                       {description || 'Nincs leírás megadva'}
                     </p>
+                    {/* Helyszín megjelenítése */}
+                    {location && (
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#16a34a',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px'
+                      }}>
+                        📍 {location.city}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
               
-              {/* Push értesítés opció */}
+              {/* Push értesítés - Mobiloptimalizált */}
               <div style={{
                 background: sendPushNotification ? '#fef3c7' : '#f8fafc',
-                borderRadius: '16px',
-                padding: '20px',
-                marginBottom: '24px',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px',
                 border: '2px solid #e5e7eb',
                 borderColor: sendPushNotification ? '#fbbf24' : '#e5e7eb'
               }}>
@@ -1003,21 +1069,23 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     style={{ 
                       accentColor: '#16a34a', 
                       transform: 'scale(1.2)',
-                      marginTop: '2px'
+                      marginTop: '2px',
+                      flexShrink: 0
                     }}
                   />
                   <div>
                     <span style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: '600',
                       color: isLimitReached.monthlyPushes ? '#9ca3af' : '#1f2937'
                     }}>
                       📢 Push értesítés küldése (500 Ft)
                     </span>
                     <p style={{
-                      fontSize: '14px',
+                      fontSize: '13px',
                       color: '#6b7280',
-                      margin: '4px 0 0 0'
+                      margin: '4px 0 0 0',
+                      lineHeight: '1.3'
                     }}>
                       {isLimitReached.monthlyPushes 
                         ? '⚠️ Elérted a havi push értesítések limitjét (3/hó)'
@@ -1027,12 +1095,12 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                   </div>
                 </label>
                 
-                {/* Push értesítés beállítások */}
+                {/* Push beállítások - Mobilbarát */}
                 {sendPushNotification && !isLimitReached.monthlyPushes && (
                   <div>
                     <label style={{
                       display: 'block',
-                      fontSize: '14px',
+                      fontSize: '13px',
                       fontWeight: '600',
                       color: '#374151',
                       marginBottom: '8px'
@@ -1053,7 +1121,7 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      fontSize: '12px',
+                      fontSize: '11px',
                       color: '#6b7280',
                       marginTop: '4px'
                     }}>
@@ -1067,97 +1135,249 @@ const [uploadedImages, setUploadedImages] = useState<File[]>([])
             </div>
           )}
           
-          {/* Navigációs gombok */}
+          {/* Navigációs gombok - Mobiloptimalizált */}
           <div style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '32px',
-            paddingTop: '24px',
+            flexDirection: 'column', // Mobil: oszloposan
+            gap: '12px',
+            marginTop: '24px',
+            paddingTop: '20px',
             borderTop: '1px solid #e5e7eb'
           }}>
-            {step > 1 ? (
-              <button
-                onClick={() => setStep(step - 1)}
-                style={{
-                  background: 'white',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  padding: '12px 24px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                ← Vissza
-              </button>
-            ) : (
-              <div></div>
-            )}
             
-            {step < 4 ? (
-              <button
-                onClick={() => setStep(step + 1)}
-                disabled={
-                  (step === 1 && (!productName || !category || !description)) ||
-                  (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
-                  (step === 3 && !price)
-                }
-                style={{
-                  background: 'linear-gradient(135deg, #16a34a, #15803d)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '12px 24px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  opacity: (
-                    (step === 1 && (!productName || !category || !description)) ||
+            {/* Desktop layout */}
+            <div style={{
+              display: 'none' // Elrejtve mobilon
+            }} className="desktop-nav">
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                {step > 1 ? (
+                  <button
+                    onClick={() => setStep(step - 1)}
+                    style={{
+                      background: 'white',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '12px',
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      color: '#6b7280',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    ← Vissza
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+                
+                {step < 4 ? (
+                  <button
+                    onClick={() => setStep(step + 1)}
+                    disabled={
+                      (step === 1 && (!productName || !category || !description || !location)) ||
+                      (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
+                      (step === 3 && !price)
+                    }
+                    style={{
+                      background: 'linear-gradient(135deg, #16a34a, #15803d)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '12px 24px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      opacity: (
+                        (step === 1 && (!productName || !category || !description || !location)) ||
+                        (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
+                        (step === 3 && !price)
+                      ) ? 0.5 : 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    Tovább →
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isLimitReached.activeAds || isLimitReached.monthlyAds}
+                    style={{
+                      background: isLimitReached.activeAds || isLimitReached.monthlyAds 
+                        ? '#9ca3af' 
+                        : 'linear-gradient(135deg, #16a34a, #15803d)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '16px 32px',
+                      fontSize: '18px',
+                      fontWeight: '600',
+                      cursor: isLimitReached.activeAds || isLimitReached.monthlyAds ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      boxShadow: isLimitReached.activeAds || isLimitReached.monthlyAds 
+                        ? 'none' 
+                        : '0 8px 24px rgba(22, 163, 74, 0.3)'
+                    }}
+                  >
+                    🚀 Termék publikálása
+                    {sendPushNotification && !isLimitReached.monthlyPushes && ' (500 Ft)'}
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            {/* Mobile layout - Mobilbarát gombok */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px'
+            }} className="mobile-nav">
+              
+              {/* Tovább/Publikálás gomb - Mindig felül */}
+              {step < 4 ? (
+                <button
+                  onClick={() => setStep(step + 1)}
+                  disabled={
+                    (step === 1 && (!productName || !category || !description || !location)) ||
                     (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
                     (step === 3 && !price)
-                  ) ? 0.5 : 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                Tovább →
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={isLimitReached.activeAds || isLimitReached.monthlyAds}
-                style={{
-                  background: isLimitReached.activeAds || isLimitReached.monthlyAds 
-                    ? '#9ca3af' 
-                    : 'linear-gradient(135deg, #16a34a, #15803d)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '16px 32px',
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  cursor: isLimitReached.activeAds || isLimitReached.monthlyAds ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: isLimitReached.activeAds || isLimitReached.monthlyAds 
-                    ? 'none' 
-                    : '0 8px 24px rgba(22, 163, 74, 0.3)'
-                }}
-              >
-                🚀 Termék publikálása
-                {sendPushNotification && !isLimitReached.monthlyPushes && ' (500 Ft)'}
-              </button>
-            )}
+                  }
+                  style={{
+                    background: (
+                      (step === 1 && (!productName || !category || !description || !location)) ||
+                      (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
+                      (step === 3 && !price)
+                    ) ? '#9ca3af' : 'linear-gradient(135deg, #16a34a, #15803d)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '14px 20px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: (
+                      (step === 1 && (!productName || !category || !description || !location)) ||
+                      (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
+                      (step === 3 && !price)
+                    ) ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%'
+                  }}
+                >
+                  Tovább →
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  disabled={isLimitReached.activeAds || isLimitReached.monthlyAds}
+                  style={{
+                    background: isLimitReached.activeAds || isLimitReached.monthlyAds 
+                      ? '#9ca3af' 
+                      : 'linear-gradient(135deg, #16a34a, #15803d)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '16px 20px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: isLimitReached.activeAds || isLimitReached.monthlyAds ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%',
+                    boxShadow: isLimitReached.activeAds || isLimitReached.monthlyAds 
+                      ? 'none' 
+                      : '0 6px 20px rgba(22, 163, 74, 0.3)'
+                  }}
+                >
+                  🚀 Termék publikálása
+                  {sendPushNotification && !isLimitReached.monthlyPushes && ' (500 Ft)'}
+                </button>
+              )}
+              
+              {/* Vissza gomb - Csak ha van előző lépés */}
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(step - 1)}
+                  style={{
+                    background: 'white',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '10px',
+                    padding: '12px 20px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    color: '#6b7280',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    width: '100%'
+                  }}
+                >
+                  ← Vissza
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* CSS for responsive navigation */}
+      <style jsx>{`
+        .desktop-nav {
+          display: flex !important;
+        }
+        .mobile-nav {
+          display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-nav {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
+                  />
+                </div>
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '6px'
+                  }}>
+                    Mértékegység
+                  </label>
+                  <select
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
