@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { LocationPicker } from '@/components/LocationSystem'
 
-// LocationPicker típusok importálása
 interface Location {
   lat: number;
   lng: number;
@@ -13,31 +12,18 @@ interface Location {
   country: string;
 }
 
-// Frissített kategóriák
 const categories = [
   { 
     id: 'perishable', 
     name: 'Romlandó termékek', 
     icon: '🥬',
-    emojis: [
-      '🍎', '🍊', '🍌', '🍇', '🍓', '🍒', '🥝', '🍑', '🍍', '🥭', '🍉', '🫐', '🥥',
-      '🥕', '🥒', '🍅', '🥬', '🥦', '🌶️', '🫒', '🌽', '🥔', '🧄', '🧅', '🥑', '🍆', '🫑',
-      '🥚', '🐣', '🥩', '🍖', '🐔', '🐄', '🐷', '🦆', '🐟', '🦐', '🦀',
-      '🥛', '🧀', '🧈', '🍳', '🥯'
-    ]
+    emojis: ['🍎', '🍊', '🍌', '🍇', '🍓', '🍒', '🥝', '🍑', '🍍', '🥭', '🍉', '🫐', '🥥', '🥕', '🥒', '🍅', '🥬', '🥦', '🌶️', '🫒', '🌽', '🥔', '🧄', '🧅', '🥑', '🍆', '🫑', '🥚', '🐣', '🥩', '🍖', '🐔', '🐄', '🐷', '🦆', '🐟', '🦐', '🦀', '🥛', '🧀', '🧈', '🍳', '🥯']
   },
   { 
     id: 'preserved', 
     name: 'Tartós termékek', 
     icon: '🍯',
-    emojis: [
-      '🍯', '🫙', '🍓', '🍑', '🍇', '🍊', '🍋', '🥝',
-      '🧃', '🍹', '🥤', '🍋', '🍓', '🍑',
-      '🍯', '🐝', '🌻', '🌼',
-      '🌿', '🍃', '🌱', '🌼', '🌸', '☕', '🫖',
-      '🌿', '🍃', '🌱', '🧄', '🧅', '🌶️',
-      '🥓', '🌭', '🍖', '🐟', '🧀'
-    ]
+    emojis: ['🍯', '🫙', '🍓', '🍑', '🍇', '🍊', '🍋', '🥝', '🧃', '🍹', '🥤', '🍋', '🍓', '🍑', '🍯', '🐝', '🌻', '🌼', '🌿', '🍃', '🌱', '🌼', '🌸', '☕', '🫖', '🌿', '🍃', '🌱', '🧄', '🧅', '🌶️', '🥓', '🌭', '🍖', '🐟', '🧀']
   },
   { 
     id: 'cosmetics', 
@@ -49,11 +35,7 @@ const categories = [
     id: 'rural_marketplace', 
     name: 'Piactér', 
     icon: '🐄',
-    emojis: [
-      '🐄', '🐷', '🐔', '🐑', '🐐', '🦆', '🐰', '🐴', '🐈', '🐕',
-      '🌾', '🌽', '🫘', '🥜', '🌰',
-      '🛠️', '⚒️', '🪓', '🔨', '⛏️', '🪚', '🧰', '📦', '🚜', '🔧'
-    ]
+    emojis: ['🐄', '🐷', '🐔', '🐑', '🐐', '🦆', '🐰', '🐴', '🐈', '🐕', '🌾', '🌽', '🫘', '🥜', '🌰', '🛠️', '⚒️', '🪓', '🔨', '⛏️', '🪚', '🧰', '📦', '🚜', '🔧']
   },
   { 
     id: 'bakery', 
@@ -63,9 +45,8 @@ const categories = [
   }
 ]
 
-// Alkategóriák
-const getSubcategories = (categoryId: string) => {
-  const subcategoryMap = {
+const getSubcategories = (categoryId: string): string[] => {
+  const subcategoryMap: Record<string, string[]> = {
     'perishable': ['Gyümölcs', 'Zöldség', 'Tojás', 'Hús', 'Tejtermék'],
     'preserved': ['Lekvár', 'Szörp', 'Méz', 'Tea', 'Gyógynövény', 'Füstöltáru'],
     'cosmetics': ['Szappan', 'Krém', 'Balzsam', 'Olaj', 'Gyertya'],
@@ -73,39 +54,38 @@ const getSubcategories = (categoryId: string) => {
     'bakery': ['Kenyér', 'Péksütemény', 'Torta', 'Sütemény']
   }
   
-  return subcategoryMap[categoryId as keyof typeof subcategoryMap] || []
+  return subcategoryMap[categoryId] || []
 }
 
-// Mock felhasználó adatok
 const currentUser = {
   name: 'Kiss Margit',
-  type: 'registered_producer',
+  type: 'registered_producer' as const,
   monthlyAds: 2,
   monthlyPushes: 1,
   activeAds: 1
 }
 
 export default function AddProductPage() {
-  const [step, setStep] = useState(1)
-  const [productName, setProductName] = useState('')
-  const [category, setCategory] = useState('')
-  const [subcategory, setSubcategory] = useState('')
-  const [description, setDescription] = useState('')
+  const [step, setStep] = useState<number>(1)
+  const [productName, setProductName] = useState<string>('')
+  const [category, setCategory] = useState<string>('')
+  const [subcategory, setSubcategory] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
   const [location, setLocation] = useState<Location | null>(null)
-  const [useImage, setUseImage] = useState('emoji')
-  const [selectedEmoji, setSelectedEmoji] = useState('')
+  const [useImage, setUseImage] = useState<'emoji' | 'photo'>('emoji')
+  const [selectedEmoji, setSelectedEmoji] = useState<string>('')
   const [uploadedImages, setUploadedImages] = useState<File[]>([])
-  const [price, setPrice] = useState('')
-  const [unit, setUnit] = useState('kg')
-  const [quantity, setQuantity] = useState('')
-  const [isOrganic, setIsOrganic] = useState(false)
+  const [price, setPrice] = useState<string>('')
+  const [unit, setUnit] = useState<string>('kg')
+  const [quantity, setQuantity] = useState<string>('')
+  const [isOrganic, setIsOrganic] = useState<boolean>(false)
   const [deliveryOptions, setDeliveryOptions] = useState({
     pickup: true,
     delivery: false,
     shipping: false
   })
-  const [sendPushNotification, setSendPushNotification] = useState(false)
-  const [pushRadius, setPushRadius] = useState(10)
+  const [sendPushNotification, setSendPushNotification] = useState<boolean>(false)
+  const [pushRadius, setPushRadius] = useState<number>(10)
 
   const isLimitReached = {
     monthlyAds: currentUser.type === 'casual_seller' && currentUser.monthlyAds >= 5,
@@ -113,7 +93,7 @@ export default function AddProductPage() {
     activeAds: currentUser.type === 'casual_seller' && currentUser.activeAds >= 3
   }
 
-  const handleImageUpload = (e: any) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     setUploadedImages((prev: File[]) => [...prev, ...files].slice(0, 5))
   }
@@ -123,7 +103,7 @@ export default function AddProductPage() {
   }
 
   const handleLocationSelect = (selectedLocation: Location) => {
-    setLocation(selectedLocation);
+    setLocation(selectedLocation)
   }
 
   const handleSubmit = () => {
@@ -143,7 +123,7 @@ export default function AddProductPage() {
       background: 'linear-gradient(135deg, #f0fdf4 0%, #fefcf3 50%, #fff7ed 100%)'
     }}>
       
-      {/* Header - Mobiloptimalizált */}
+      {/* Header */}
       <div style={{
         background: 'white',
         borderBottom: '1px solid #e5e7eb',
@@ -156,15 +136,13 @@ export default function AddProductPage() {
         }}>
           <div style={{
             display: 'flex',
-            flexDirection: window.innerWidth < 768 ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: window.innerWidth < 768 ? 'stretch' : 'center',
+            flexDirection: 'column',
             gap: '12px',
             marginBottom: '16px'
           }}>
             <div>
               <h1 style={{
-                fontSize: window.innerWidth < 768 ? '24px' : '28px',
+                fontSize: '24px',
                 fontWeight: '700',
                 color: '#1f2937',
                 margin: '0 0 8px 0'
@@ -217,15 +195,15 @@ export default function AddProductPage() {
                 flex: '1'
               }}>
                 <div style={{
-                  width: window.innerWidth < 768 ? '28px' : '32px',
-                  height: window.innerWidth < 768 ? '28px' : '32px',
+                  width: '28px',
+                  height: '28px',
                   borderRadius: '50%',
                   background: step >= stepNum ? '#16a34a' : '#e5e7eb',
                   color: step >= stepNum ? 'white' : '#9ca3af',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: window.innerWidth < 768 ? '12px' : '14px',
+                  fontSize: '12px',
                   fontWeight: '600',
                   flexShrink: 0
                 }}>
@@ -238,12 +216,221 @@ export default function AddProductPage() {
                     background: step > stepNum ? '#16a34a' : '#e5e7eb'
                   }}></div>
                 )}
+              </div>
+            ))}
+          </div>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            fontSize: '10px',
+            color: '#6b7280',
+            textAlign: 'center'
+          }}>
+            <span>Alapadatok</span>
+            <span>Kép/Ikon</span>
+            <span>Árazás</span>
+            <span>Publikálás</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Form tartalma */}
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '16px'
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '20px',
+          padding: '20px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          border: '2px solid #f8fafc'
+        }}>
+          
+          {/* STEP 1: Alapadatok */}
+          {step === 1 && (
+            <div>
+              <h2 style={{
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#1f2937',
+                marginBottom: '20px'
+              }}>
+                Termék alapadatok
+              </h2>
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '6px'
+                }}>
+                  Termék neve *
+                </label>
+                <input
+                  type="text"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  placeholder="pl. Friss meggy, Házi lekvár, Bio sajt..."
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <LocationPicker onLocationSelect={handleLocationSelect} />
+              
+              {location && (
+                <div style={{ 
+                  marginBottom: '20px',
+                  padding: '10px',
+                  backgroundColor: '#f0fdf4',
+                  borderRadius: '8px',
+                  border: '1px solid #16a34a'
+                }}>
+                  <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>
+                    ✅ Kiválasztott helyszín: {location.address}
+                  </div>
+                </div>
+              )}
+              
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '12px'
+                }}>
+                  Kategória *
+                </label>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                  gap: '10px',
+                  marginBottom: '16px'
+                }}>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setCategory(cat.id)
+                        setSubcategory('')
+                      }}
+                      style={{
+                        background: category === cat.id ? '#dcfce7' : 'white',
+                        border: '2px solid #e5e7eb',
+                        borderColor: category === cat.id ? '#16a34a' : '#e5e7eb',
+                        borderRadius: '10px',
+                        padding: '12px 8px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <div style={{ fontSize: '20px', marginBottom: '6px' }}>
+                        {cat.icon}
+                      </div>
+                      <div style={{
+                        fontSize: '11px',
+                        fontWeight: '600',
+                        color: category === cat.id ? '#15803d' : '#6b7280',
+                        lineHeight: '1.2'
+                      }}>
+                        {cat.name}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                {category && (
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      color: '#374151',
+                      marginBottom: '8px'
+                    }}>
+                      Pontosabb kategória (opcionális)
+                    </label>
+                    <div style={{
+                      display: 'flex',
+                      gap: '6px',
+                      flexWrap: 'wrap'
+                    }}>
+                      {getSubcategories(category).map((sub) => (
+                        <button
+                          key={sub}
+                          type="button"
+                          onClick={() => setSubcategory(subcategory === sub ? '' : sub)}
+                          style={{
+                            background: subcategory === sub ? '#dcfce7' : '#f8fafc',
+                            color: subcategory === sub ? '#15803d' : '#6b7280',
+                            border: '1px solid #e5e7eb',
+                            borderColor: subcategory === sub ? '#16a34a' : '#e5e7eb',
+                            borderRadius: '6px',
+                            padding: '5px 10px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          {sub}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '6px'
+                }}>
+                  Leírás *
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Írj részletesen a termékről: hogyan készült, milyen minőségű, mire használható..."
+                  rows={4}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    resize: 'vertical'
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* STEP 2: Kép/Ikon választás */}
           {step === 2 && (
             <div>
               <h2 style={{
-                fontSize: window.innerWidth < 768 ? '20px' : '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
                 marginBottom: '20px'
@@ -254,12 +441,11 @@ export default function AddProductPage() {
               <div style={{ marginBottom: '24px' }}>
                 <div style={{
                   display: 'flex',
-                  flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                  flexDirection: 'column',
                   gap: '12px',
                   marginBottom: '20px'
                 }}>
                   
-                  {/* Saját kép feltöltése */}
                   <div
                     onClick={() => setUseImage('photo')}
                     style={{
@@ -293,7 +479,6 @@ export default function AddProductPage() {
                     </p>
                   </div>
                   
-                  {/* Emoji ikon választás */}
                   <div
                     onClick={() => setUseImage('emoji')}
                     style={{
@@ -328,7 +513,6 @@ export default function AddProductPage() {
                   </div>
                 </div>
                 
-                {/* Képfeltöltés interface */}
                 {useImage === 'photo' && (
                   <div style={{
                     border: '2px dashed #d1d5db',
@@ -377,7 +561,7 @@ export default function AddProductPage() {
                     {uploadedImages.length > 0 && (
                       <div style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(auto-fill, minmax(${window.innerWidth < 768 ? '80px' : '100px'}, 1fr))`,
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
                         gap: '8px',
                         marginTop: '16px'
                       }}>
@@ -423,7 +607,6 @@ export default function AddProductPage() {
                   </div>
                 )}
                 
-                {/* Emoji választás */}
                 {useImage === 'emoji' && selectedCategoryData && (
                   <div>
                     <h4 style={{
@@ -432,11 +615,11 @@ export default function AddProductPage() {
                       color: '#374151',
                       marginBottom: '12px'
                     }}>
-                      Válassz ikont a(z) "{selectedCategoryData.name}" kategóriához:
+                      Válassz ikont a(z) &quot;{selectedCategoryData.name}&quot; kategóriához:
                     </h4>
                     <div style={{
                       display: 'grid',
-                      gridTemplateColumns: `repeat(auto-fill, minmax(${window.innerWidth < 768 ? '50px' : '60px'}, 1fr))`,
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(50px, 1fr))',
                       gap: '8px'
                     }}>
                       {selectedCategoryData.emojis.map((emoji, index) => (
@@ -451,7 +634,7 @@ export default function AddProductPage() {
                             borderRadius: '8px',
                             padding: '10px',
                             cursor: 'pointer',
-                            fontSize: window.innerWidth < 768 ? '24px' : '32px',
+                            fontSize: '24px',
                             textAlign: 'center',
                             aspectRatio: '1'
                           }}
@@ -466,11 +649,11 @@ export default function AddProductPage() {
             </div>
           )}
           
-          {/* STEP 3: Árazás és részletek */}
+          {/* STEP 3: Árazás */}
           {step === 3 && (
             <div>
               <h2 style={{
-                fontSize: window.innerWidth < 768 ? '20px' : '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
                 marginBottom: '20px'
@@ -478,10 +661,9 @@ export default function AddProductPage() {
                 Árazás és részletek
               </h2>
               
-              {/* Ár és mértékegység */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '2fr 1fr',
+                gridTemplateColumns: '2fr 1fr',
                 gap: '12px',
                 marginBottom: '20px'
               }}>
@@ -543,7 +725,6 @@ export default function AddProductPage() {
                 </div>
               </div>
               
-              {/* Mennyiség */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'block',
@@ -571,7 +752,6 @@ export default function AddProductPage() {
                 />
               </div>
               
-              {/* Bio termék */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
                   display: 'flex',
@@ -606,99 +786,12 @@ export default function AddProductPage() {
                       fontSize: '13px',
                       color: '#6b7280',
                       margin: '4px 0 0 0',
-                      lineHeight: '1.3'
+                      lineHeight: '1.4'
                     }}>
-                      Vegyszermentes, természetes módon termelt
+                      Kiemelt fontosságú a környezetbarát termesztés és feldolgozás
                     </p>
                   </div>
                 </label>
-              </div>
-              
-              {/* Szállítási opciók */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '12px'
-                }}>
-                  Szállítási lehetőségek
-                </h3>
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px'
-                }}>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    cursor: 'pointer',
-                    padding: '8px'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={deliveryOptions.pickup}
-                      onChange={(e) => setDeliveryOptions({
-                        ...deliveryOptions,
-                        pickup: e.target.checked
-                      })}
-                      style={{ 
-                        accentColor: '#16a34a', 
-                        transform: 'scale(1.2)',
-                        marginTop: '2px',
-                        flexShrink: 0
-                      }}
-                    />
-                    <span style={{ fontSize: '14px' }}>🚚 Személyes átvétel</span>
-                  </label>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    cursor: 'pointer',
-                    padding: '8px'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={deliveryOptions.delivery}
-                      onChange={(e) => setDeliveryOptions({
-                        ...deliveryOptions,
-                        delivery: e.target.checked
-                      })}
-                      style={{ 
-                        accentColor: '#16a34a', 
-                        transform: 'scale(1.2)',
-                        marginTop: '2px',
-                        flexShrink: 0
-                      }}
-                    />
-                    <span style={{ fontSize: '14px', lineHeight: '1.3' }}>🚗 Házhozszállítás (környéken)</span>
-                  </label>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    cursor: 'pointer',
-                    padding: '8px'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={deliveryOptions.shipping}
-                      onChange={(e) => setDeliveryOptions({
-                        ...deliveryOptions,
-                        shipping: e.target.checked
-                      })}
-                      style={{ 
-                        accentColor: '#16a34a', 
-                        transform: 'scale(1.2)',
-                        marginTop: '2px',
-                        flexShrink: 0
-                      }}
-                    />
-                    <span style={{ fontSize: '14px', lineHeight: '1.3' }}>📦 Postai küldés (tartós termékek)</span>
-                  </label>
-                </div>
               </div>
             </div>
           )}
@@ -707,410 +800,171 @@ export default function AddProductPage() {
           {step === 4 && (
             <div>
               <h2 style={{
-                fontSize: window.innerWidth < 768 ? '20px' : '24px',
+                fontSize: '20px',
                 fontWeight: '600',
                 color: '#1f2937',
                 marginBottom: '20px'
               }}>
-                Publikálás és értesítések
+                Publikálás
               </h2>
               
-              {/* Termék előnézete */}
               <div style={{
-                background: '#f8fafc',
-                borderRadius: '12px',
+                background: '#f0fdf4',
+                borderRadius: '8px',
                 padding: '16px',
                 marginBottom: '20px',
-                border: '2px solid #e5e7eb'
+                border: '1px solid #16a34a'
               }}>
                 <h3 style={{
                   fontSize: '16px',
                   fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '12px'
+                  color: '#15803d',
+                  margin: '0 0 8px 0'
                 }}>
-                  Termék előnézete
+                  Kész vagy a termék publikálására!
                 </h3>
-                
-                <div style={{
-                  display: 'flex',
-                  flexDirection: window.innerWidth < 768 ? 'column' : 'row',
-                  gap: '12px',
-                  alignItems: window.innerWidth < 768 ? 'center' : 'flex-start'
+                <p style={{
+                  fontSize: '14px',
+                  color: '#374151',
+                  margin: 0
                 }}>
-                  {/* Termék képe/ikonja */}
+                  Ellenőrizd az adatokat, majd nyomj a &quot;Termék publikálása&quot; gombra.
+                </p>
+              </div>
+              
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '12px',
+                marginBottom: '20px'
+              }}>
+                <div>
+                  <h4 style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    Termék adatai
+                  </h4>
                   <div style={{
-                    width: '80px',
-                    height: '80px',
-                    background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-                    borderRadius: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: useImage === 'photo' && uploadedImages.length > 0 ? '0' : '32px',
-                    backgroundImage: useImage === 'photo' && uploadedImages.length > 0 
-                      ? `url(${URL.createObjectURL(uploadedImages[0])})` 
-                      : 'none',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    flexShrink: 0
+                    background: '#fafafa',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    border: '1px solid #e5e7eb'
                   }}>
-                    {useImage === 'emoji' && selectedEmoji}
-                  </div>
-                  
-                  {/* Termék info */}
-                  <div style={{ 
-                    flex: '1',
-                    textAlign: window.innerWidth < 768 ? 'center' : 'left'
-                  }}>
-                    <h4 style={{
-                      fontSize: '18px',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '8px'
-                    }}>
-                      {productName || 'Termék neve'}
-                    </h4>
                     <div style={{
                       display: 'flex',
-                      flexDirection: window.innerWidth < 768 ? 'column' : 'row',
-                      alignItems: window.innerWidth < 768 ? 'center' : 'flex-start',
-                      gap: window.innerWidth < 768 ? '6px' : '16px',
-                      marginBottom: '8px'
+                      flexDirection: 'column',
+                      gap: '8px'
                     }}>
-                      <span style={{
-                        fontSize: '16px',
-                        fontWeight: '700',
-                        color: '#16a34a'
-                      }}>
-                        {price ? `${price} Ft/${unit}` : 'Ár nincs megadva'}
-                      </span>
                       <div style={{
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: window.innerWidth < 768 ? 'center' : 'flex-start',
-                        gap: '4px'
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151'
                       }}>
-                        {isOrganic && (
-                          <span style={{
-                            background: '#16a34a',
-                            color: 'white',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontSize: '10px',
-                            fontWeight: '600'
-                          }}>
-                            🌱 BIO
-                          </span>
-                        )}
-                        {subcategory && (
-                          <span style={{
-                            background: '#f0fdf4',
-                            color: '#16a34a',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            fontSize: '10px',
-                            fontWeight: '600'
-                          }}>
-                            {subcategory}
-                          </span>
-                        )}
+                        <span>Termék neve:</span>
+                        <span style={{ fontWeight: '600', color: '#1f2937' }}>{productName}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151'
+                      }}>
+                        <span>Kategória:</span>
+                        <span style={{ fontWeight: '600', color: '#1f2937' }}>{category}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151'
+                      }}>
+                        <span>Alkategória:</span>
+                        <span style={{ fontWeight: '600', color: '#1f2937' }}>{subcategory || 'Nincs megadva'}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151'
+                      }}>
+                        <span>Leírás:</span>
+                        <span style={{ fontWeight: '600', color: '#1f2937' }}>{description}</span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#374151'
+                      }}>
+                        <span>Helyszín:</span>
+                        <span style={{ fontWeight: '600', color: '#1f2937' }}>{location?.address || 'Nincs megadva'}</span>
                       </div>
                     </div>
-                    <p style={{
-                      fontSize: '13px',
-                      color: '#6b7280',
-                      margin: '0 0 8px 0',
-                      lineHeight: '1.3'
-                    }}>
-                      {description || 'Nincs leírás megadva'}
-                    </p>
-                    {location && (
+                  </div>
+                </div>
+                <div>
+                  <h4 style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    Kép/Ikon
+                  </h4>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    {useImage === 'photo' && uploadedImages.length > 0 && (
                       <div style={{
-                        fontSize: '12px',
-                        color: '#16a34a',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: window.innerWidth < 768 ? 'center' : 'flex-start',
-                        gap: '4px'
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                        gap: '8px'
                       }}>
-                        📍 {location.city}
+                        {uploadedImages.map((file: File, index) => (
+                          <div key={index} style={{
+                            position: 'relative',
+                            aspectRatio: '1',
+                            background: '#e5e7eb',
+                            borderRadius: '6px',
+                            overflow: 'hidden'
+                          }}>
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Upload ${index + 1}`}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {useImage === 'emoji' && (
+                      <div style={{
+                        fontSize: '32px',
+                        textAlign: 'center',
+                        color: '#1f2937'
+                      }}>
+                        {selectedEmoji}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
               
-              {/* Push értesítés opció */}
-              <div style={{
-                background: sendPushNotification ? '#fef3c7' : '#f8fafc',
-                borderRadius: '12px',
-                padding: '16px',
-                marginBottom: '20px',
-                border: '2px solid #e5e7eb',
-                borderColor: sendPushNotification ? '#fbbf24' : '#e5e7eb'
-              }}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '12px',
-                  cursor: 'pointer',
-                  marginBottom: sendPushNotification ? '16px' : '0'
-                }}>
-                  <input
-                    type="checkbox"
-                    checked={sendPushNotification}
-                    onChange={(e) => setSendPushNotification(e.target.checked)}
-                    disabled={isLimitReached.monthlyPushes}
-                    style={{ 
-                      accentColor: '#16a34a', 
-                      transform: 'scale(1.2)',
-                      marginTop: '2px',
-                      flexShrink: 0
-                    }}
-                  />
-                  <div>
-                    <span style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: isLimitReached.monthlyPushes ? '#9ca3af' : '#1f2937'
-                    }}>
-                      📢 Push értesítés küldése (500 Ft)
-                    </span>
-                    <p style={{
-                      fontSize: '13px',
-                      color: '#6b7280',
-                      margin: '4px 0 0 0',
-                      lineHeight: '1.3'
-                    }}>
-                      {isLimitReached.monthlyPushes 
-                        ? '⚠️ Elérted a havi push értesítések limitjét (3/hó)'
-                        : 'Értesítsd a környékbelieket az új termékről'
-                      }
-                    </p>
-                  </div>
-                </label>
-                
-                {sendPushNotification && !isLimitReached.monthlyPushes && (
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '8px'
-                    }}>
-                      Értesítés távolsága: {pushRadius} km
-                    </label>
-                    <input
-                      type="range"
-                      min="5"
-                      max="30"
-                      value={pushRadius}
-                      onChange={(e) => setPushRadius(parseInt(e.target.value))}
-                      style={{
-                        width: '100%',
-                        accentColor: '#fbbf24'
-                      }}
-                    />
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '11px',
-                      color: '#6b7280',
-                      marginTop: '4px'
-                    }}>
-                      <span>5 km</span>
-                      <span>~{Math.round(pushRadius * pushRadius * 0.3)} potenciális vásárló</span>
-                      <span>30 km</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-              </div>
-            ))}
-          </div>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            fontSize: window.innerWidth < 768 ? '10px' : '12px',
-            color: '#6b7280',
-            textAlign: 'center'
-          }}>
-            <span>Alapadatok</span>
-            <span>Kép/Ikon</span>
-            <span>Árazás</span>
-            <span>Publikálás</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Form tartalma */}
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        padding: '16px'
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '20px',
-          padding: window.innerWidth < 768 ? '20px' : '32px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-          border: '2px solid #f8fafc'
-        }}>
-          
-          {/* STEP 1: Alapadatok */}
-          {step === 1 && (
-            <div>
-              <h2 style={{
-                fontSize: window.innerWidth < 768 ? '20px' : '24px',
-                fontWeight: '600',
-                color: '#1f2937',
-                marginBottom: '20px'
-              }}>
-                Termék alapadatok
-              </h2>
-              
-              {/* Termék név */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '6px'
-                }}>
-                  Termék neve *
-                </label>
-                <input
-                  type="text"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  placeholder="pl. Friss meggy, Házi lekvár, Bio sajt..."
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-
-              <LocationPicker onLocationSelect={handleLocationSelect} />
-              
-              {location && (
-                <div style={{ 
-                  marginBottom: '20px',
-                  padding: '10px',
-                  backgroundColor: '#f0fdf4',
-                  borderRadius: '8px',
-                  border: '1px solid #16a34a'
-                }}>
-                  <div style={{ fontSize: '13px', color: '#16a34a', fontWeight: '500' }}>
-                    ✅ Kiválasztott helyszín: {location.address}
-                  </div>
-                </div>
-              )}
-              
-              {/* Kategória választás */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '12px'
-                }}>
-                  Kategória *
-                </label>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: `repeat(auto-fit, minmax(${window.innerWidth < 768 ? '120px' : '140px'}, 1fr))`,
-                  gap: '10px',
-                  marginBottom: '16px'
-                }}>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => {
-                        setCategory(cat.id)
-                        setSubcategory('')
-                      }}
-                      style={{
-                        background: category === cat.id ? '#dcfce7' : 'white',
-                        border: '2px solid #e5e7eb',
-                        borderColor: category === cat.id ? '#16a34a' : '#e5e7eb',
-                        borderRadius: '10px',
-                        padding: window.innerWidth < 768 ? '12px 8px' : '16px 12px',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      <div style={{ fontSize: window.innerWidth < 768 ? '20px' : '24px', marginBottom: '6px' }}>
-                        {cat.icon}
-                      </div>
-                      <div style={{
-                        fontSize: window.innerWidth < 768 ? '11px' : '12px',
-                        fontWeight: '600',
-                        color: category === cat.id ? '#15803d' : '#6b7280',
-                        lineHeight: '1.2'
-                      }}>
-                        {cat.name}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                
-                {category && (
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '8px'
-                    }}>
-                      Pontosabb kategória (opcionális)
-                    </label>
-                    <div style={{
-                      display: 'flex',
-                      gap: '6px',
-                      flexWrap: 'wrap'
-                    }}>
-                      {getSubcategories(category).map((sub) => (
-                        <button
-                          key={sub}
-                          type="button"
-                          onClick={() => setSubcategory(subcategory === sub ? '' : sub)}
-                          style={{
-                            background: subcategory === sub ? '#dcfce7' : '#f8fafc',
-                            color: subcategory === sub ? '#15803d' : '#6b7280',
-                            border: '1px solid #e5e7eb',
-                            borderColor: subcategory === sub ? '#16a34a' : '#e5e7eb',
-                            borderRadius: '6px',
-                            padding: '5px 10px',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          {sub}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Leírás */}
               <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'block',
@@ -1119,168 +973,148 @@ export default function AddProductPage() {
                   color: '#374151',
                   marginBottom: '6px'
                 }}>
-                  Leírás *
+                  Elérhetőségek
                 </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Írj részletesen a termékről: hogyan készült, milyen minőségű, mire használható..."
-                  rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    resize: 'vertical'
-                  }}
-                />
+                <div style={{
+                  background: '#fafafa',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151'
+                    }}>
+                      <span>Telefonszám:</span>
+                      <span style={{ fontWeight: '600', color: '#1f2937' }}>+36 30 123 4567</span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151'
+                    }}>
+                      <span>Email:</span>
+                      <span style={{ fontWeight: '600', color: '#1f2937' }}>margit.kiss@email.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '6px'
+                }}>
+                  Szállítási és átvételi lehetőségek
+                </label>
+                <div style={{
+                  background: '#fafafa',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151'
+                    }}>
+                      <span>Átvételi lehetőség:</span>
+                      <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                        {deliveryOptions.pickup ? 'Személyes átvétel' : 'Nincs'}
+                      </span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151'
+                    }}>
+                      <span>Házhoz szállítás:</span>
+                      <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                        {deliveryOptions.delivery ? 'Elérhető' : 'Nincs'}
+                      </span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: '#374151'
+                    }}>
+                      <span>Postai küldemény:</span>
+                      <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                        {deliveryOptions.shipping ? 'Elérhető' : 'Nincs'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
-
-          {/* Navigációs gombok - Mobiloptimalizált */}
+          
+          {/* Footer buttons */}
           <div style={{
             display: 'flex',
-            flexDirection: window.innerWidth < 768 ? 'column' : 'row',
             justifyContent: 'space-between',
-            alignItems: window.innerWidth < 768 ? 'stretch' : 'center',
-            gap: window.innerWidth < 768 ? '10px' : '0',
-            marginTop: '24px',
-            paddingTop: '20px',
-            borderTop: '1px solid #e5e7eb'
+            marginTop: '24px'
           }}>
-            {/* Vissza gomb */}
-            {step > 1 ? (
-              <button
-                onClick={() => setStep(step - 1)}
-                style={{
-                  background: 'white',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  padding: window.innerWidth < 768 ? '12px 20px' : '12px 24px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  order: window.innerWidth < 768 ? '2' : '1'
-                }}
-              >
-                ← Vissza
-              </button>
-            ) : (
-              window.innerWidth >= 768 && <div></div>
-            )}
-            
-            {/* Tovább/Publikálás gomb */}
-            {step < 4 ? (
-              <button
-                onClick={() => setStep(step + 1)}
-                disabled={
-                  (step === 1 && (!productName || !category || !description || !location)) ||
-                  (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
-                  (step === 3 && !price)
-                }
-                style={{
-                  background: (
-                    (step === 1 && (!productName || !category || !description || !location)) ||
-                    (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
-                    (step === 3 && !price)
-                  ) ? '#9ca3af' : 'linear-gradient(135deg, #16a34a, #15803d)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: window.innerWidth < 768 ? '14px 20px' : '12px 24px',
-                  fontSize: window.innerWidth < 768 ? '16px' : '14px',
-                  fontWeight: '600',
-                  cursor: (
-                    (step === 1 && (!productName || !category || !description || !location)) ||
-                    (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
-                    (step === 3 && !price)
-                  ) ? 'not-allowed' : 'pointer',
-                  order: window.innerWidth < 768 ? '1' : '2',
-                  boxShadow: (
-                    (step === 1 && (!productName || !category || !description || !location)) ||
-                    (step === 2 && useImage === 'emoji' && !selectedEmoji) ||
-                    (step === 3 && !price)
-                  ) ? 'none' : window.innerWidth < 768 ? '0 6px 20px rgba(22, 163, 74, 0.3)' : 'none'
-                }}
-              >
-                Tovább →
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={isLimitReached.activeAds || isLimitReached.monthlyAds}
-                style={{
-                  background: isLimitReached.activeAds || isLimitReached.monthlyAds 
-                    ? '#9ca3af' 
-                    : 'linear-gradient(135deg, #16a34a, #15803d)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: window.innerWidth < 768 ? '16px 20px' : '16px 32px',
-                  fontSize: window.innerWidth < 768 ? '16px' : '18px',
-                  fontWeight: '600',
-                  cursor: isLimitReached.activeAds || isLimitReached.monthlyAds ? 'not-allowed' : 'pointer',
-                  order: window.innerWidth < 768 ? '1' : '2',
-                  boxShadow: isLimitReached.activeAds || isLimitReached.monthlyAds 
-                    ? 'none' 
-                    : '0 8px 24px rgba(22, 163, 74, 0.3)'
-                }}
-              >
-                🚀 Termék publikálása
-                {sendPushNotification && !isLimitReached.monthlyPushes && ' (500 Ft)'}
-              </button>
-            )}
-          </div>display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '24px',
-            paddingTop: '20px',
-            borderTop: '1px solid #e5e7eb'
-          }}>
-            {step > 1 ? (
-              <button
-                onClick={() => setStep(step - 1)}
-                style={{
-                  background: 'white',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  padding: '12px 24px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  color: '#6b7280'
-                }}
-              >
-                ← Vissza
-              </button>
-            ) : (
-              <div></div>
-            )}
-            
             <button
-              onClick={() => setStep(step + 1)}
-              disabled={step === 1 && (!productName || !category || !description || !location)}
+              onClick={() => setStep(step - 1)}
+              disabled={step === 1}
               style={{
-                background: (step === 1 && (!productName || !category || !description || !location)) 
-                  ? '#9ca3af' 
-                  : 'linear-gradient(135deg, #16a34a, #15803d)',
-                color: 'white',
-                border: 'none',
+                background: 'white',
+                border: '2px solid #e5e7eb',
                 borderRadius: '12px',
-                padding: '12px 24px',
+                padding: '10px 16px',
                 fontSize: '14px',
                 fontWeight: '600',
-                cursor: (step === 1 && (!productName || !category || !description || !location)) 
-                  ? 'not-allowed' 
-                  : 'pointer'
+                textDecoration: 'none',
+                color: '#6b7280',
+                textAlign: 'center',
+                cursor: step === 1 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
-              Tovább →
+              ← Vissza
+            </button>
+            <button
+              onClick={handleSubmit}
+              style={{
+                background: '#16a34a',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '10px 16px',
+                fontSize: '14px',
+                fontWeight: '600',
+                color: 'white',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flex: '1'
+              }}
+            >
+              {step === 4 ? 'Termék publikálása' : 'Következő lépés →'}
             </button>
           </div>
         </div>
