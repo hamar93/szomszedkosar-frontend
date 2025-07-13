@@ -726,27 +726,42 @@ export default function AddProductPage() {
                   }}>
                     Ár *
                   </label>
-                  <input
-                    type="number"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="800"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <option value="kg">kg</option>
-                    <option value="db">db</option>
-                    <option value="üveg">üveg</option>
-                    <option value="csomag">csomag</option>
-                    <option value="liter">liter</option>
-                  </select>
+                 <input
+  type="number"
+  value={price}
+  onChange={(e) => setPrice(e.target.value)}
+  placeholder="800"
+  style={{
+    width: '100%',
+    padding: '12px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box'
+  }}
+/>
+
+<select
+  value={unit}
+  onChange={(e) => setUnit(e.target.value)}
+  style={{
+    width: '100%',
+    padding: '12px',
+    border: '2px solid #e5e7eb',
+    borderRadius: '8px',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box'
+  }}
+>
+  <option value="kg">kg</option>
+  <option value="db">db</option>
+  <option value="üveg">üveg</option>
+  <option value="csomag">csomag</option>
+  <option value="liter">liter</option>
+</select>
+
                 </div>
               </div>
               
