@@ -98,7 +98,7 @@ export default function AddProductPage() {
   const [description, setDescription] = useState('')
   const [useImage, setUseImage] = useState('emoji')
   const [selectedEmoji, setSelectedEmoji] = useState('')
-  const [uploadedImages, setUploadedImages] = useState([])
+const [uploadedImages, setUploadedImages] = useState<File[]>([])
   const [price, setPrice] = useState('')
   const [unit, setUnit] = useState('kg')
   const [quantity, setQuantity] = useState('')
