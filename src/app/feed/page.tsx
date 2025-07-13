@@ -40,8 +40,47 @@ interface Location {
   city: string;
 }
 
+// Define FeedItem type to include calculatedDistance
+interface FeedItem {
+  id: string;
+  type: string;
+  urgent: boolean;
+  seller: {
+    name: string;
+    avatar: string;
+    location: string;
+    verified: boolean;
+    coordinates: { lat: number; lng: number };
+  };
+  product?: {
+    name: string;
+    price?: string;
+    quantity?: string;
+    emoji?: string;
+    varieties?: string[];
+    originalPrice?: string;
+    discountPrice?: string;
+    reason?: string;
+  };
+  event?: {
+    name: string;
+    date: string;
+    products?: string[];
+    emoji?: string;
+  };
+  message: string;
+  description: string;
+  distance: string;
+  time: string;
+  views: number;
+  interested: number;
+  discount?: number;
+  coordinates: { lat: number; lng: number };
+  calculatedDistance?: number; // <-- Add this property
+}
+
 // Mock hírfolyam adatok - koordinátákkal bővítve
-const feedData = [
+const feedData: FeedItem[] = [
   {
     id: '1',
     type: 'push_notification',
@@ -177,7 +216,7 @@ export default function FeedPage() {
   const [userLocation, setUserLocation] = useState<Location | null>(null)
   const [manualLocation, setManualLocation] = useState('Kisbér')
   const [locationPermission, setLocationPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown')
-  const [feedWithDistances, setFeedWithDistances] = useState(feedData)
+  const [feedWithDistances, setFeedWithDistances] = useState<FeedItem[]>(feedData)
 
   // Felhasználó helyzete (GPS vagy kézi beállítás)
   const getUserLocation = () => {
