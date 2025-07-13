@@ -324,7 +324,6 @@ export default function AddProductPage() {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                />
               </div>
 
               {/* LocationPicker - Már mobilbarát */}
@@ -465,7 +464,6 @@ export default function AddProductPage() {
                     boxSizing: 'border-box',
                     resize: 'vertical'
                   }}
-                />
               </div>
             </div>
           )}
@@ -574,7 +572,6 @@ export default function AddProductPage() {
                       onChange={handleImageUpload}
                       style={{ display: 'none' }}
                       id="image-upload"
-                    />
                     <label
                       htmlFor="image-upload"
                       style={{
@@ -628,7 +625,6 @@ export default function AddProductPage() {
                                 height: '100%',
                                 objectFit: 'cover'
                               }}
-                            />
                             <button
                               onClick={() => removeImage(index)}
                               style={{
@@ -740,7 +736,6 @@ export default function AddProductPage() {
     outline: 'none',
     boxSizing: 'border-box'
   }}
-/>
 
 <select
   value={unit}
@@ -790,7 +785,6 @@ export default function AddProductPage() {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                />
               </div>
               
               {/* Bio termék - Mobilbarát checkbox */}
@@ -815,7 +809,6 @@ export default function AddProductPage() {
                       marginTop: '2px',
                       flexShrink: 0
                     }}
-                  />
                   <div>
                     <span style={{
                       fontSize: '14px',
@@ -871,7 +864,6 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
-                    />
                     <span style={{ fontSize: '14px' }}>🚚 Személyes átvétel</span>
                   </label>
                   <label style={{
@@ -894,7 +886,6 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
-                    />
                     <span style={{ fontSize: '14px', lineHeight: '1.3' }}>🚗 Házhozszállítás (környéken)</span>
                   </label>
                   <label style={{
@@ -917,7 +908,6 @@ export default function AddProductPage() {
                         marginTop: '2px',
                         flexShrink: 0
                       }}
-                    />
                     <span style={{ fontSize: '14px', lineHeight: '1.3' }}>📦 Postai küldés (tartós termékek)</span>
                   </label>
                 </div>
@@ -1087,7 +1077,6 @@ export default function AddProductPage() {
                       marginTop: '2px',
                       flexShrink: 0
                     }}
-                  />
                   <div>
                     <span style={{
                       fontSize: '14px',
@@ -1132,7 +1121,6 @@ export default function AddProductPage() {
                         width: '100%',
                         accentColor: '#fbbf24'
                       }}
-                    />
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -1373,26 +1361,8 @@ export default function AddProductPage() {
   )
 }
                   
-                </div>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#374151',
-                    marginBottom: '6px'
-                  }}>
-                    Mértékegység
-                  </label>
-                  <select
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
+    </div>
+  )
+}
+
+export default AddProductPage
