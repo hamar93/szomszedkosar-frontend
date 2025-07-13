@@ -1372,7 +1372,7 @@ export default function AddProductPage() {
     </div>
   )
 }
-                  />
+                  
                 </div>
                 <div>
                   <label style={{
