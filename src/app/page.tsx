@@ -7,7 +7,8 @@ export default function HomePage() {
   
   // Mock felhasználó állapot - később API-ból jön
   const [isLoggedIn, setIsLoggedIn] = useState(false) // false = nincs bejelentkezve
-  const [userType, setUserType] = useState(null) // 'producer' | 'casual_seller' | null
+ const [userType, setUserType] = useState<'producer' | 'casual_seller' | null>(null)
+
 
   return (
     <div style={{
