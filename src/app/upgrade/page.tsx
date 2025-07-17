@@ -70,7 +70,7 @@ export default function HomePage() {
               🧺
             </div>
             <span style={{
-              fontSize: isMobile ? '18px' : '24px',
+              fontSize: 'clamp(18px, 5vw, 24px)',
               fontWeight: '800',
               background: 'linear-gradient(135deg, #16a34a, #059669)',
               WebkitBackgroundClip: 'text',
@@ -83,7 +83,7 @@ export default function HomePage() {
 
           {/* Desktop Navigation */}
           <nav style={{ 
-            display: isMobile ? 'none' : 'flex',
+            display: !isMobile ? 'flex' : 'none',
             gap: '32px', 
             alignItems: 'center'
           }}>
@@ -128,7 +128,7 @@ export default function HomePage() {
 
           {/* Desktop Auth Buttons */}
           <div style={{ 
-            display: isMobile ? 'none' : 'flex',
+            display: !isMobile ? 'flex' : 'none',
             gap: '16px', 
             alignItems: 'center' 
           }}>
@@ -331,11 +331,11 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section style={{
-        padding: isMobile ? '40px 16px' : '80px 16px',
+        padding: 'clamp(40px, 8vw, 80px) 16px',
         textAlign: 'center'
       }}>
         <h1 style={{
-          fontSize: isMobile ? '32px' : '64px',
+          fontSize: 'clamp(28px, 8vw, 64px)',
           fontWeight: '800',
           color: '#1f2937',
           marginBottom: '20px',
@@ -355,23 +355,23 @@ export default function HomePage() {
         </h1>
         
         <p style={{
-          fontSize: isMobile ? '18px' : '22px',
+          fontSize: 'clamp(16px, 4vw, 22px)',
           color: '#6b7280',
-          marginBottom: isMobile ? '40px' : '64px',
+          marginBottom: 'clamp(40px, 8vw, 64px)',
           maxWidth: '600px',
-          margin: `0 auto ${isMobile ? '40px' : '64px'}`,
+          margin: '0 auto clamp(40px, 8vw, 64px)',
           fontWeight: '500',
           lineHeight: '1.5'
         }}>
           Közvetlenül a termelőktől és környékbeli árusoktól
         </p>
 
-        {/* Hero kép */}
+        {/* Hero kép - mobilon kisebb */}
         <div style={{
-          maxWidth: isMobile ? '300px' : '700px',
-          height: isMobile ? '250px' : '500px',
-          margin: `0 auto ${isMobile ? '40px' : '64px'}`,
-          borderRadius: isMobile ? '16px' : '32px',
+          maxWidth: 'clamp(300px, 90vw, 700px)',
+          height: 'clamp(250px, 50vw, 500px)',
+          margin: '0 auto clamp(40px, 8vw, 64px)',
+          borderRadius: 'clamp(16px, 4vw, 32px)',
           backgroundImage: 'url(/images/hero-image.png)',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
@@ -388,83 +388,82 @@ export default function HomePage() {
             right: 0,
             bottom: 0,
             background: 'linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(240,253,244,0.1) 100%)',
-            borderRadius: isMobile ? '12px' : '28px'
+            borderRadius: 'clamp(12px, 4vw, 28px)'
           }}></div>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar - mobilra optimalizálva */}
         <div style={{
           maxWidth: '100%',
           margin: '0 auto',
           padding: '0 16px'
         }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            background: 'white',
-            borderRadius: isMobile ? '16px' : '24px',
-            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
-            border: '3px solid #f0fdf4',
-            overflow: 'hidden',
-            transition: 'all 0.3s ease'
-          }}>
+        <div
+  className="
+    flex flex-col sm:flex-row 
+    bg-white border-[3px] border-green-50 
+    rounded-[clamp(16px,4vw,24px)]
+    shadow-[0_12px_32px_rgba(0,0,0,0.15)]
+    overflow-hidden transition-all duration-300 ease-in-out
+  "
+>
             <input
               type="text"
-              placeholder={isMobile ? "Mit keresel?" : "Mit keresel? (pl. meggy, lekvár...)"}
+              placeholder="Mit keresel? (pl. meggy, lekvár...)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 flex: 1,
-                padding: isMobile ? '16px' : '24px',
+                padding: 'clamp(16px, 4vw, 24px)',
                 border: 'none',
                 outline: 'none',
-                fontSize: isMobile ? '16px' : '18px',
+                fontSize: 'clamp(14px, 4vw, 18px)',
                 background: 'transparent',
                 color: '#1f2937',
                 fontWeight: '500',
                 minHeight: '60px'
               }}
             />
-            <button style={{
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
-              color: 'white',
-              border: 'none',
-              padding: isMobile ? '16px' : '24px',
-              cursor: 'pointer',
-              fontSize: isMobile ? '20px' : '24px',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '60px',
-              borderRadius: isMobile ? '0 0 16px 16px' : '0'
-            }}>
+            <button
+  className="
+    bg-gradient-to-br from-green-600 to-green-700 
+    text-white border-none 
+    px-[clamp(16px,4vw,24px)] 
+    text-[clamp(18px,5vw,24px)] 
+    transition-all duration-200 ease-in-out 
+    flex items-center justify-center 
+    min-h-[60px] 
+    sm:rounded-none rounded-b-[16px]
+    cursor-pointer
+  "
+>
+            
               🔍
             </button>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories - mobilra optimalizálva */}
       <section style={{
         maxWidth: '1000px',
         margin: '0 auto',
-        padding: `0 16px ${isMobile ? '40px' : '80px'}`
+        padding: '0 16px clamp(40px, 8vw, 80px)'
       }}>
         <h2 style={{
-          fontSize: isMobile ? '28px' : '36px',
+          fontSize: 'clamp(24px, 6vw, 36px)',
           fontWeight: '700',
           color: '#1f2937',
           textAlign: 'center',
-          marginBottom: isMobile ? '32px' : '48px'
+          marginBottom: 'clamp(32px, 6vw, 48px)'
         }}>
           Kategóriák
         </h2>
         
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: isMobile ? '16px' : '24px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 40vw, 220px), 1fr))',
+          gap: 'clamp(16px, 4vw, 24px)'
         }}>
           {[
             { name: 'Őstermelők termékei', emoji: '🥕', gradient: 'linear-gradient(135deg, #FFF7ED, #FFEDD5)' },
@@ -474,8 +473,8 @@ export default function HomePage() {
           ].map((category, index) => (
             <div key={index} style={{
               background: category.gradient,
-              borderRadius: isMobile ? '16px' : '24px',
-              padding: isMobile ? '24px 16px' : '40px 24px',
+              borderRadius: 'clamp(16px, 4vw, 24px)',
+              padding: 'clamp(24px, 6vw, 40px) clamp(16px, 4vw, 24px)',
               textAlign: 'center',
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
               border: '2px solid white',
@@ -483,21 +482,21 @@ export default function HomePage() {
               transition: 'all 0.3s ease'
             }}>
               <div style={{
-                width: isMobile ? '60px' : '80px',
-                height: isMobile ? '60px' : '80px',
+                width: 'clamp(60px, 15vw, 80px)',
+                height: 'clamp(60px, 15vw, 80px)',
                 background: 'white',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 16px',
-                fontSize: isMobile ? '28px' : '36px',
+                fontSize: 'clamp(24px, 6vw, 36px)',
                 boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)'
               }}>
                 {category.emoji}
               </div>
               <h3 style={{
-                fontSize: isMobile ? '14px' : '18px',
+                fontSize: 'clamp(14px, 4vw, 18px)',
                 fontWeight: '700',
                 color: '#1f2937',
                 margin: 0,
@@ -510,26 +509,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Products */}
+      {/* Products - mobilra optimalizálva */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: `0 16px ${isMobile ? '60px' : '100px'}`
+        padding: '0 16px clamp(60px, 10vw, 100px)'
       }}>
         <h2 style={{
-          fontSize: isMobile ? '28px' : '36px',
+          fontSize: 'clamp(24px, 6vw, 36px)',
           fontWeight: '700',
           color: '#1f2937',
           textAlign: 'center',
-          marginBottom: isMobile ? '32px' : '48px'
+          marginBottom: 'clamp(32px, 6vw, 48px)'
         }}>
           Kiemelt termékek
         </h2>
         
         <div style={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: isMobile ? '20px' : '32px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(280px, 80vw, 320px), 1fr))',
+          gap: 'clamp(20px, 5vw, 32px)'
         }}>
           {[
             { name: 'Meggy', price: '800 Ft/kg', seller: 'Marika Néni', location: 'Balatonfüred', emoji: '🍒', rating: 4.9 },
@@ -539,7 +538,7 @@ export default function HomePage() {
           ].map((product, index) => (
             <div key={index} style={{
               background: 'white',
-              borderRadius: isMobile ? '16px' : '24px',
+              borderRadius: 'clamp(16px, 4vw, 24px)',
               overflow: 'hidden',
               boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
               border: '2px solid #f8fafc',
@@ -548,12 +547,12 @@ export default function HomePage() {
             }}>
               
               <div style={{
-                height: isMobile ? '180px' : '220px',
+                height: 'clamp(180px, 40vw, 220px)',
                 background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: isMobile ? '64px' : '80px',
+                fontSize: 'clamp(60px, 15vw, 80px)',
                 position: 'relative'
               }}>
                 {product.emoji}
@@ -576,7 +575,7 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div style={{ padding: isMobile ? '20px' : '28px' }}>
+              <div style={{ padding: 'clamp(20px, 5vw, 28px)' }}>
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -585,7 +584,7 @@ export default function HomePage() {
                   gap: '12px'
                 }}>
                   <h3 style={{
-                    fontSize: isMobile ? '20px' : '24px',
+                    fontSize: 'clamp(18px, 5vw, 24px)',
                     fontWeight: '700',
                     color: '#1f2937',
                     margin: 0,
@@ -594,7 +593,7 @@ export default function HomePage() {
                     {product.name}
                   </h3>
                   <span style={{
-                    fontSize: isMobile ? '16px' : '20px',
+                    fontSize: 'clamp(16px, 4vw, 20px)',
                     fontWeight: '800',
                     color: '#16a34a',
                     background: '#f0fdf4',
@@ -615,7 +614,7 @@ export default function HomePage() {
                   <span style={{ fontSize: '16px' }}>👤</span>
                   <span style={{ 
                     color: '#6b7280', 
-                    fontSize: '16px', 
+                    fontSize: 'clamp(14px, 3.5vw, 16px)', 
                     fontWeight: '500' 
                   }}>
                     {product.seller}
@@ -630,7 +629,7 @@ export default function HomePage() {
                   <span style={{ fontSize: '16px' }}>📍</span>
                   <span style={{ 
                     color: '#6b7280', 
-                    fontSize: '16px', 
+                    fontSize: 'clamp(14px, 3.5vw, 16px)', 
                     fontWeight: '500' 
                   }}>
                     {product.location}
@@ -642,11 +641,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer - mobilra optimalizálva */}
       <footer style={{
         background: 'linear-gradient(135deg, #1f2937, #111827)',
         color: 'white',
-        padding: `${isMobile ? '40px' : '64px'} 16px ${isMobile ? '20px' : '32px'}`,
+        padding: 'clamp(40px, 8vw, 64px) 16px clamp(20px, 4vw, 32px)',
         textAlign: 'center'
       }}>
         <div style={{
@@ -658,22 +657,22 @@ export default function HomePage() {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '12px',
-            marginBottom: isMobile ? '20px' : '32px'
+            marginBottom: 'clamp(20px, 5vw, 32px)'
           }}>
             <div style={{
-              width: isMobile ? '40px' : '48px',
-              height: isMobile ? '40px' : '48px',
+              width: 'clamp(36px, 8vw, 48px)',
+              height: 'clamp(36px, 8vw, 48px)',
               borderRadius: '10px',
               background: 'linear-gradient(135deg, #16a34a, #15803d)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: isMobile ? '20px' : '24px'
+              fontSize: 'clamp(18px, 5vw, 24px)'
             }}>
               🧺
             </div>
             <span style={{
-              fontSize: isMobile ? '20px' : '24px',
+              fontSize: 'clamp(18px, 5vw, 24px)',
               fontWeight: '700',
               color: 'white'
             }}>
@@ -683,25 +682,25 @@ export default function HomePage() {
           
           <p style={{
             color: '#9ca3af',
-            marginBottom: isMobile ? '20px' : '32px',
-            fontSize: isMobile ? '16px' : '18px'
+            marginBottom: 'clamp(20px, 5vw, 32px)',
+            fontSize: 'clamp(14px, 4vw, 18px)'
           }}>
             Helyi termékek, közösségi kapcsolatok
           </p>
           
           <div style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
             gap: '16px',
-            marginBottom: isMobile ? '20px' : '32px',
+            marginBottom: 'clamp(20px, 5vw, 32px)',
             maxWidth: '400px',
-            margin: `0 auto ${isMobile ? '20px' : '32px'}`
+            margin: '0 auto clamp(20px, 5vw, 32px)'
           }}>
             {['Rólunk', 'ÁSZF', 'Adatvédelem', 'Kapcsolat'].map((link, index) => (
               <a key={index} href="#" style={{ 
                 color: '#d1d5db', 
                 textDecoration: 'none',
-                fontSize: '16px',
+                fontSize: 'clamp(14px, 3.5vw, 16px)',
                 fontWeight: '500',
                 transition: 'color 0.2s ease',
                 padding: '8px 0'
@@ -712,7 +711,7 @@ export default function HomePage() {
           </div>
           
           <p style={{
-            fontSize: '14px',
+            fontSize: 'clamp(12px, 3vw, 14px)',
             color: '#6b7280',
             margin: 0,
             lineHeight: '1.4'
@@ -722,7 +721,7 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Teszt gombok */}
+      {/* Teszt gombok - mobilon is láthatóak */}
       <div style={{
         position: 'fixed',
         bottom: '20px',

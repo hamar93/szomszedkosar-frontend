@@ -1,0 +1,32 @@
+[build]
+  command = "npm run build && npx @netlify/next"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# App Router → a @netlify/next adapter kezeli a routingot, nem kell catch-all index.html
+# Ezért ezt a redirects szekciót TÖRÖLJÜK vagy kikommenteljük
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+
+# API routes (ha lesz később)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Cache optimization
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

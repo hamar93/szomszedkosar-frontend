@@ -12,6 +12,10 @@ export default function MobileNavigation() {
     { href: '/search', icon: '🔍', label: 'Keresés' },
     { href: '/feed', icon: '📢', label: 'Hírfolyam' },
     { href: '/add-product', icon: '➕', label: 'Új termék' },
+    { href: '/upgrade', icon: '💼', label: 'Előfizetés' },
+    { href: '/notifications', icon: '🔔', label: 'Értesítések' },
+    { href: '/favorites', icon: '⭐', label: 'Kedvencek' },
+    { href: '/messages', icon: '💬', label: 'Üzenetek' },
     { href: '/profile', icon: '👤', label: 'Profil' },
     { href: '/login', icon: '👋', label: 'Bejelentkezés' },
     { href: '/register', icon: '🚀', label: 'Regisztráció' }
@@ -19,6 +23,7 @@ export default function MobileNavigation() {
 
   const secondaryItems = [
     { href: '/help', icon: '❓', label: 'Súgó' },
+    { href: '/settings', icon: '⚙️', label: 'Beállítások' },
     { href: '/contact', icon: '📧', label: 'Kapcsolat' },
     { href: '/about', icon: 'ℹ️', label: 'Rólunk' },
     { href: '/terms', icon: '📄', label: 'ÁSZF' },
