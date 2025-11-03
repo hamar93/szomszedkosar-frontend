@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import LocationPrompt from '../components/LocationPrompt'
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -444,6 +445,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <LocationPrompt />
 
       {/* Categories */}
       <section style={{
