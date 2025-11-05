@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { LocationPicker } from '@/components/LocationSystem'
+import { triggerFreshAlert } from '@/lib/api/alerts'
+import { AlertPayload } from '@/types/AlertPayload'
 type UserType = 'registered_producer' | 'casual_seller';
 
 interface Location {
@@ -93,6 +95,8 @@ export default function AddProductPage() {
   })
   const [sendPushNotification, setSendPushNotification] = useState<boolean>(false)
   const [pushRadius, setPushRadius] = useState<number>(10)
+  const [sendAlert, setSendAlert] = useState<boolean>(false)
+  const [alertSubmissionSuccessful, setAlertSubmissionSuccessful] = useState<boolean>(false)
 
   const isLimitReached = {
     monthlyAds: currentUser.type === 'casual_seller' && currentUser.monthlyAds >= 5,
@@ -113,13 +117,37 @@ export default function AddProductPage() {
     setLocation(selectedLocation)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (step < 4) {
+      setStep(step + 1);
+      return;
+    }
+
+    if (sendAlert && location) {
+      const payload: AlertPayload = {
+        productId: Math.floor(Math.random() * 1000), // Dummy product ID
+        sellerLat: location.lat,
+        sellerLon: location.lng,
+        alertRadiusKm: 10,
+        message: `Új termék a közelben: ${productName}`,
+      };
+      try {
+        await triggerFreshAlert(payload);
+        setAlertSubmissionSuccessful(true);
+      } catch (error) {
+        console.error("Alert submission failed", error);
+        // Handle error state in UI
+      }
+    } else {
+      // Handle regular product submission logic here
+      console.log("Regular product submission");
+    }
+
     console.log('Termék feltöltése:', {
       productName, category, subcategory, description, location, useImage, selectedEmoji, 
       uploadedImages, price, unit, quantity, isOrganic, deliveryOptions,
       sendPushNotification, pushRadius
     })
-    alert('Termék sikeresen feltöltve! (Demo)')
   }
 
   const selectedCategoryData = categories.find(cat => cat.id === category)
@@ -403,6 +431,62 @@ export default function AddProductPage() {
                 )}
               </div>
               
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  cursor: 'pointer',
+                  background: '#f8fafc',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '2px solid #e5e7eb'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={sendAlert}
+                    onChange={(e) => setSendAlert(e.target.checked)}
+                    style={{
+                      accentColor: '#16a34a',
+                      transform: 'scale(1.2)',
+                      flexShrink: 0
+                    }}
+                  />
+                  <div>
+                    <span style={{
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#1f2937'
+                    }}>
+                      Friss Riasztás küldése a 10 km-es körzetbe
+                    </span>
+                    <p style={{
+                      fontSize: '13px',
+                      color: '#6b7280',
+                      margin: '4px 0 0 0',
+                      lineHeight: '1.4'
+                    }}>
+                      Értesítsd a környékbelieket az új, friss termékedről!
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {alertSubmissionSuccessful && (
+                <div style={{
+                  background: '#dcfce7',
+                  color: '#166534',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  marginBottom: '20px',
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}>
+                  ✅ Friss riasztás elküldve a környékbelieknek!
+                </div>
+              )}
+
               <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'block',
