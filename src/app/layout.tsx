@@ -1,9 +1,12 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const sourceSans3 = Source_Sans_3({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+})
 
 export const metadata: Metadata = {
   title: 'SzomszédKosár - Friss, helyi, házias termékek',
@@ -17,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hu">
-      <body className={inter.className}>
+      <body className={sourceSans3.className}>
         {children}
       </body>
     </html>

@@ -1191,19 +1191,7 @@ export default function AddProductPage() {
             </button>
             <button
               onClick={handleSubmit}
-              style={{
-                background: '#16a34a',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '10px 16px',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: 'white',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                flex: '1'
-              }}
+              className="btn-primary flex-1"
             >
               {step === 4 ? 'Termék publikálása' : 'Következő lépés →'}
             </button>
