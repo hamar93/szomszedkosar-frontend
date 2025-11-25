@@ -2,359 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Google Font Import */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Source Sans 3', sans-serif;
-    background: #FAF7F0; /* KRÉM HÁTTÉR */
-    color: #1a1a1a;
-    font-size: 18px;
-    line-height: 1.6;
+  font-family: 'Source Sans 3', sans-serif;
+  background-color: #F5F5F0; /* Warm Bone/Beige */
+  color: #1F2937; /* Dark Gray text */
+  font-size: 18px;
+  line-height: 1.6;
 }
 
-/* * HEADER (TELJES) */
-.header {
-    background: #ffffff;
-    padding: 1.5rem 0;
-    border-bottom: 2px solid #f0f0f0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 2rem;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.logo-dot {
-    width: 12px;
-    height: 12px;
-    background: #4caf50; /* ZÖLD PONT */
-    border-radius: 50%;
-}
-
-.search-bar {
-    max-width: 500px;
-}
-
-.search-input {
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.search-input:focus {
-    border-color: #4caf50; /* ZÖLD FÓKUSZ */
-}
-
-.header-actions {
-    display: flex;
-    gap: 1rem;
-}
-
-/* * GOMBOK (TELJES, ZÖLD AKCENTUSSAL) */
-.btn {
-    padding: 0.7rem 1.3rem;
-    border: 2px solid #1a1a1a;
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-    color: #1a1a1a;
-}
-
-.btn:hover {
-    background: #4caf50; /* ZÖLD HOVER */
-    color: white;
-    border-color: #4caf50;
-}
-
+/* Buttons */
 .btn-primary {
-    background: #4caf50; /* ZÖLD FŐ GOMB */
-    color: white;
-    border-color: #4caf50;
+  background-color: #1B4332; /* Deep Forest Green */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
 }
-
 .btn-primary:hover {
-    background: #45a049;
-    border-color: #45a049;
+  background-color: #2D6A4F; /* Lighter Green */
 }
 
-/* * CONTAINER ÉS OLDAL STRUKTÚRA */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
+/* Cards */
+.post, .card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.page-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 2.5rem;
-}
-
-.filters {
-    display: flex;
-    gap: 0.8rem;
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 2px solid #f0f0f0;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: 0.6rem 1.2rem;
-    border: 2px solid #e0e0e0;
-    background: white;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-weight: 500;
-}
-
-.filter-btn:hover {
-    border-color: #4caf50;
-}
-
-.filter-btn.active {
-    background: #4caf50; /* ZÖLD AKTÍV */
-    color: white;
-    border-color: #4caf50;
-}
-
-/* STATISZTIKA */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-
-.stat-box {
-    padding: 1.5rem;
-    background: #fafafa;
-    border-radius: 8px;
-    border-left: 4px solid #4caf50; /* ZÖLD KIEMELÉS */
-}
-
-.stat-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    display: block;
-    margin-bottom: 0.3rem;
-}
-
-.stat-label {
-    color: #666;
-    font-size: 0.95rem;
-}
-
-/* * POST KÁRTYA (TELJES) */
-.posts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.post {
-    background: #ffffff; /* FEHÉR KÁRTYA */
-    border-radius: 12px;
-    padding: 2rem;
-    transition: all 0.3s;
-    border: 2px solid transparent;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.post:hover {
-    border-color: #4caf50; /* ZÖLD HOVER */
-    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.15);
-}
-
-.post-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.author-section {
-    display: flex;
-    gap: 1rem;
-}
-
-.author-avatar {
-    width: 50px;
-    height: 50px;
-    background: #1a1a1a;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-
-.author-details h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-    color: #1a1a1a;
-}
-
-.meta-info {
-    display: flex;
-    gap: 1rem;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.urgent-label {
-    background: #ff9800; /* NARANCS */
-    color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.urgent-label.red {
-    background: #e53535; /* PIROS */
-}
-
-.post-body h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-    color: #1a1a1a;
-}
-
-.post-text {
-    color: #555;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-}
-
-.product-box {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.product-details h4 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #1a1a1a;
-}
-
-.product-price {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #1a1a1a;
-}
-
-.product-emoji {
-    font-size: 3rem;
-}
-
-.post-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-}
-
-.engagement {
-    display: flex;
-    gap: 2rem;
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.actions {
-    display: flex;
-    gap: 0.8rem;
-}
-
-.action-btn {
-    padding: 0.7rem 1.5rem;
-    border: 2px solid #1a1a1a;
-    background: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.action-btn:hover {
-    background: #1a1a1a;
-    color: white;
-}
-
-.action-btn.primary {
-    background: #4caf50; /* ZÖLD AKCIÓ */
-    color: white;
-    border-color: #4caf50;
-}
-
-.action-btn.primary:hover {
-    background: #45a049;
-}
-
-@media (max-width: 768px) {
-    .header-inner {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .page-title {
-        font-size: 2rem;
-    }
-
-    .post-footer {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-}
+/* Accents */
+.logo-dot { background-color: #1B4332; }
+.filter-btn.active { background-color: #1B4332; color: white; }
+.text-primary { color: #1B4332; }
