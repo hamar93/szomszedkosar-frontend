@@ -149,7 +149,7 @@ export default function Header() {
                                 <Link href="/profile" className="flex items-center gap-2 text-gray-700">
                                     <User size={18} /> Profilom
                                 </Link>
-                                <button onClick={() => signOut()} className="flex items-center gap-2 text-red-600 font-medium text-left">
+                                <button onClick={() => signOut({ callbackUrl: '/' })} className="flex items-center gap-2 text-red-600 font-medium text-left">
                                     <LogOut size={18} /> Kijelentkezés
                                 </button>
                             </>

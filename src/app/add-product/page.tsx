@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import Header from '@/components/Header'; // Biztosítsd, hogy ez a komponens létezik
+import Header from '@/components/Header';
 import { Upload, Check, AlertCircle } from 'lucide-react';
 
 export default function AddProductPage() {
@@ -19,7 +19,7 @@ export default function AddProductPage() {
     price: '',
     unit: 'kg',
     category: 'Zöldség',
-    imageUrl: '', // Kép URL mező
+    imageUrl: '',
     description: '',
     isShippable: false
   });
@@ -41,8 +41,6 @@ export default function AddProductPage() {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
         ...formData,
         price: Number(formData.price), // Ár konvertálása számmá
-        // Opcionális: Ha a backend nem szedi ki a sessionből a user ID-t, itt átadhatod:
-        // sellerEmail: session.user.email 
       });
 
       // Siker esetén átirányítás a feedre
@@ -57,7 +55,6 @@ export default function AddProductPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
-      {/* Header komponens behívása (ha létezik src/components/Header.tsx) */}
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-12">
@@ -186,7 +183,10 @@ export default function AddProductPage() {
               className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                'Feltöltés...'
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Feltöltés...
+                </>
               ) : (
                 <>
                   <Check size={20} /> Termék közzététele
