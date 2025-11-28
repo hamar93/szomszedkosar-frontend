@@ -15,17 +15,9 @@ export default function ProductDetailPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await api.get(`/api/products`);
-        // Note: In a real app, we would have GET /api/products/:id
-        // For now, we fetch all and find one, or if the backend supports it, use ID.
-        // Let's assume we need to filter client side if backend doesn't have specific endpoint yet,
-        // OR we can try to fetch specific if we implemented it.
-        // The user instructions said: Get product data from `${process.env.NEXT_PUBLIC_API_URL}/api/products/${params.id}`
-        // So I will assume that endpoint exists or I should use it.
-        // If it fails (404), I'll fallback to fetching all.
-
+        // Try specific endpoint first
         try {
-          const specificRes = await api.get(`/api/products/${params.id}`); // Try specific endpoint
+          const specificRes = await api.get(`/api/products/${params.id}`);
           setProduct(specificRes.data);
         } catch (e) {
           // Fallback if specific endpoint not implemented in backend yet
@@ -33,7 +25,6 @@ export default function ProductDetailPage() {
           const found = allRes.data.find((p: any) => p._id === params.id);
           setProduct(found);
         }
-
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -45,6 +36,32 @@ export default function ProductDetailPage() {
       fetchProduct();
     }
   }, [params.id]);
+
+  const handlePurchase = async () => {
+    if (!product || !product.stock || product.stock <= 0) return;
+
+    try {
+      // In a real app, we would get the user ID from the session
+      // For now, we'll send a request and let the backend handle validation or use a mock user ID if needed
+      // Ideally, we should use useSession() here.
+
+      // Assuming the backend endpoint /api/orders exists as created
+      const res = await api.post('/api/orders', {
+        productId: product._id,
+        buyerId: product.sellerEmail, // MOCK: Using seller as buyer for demo if no session. Ideally: session.user.id
+        quantity: 1
+      });
+
+      if (res.status === 201) {
+        alert('Sikeres megrendelés!');
+        // Update local stock
+        setProduct({ ...product, stock: product.stock - 1 });
+      }
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      alert('Hiba történt a megrendelés során.');
+    }
+  };
 
   if (loading) {
     return (
@@ -141,19 +158,32 @@ export default function ProductDetailPage() {
               </div>
 
               {/* ACTIONS */}
-              <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                <button
-                  onClick={() => console.log('Megrendelés:', product)}
-                  className="flex-1 bg-[#1B4332] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
-                >
-                  <ShoppingCart size={20} /> Megrendelem
-                </button>
-                <button
-                  onClick={() => console.log('Üzenet:', product)}
-                  className="flex-1 bg-white text-[#1F2937] border-2 border-gray-200 py-4 rounded-xl font-bold text-lg hover:border-[#1B4332] hover:text-[#1B4332] transition flex items-center justify-center gap-2"
-                >
-                  <MessageCircle size={20} /> Üzenet az eladónak
-                </button>
+              <div className="flex flex-col gap-4 mt-8">
+                <div className="flex items-center justify-between">
+                  <span className={`font-bold ${product.stock > 0 ? 'text-[#1B4332]' : 'text-red-600'}`}>
+                    {product.stock > 0 ? `Készleten: ${product.stock} db` : 'ELFOGYOTT'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={handlePurchase}
+                    disabled={!product.stock || product.stock <= 0}
+                    className={`flex-1 py-4 rounded-xl font-bold text-lg transition shadow-md flex items-center justify-center gap-2 ${product.stock > 0
+                        ? 'bg-[#1B4332] text-white hover:bg-[#2D6A4F]'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                  >
+                    <ShoppingCart size={20} />
+                    {product.stock > 0 ? 'Megrendelem' : 'ELFOGYOTT'}
+                  </button>
+                  <button
+                    onClick={() => console.log('Üzenet:', product)}
+                    className="flex-1 bg-white text-[#1F2937] border-2 border-gray-200 py-4 rounded-xl font-bold text-lg hover:border-[#1B4332] hover:text-[#1B4332] transition flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle size={20} /> Üzenet az eladónak
+                  </button>
+                </div>
               </div>
 
             </div>

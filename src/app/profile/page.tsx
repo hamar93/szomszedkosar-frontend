@@ -3,16 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import axios from 'axios';
 import Header from '@/components/Header';
 import {
   User,
   MapPin,
   Star,
   Package,
-  Calendar,
-  Settings,
-  ShoppingBasket,
   ShieldCheck,
   Edit,
   CreditCard,
@@ -22,7 +18,8 @@ import {
   Trash2,
   Plus,
   Phone,
-  Truck
+  Truck,
+  ShoppingBasket
 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -113,8 +110,10 @@ export default function ProfilePage() {
     setSubLoading(true);
     try {
       const response = await api.post('/api/payments/create-subscription-checkout', {
-        priceId: 'price_HelypenzId',
-        userId: (session?.user as any).id || session?.user?.email
+        priceId: 'price_HelypenzBasic', // Fixed price ID
+        userId: (session?.user as any).id || session?.user?.email,
+        successUrl: window.location.origin + '/profile?status=success',
+        cancelUrl: window.location.origin + '/profile?status=cancel'
       });
       if (response.data.url) {
         window.location.href = response.data.url;
@@ -124,6 +123,23 @@ export default function ProfilePage() {
       alert('Hiba történt a fizetés indításakor.');
     } finally {
       setSubLoading(false);
+    }
+  };
+
+  const handleBuyCredits = async (quantity: number, amount: number) => {
+    try {
+      const response = await api.post('/api/payments/create-credits-checkout', {
+        quantity,
+        userId: (session?.user as any).id || session?.user?.email,
+        successUrl: window.location.origin + '/profile?status=success',
+        cancelUrl: window.location.origin + '/profile?status=cancel'
+      });
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      }
+    } catch (error) {
+      console.error('Credits purchase error:', error);
+      alert('Hiba történt a vásárlás indításakor.');
     }
   };
 
@@ -441,6 +457,30 @@ export default function ProfilePage() {
                     <p className="text-center text-xs text-green-200 mt-4">
                       Biztonságos fizetés Stripe-on keresztül
                     </p>
+                  </div>
+                </div>
+
+                {/* Push Notification Credits */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold text-[#1F2937] mb-4">Push Értesítés Kredit Vásárlás</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      onClick={() => handleBuyCredits(5, 1500)}
+                      className="bg-white border-2 border-[#1B4332] text-[#1B4332] p-6 rounded-2xl hover:bg-[#1B4332] hover:text-white transition group text-left"
+                    >
+                      <div className="font-bold text-lg mb-1">5 db Kredit</div>
+                      <div className="text-2xl font-bold mb-2">1 500 Ft</div>
+                      <p className="text-sm opacity-80 group-hover:text-green-100">Ideális kipróbáláshoz</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleBuyCredits(10, 2500)}
+                      className="bg-[#1B4332] text-white p-6 rounded-2xl hover:bg-[#2D6A4F] transition text-left shadow-md"
+                    >
+                      <div className="font-bold text-lg mb-1">10 db Kredit</div>
+                      <div className="text-2xl font-bold mb-2">2 500 Ft</div>
+                      <p className="text-sm text-green-100">Legnépszerűbb választás</p>
+                    </button>
                   </div>
                 </div>
               </div>

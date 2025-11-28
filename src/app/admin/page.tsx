@@ -1,34 +1,46 @@
-// src/app/admin/page.tsx
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-// Mock admin adatok
-const adminStats = {
-  totalUsers: 2847,
-  activeListings: 1023,
-  totalRevenue: 1247500,
-  newUsersToday: 23,
-  reportsToday: 5,
-  pendingApprovals: 12,
-  totalTransactions: 8934,
-  platformFee: 247500
-}
-
-const recentUsers = [
-  { id: '1', name: 'Kiss Margit', email: 'kiss.margit@email.com', type: 'producer', status: 'active', joined: '2024-06-20' },
-  { id: '2', name: 'Nagy Péter', email: 'nagy.peter@email.com', type: 'casual_seller', status: 'pending', joined: '2024-06-21' },
-  { id: '3', name: 'Szabó Anna', email: 'szabo.anna@email.com', type: 'buyer', status: 'active', joined: '2024-06-22' }
-]
-
-const reportedContent = [
-  { id: '1', type: 'product', title: 'Gyanús húskészítmény', reporter: 'user_123', reason: 'Egészségügyi aggály', status: 'pending' },
-  { id: '2', type: 'user', title: 'Káromkodás üzenetekben', reporter: 'user_456', reason: 'Nem megfelelő viselkedés', status: 'investigating' },
-  { id: '3', type: 'review', title: 'Hamis értékelés', reporter: 'user_789', reason: 'Spam/hamis tartalom', status: 'resolved' }
-]
+import api from '@/lib/api';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports' | 'payments' | 'settings'>('overview')
+  const [stats, setStats] = useState<any>({
+    totalUsers: 0,
+    activeListings: 0,
+    totalRevenue: 0,
+    newUsersToday: 0,
+    reportsToday: 0,
+    pendingApprovals: 0,
+    totalTransactions: 0,
+    platformFee: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await api.get('/api/admin/stats');
+        setStats(res.data);
+      } catch (error) {
+        console.error('Error fetching admin stats:', error);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const adminStats = stats;
+
+  const recentUsers = [
+    { id: '1', name: 'Kiss Margit', email: 'kiss.margit@email.com', type: 'producer', status: 'active', joined: '2024-06-20' },
+    { id: '2', name: 'Nagy Péter', email: 'nagy.peter@email.com', type: 'casual_seller', status: 'pending', joined: '2024-06-21' },
+    { id: '3', name: 'Szabó Anna', email: 'szabo.anna@email.com', type: 'buyer', status: 'active', joined: '2024-06-22' }
+  ]
+
+  const reportedContent = [
+    { id: '1', type: 'product', title: 'Gyanús húskészítmény', reporter: 'user_123', reason: 'Egészségügyi aggály', status: 'pending' },
+    { id: '2', type: 'user', title: 'Káromkodás üzenetekben', reporter: 'user_456', reason: 'Nem megfelelő viselkedés', status: 'investigating' },
+    { id: '3', type: 'review', title: 'Hamis értékelés', reporter: 'user_789', reason: 'Spam/hamis tartalom', status: 'resolved' }
+  ]
 
   return (
     <div style={{
@@ -36,7 +48,7 @@ export default function AdminDashboard() {
       background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
       color: 'white'
     }}>
-      
+
       {/* Admin Header */}
       <header style={{
         background: 'rgba(0,0,0,0.3)',
@@ -84,7 +96,7 @@ export default function AdminDashboard() {
               </p>
             </div>
           </div>
-          
+
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -120,7 +132,7 @@ export default function AdminDashboard() {
         margin: '0 auto',
         padding: '32px 24px'
       }}>
-        
+
         {/* Navigation Tabs */}
         <div style={{
           display: 'flex',
@@ -170,7 +182,7 @@ export default function AdminDashboard() {
             </button>
           ))}
         </div>
-        
+
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div>
@@ -182,10 +194,10 @@ export default function AdminDashboard() {
               marginBottom: '32px'
             }}>
               {[
-                { title: 'Összes felhasználó', value: adminStats.totalUsers.toLocaleString(), change: '+12%', icon: '👥', color: '#3b82f6' },
-                { title: 'Aktív hirdetések', value: adminStats.activeListings.toLocaleString(), change: '+8%', icon: '📦', color: '#16a34a' },
-                { title: 'Platform bevétel', value: `${Math.round(adminStats.platformFee / 1000)}k Ft`, change: '+15%', icon: '💰', color: '#f59e0b' },
-                { title: 'Mai új felhasználók', value: adminStats.newUsersToday.toString(), change: '+5%', icon: '🆕', color: '#8b5cf6' }
+                { title: 'Összes felhasználó', value: adminStats.totalUsers?.toLocaleString() || '0', change: '+12%', icon: '👥', color: '#3b82f6' },
+                { title: 'Aktív hirdetések', value: adminStats.activeListings?.toLocaleString() || '0', change: '+8%', icon: '📦', color: '#16a34a' },
+                { title: 'Platform bevétel', value: `${Math.round((adminStats.platformFee || 0) / 1000)}k Ft`, change: '+15%', icon: '💰', color: '#f59e0b' },
+                { title: 'Mai új felhasználók', value: adminStats.newUsersToday?.toString() || '0', change: '+5%', icon: '🆕', color: '#8b5cf6' }
               ].map((stat, index) => (
                 <div key={index} style={{
                   background: 'rgba(255,255,255,0.05)',
@@ -238,14 +250,14 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-            
+
             {/* Recent Activity */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: '24px'
             }}>
-              
+
               {/* Recent Users */}
               <div style={{
                 background: 'rgba(255,255,255,0.05)',
@@ -263,7 +275,7 @@ export default function AdminDashboard() {
                 }}>
                   👥 Legújabb felhasználók
                 </h3>
-                
+
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -306,7 +318,7 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-              
+
               {/* Recent Reports */}
               <div style={{
                 background: 'rgba(255,255,255,0.05)',
@@ -324,7 +336,7 @@ export default function AdminDashboard() {
                 }}>
                   🚨 Legújabb bejelentések
                 </h3>
-                
+
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -354,17 +366,17 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <span style={{
-                        background: report.status === 'resolved' ? 'rgba(34, 197, 94, 0.2)' : 
-                                   report.status === 'investigating' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                        color: report.status === 'resolved' ? '#22c55e' : 
-                               report.status === 'investigating' ? '#f59e0b' : '#ef4444',
+                        background: report.status === 'resolved' ? 'rgba(34, 197, 94, 0.2)' :
+                          report.status === 'investigating' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: report.status === 'resolved' ? '#22c55e' :
+                          report.status === 'investigating' ? '#f59e0b' : '#ef4444',
                         padding: '4px 8px',
                         borderRadius: '6px',
                         fontSize: '12px',
                         fontWeight: '600'
                       }}>
-                        {report.status === 'resolved' ? 'Megoldva' : 
-                         report.status === 'investigating' ? 'Vizsgálat' : 'Új'}
+                        {report.status === 'resolved' ? 'Megoldva' :
+                          report.status === 'investigating' ? 'Vizsgálat' : 'Új'}
                       </span>
                     </div>
                   ))}
@@ -373,7 +385,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-        
+
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div>
@@ -423,7 +435,7 @@ export default function AdminDashboard() {
                 </select>
               </div>
             </div>
-            
+
             {/* Users Table */}
             <div style={{
               background: 'rgba(255,255,255,0.05)',
@@ -448,7 +460,7 @@ export default function AdminDashboard() {
                 <span>Hirdetések</span>
                 <span>Műveletek</span>
               </div>
-              
+
               {[...recentUsers, ...recentUsers].map((user, index) => (
                 <div key={index} style={{
                   display: 'grid',
@@ -513,7 +525,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-        
+
         {/* Settings Tab */}
         {activeTab === 'settings' && (
           <div>
@@ -524,13 +536,13 @@ export default function AdminDashboard() {
             }}>
               Rendszer beállítások
             </h2>
-            
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: '24px'
             }}>
-              
+
               {/* Platform beállítások */}
               <div style={{
                 background: 'rgba(255,255,255,0.05)',
@@ -545,7 +557,7 @@ export default function AdminDashboard() {
                 }}>
                   🏛️ Platform beállítások
                 </h3>
-                
+
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -576,7 +588,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                  
+
                   <div>
                     <label style={{
                       display: 'block',
@@ -602,7 +614,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                  
+
                   <div>
                     <label style={{
                       display: 'block',
@@ -631,7 +643,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Email beállítások */}
               <div style={{
                 background: 'rgba(255,255,255,0.05)',
@@ -646,7 +658,7 @@ export default function AdminDashboard() {
                 }}>
                   📧 Email beállítások
                 </h3>
-                
+
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -677,7 +689,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                  
+
                   <div>
                     <label style={{
                       display: 'block',
@@ -703,7 +715,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                  
+
                   <div>
                     <label style={{
                       display: 'block',
@@ -732,7 +744,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
-            
+
             {/* Save Button */}
             <div style={{
               textAlign: 'center',
