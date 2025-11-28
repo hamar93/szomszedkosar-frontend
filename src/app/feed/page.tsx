@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Header from '@/components/Header';
 import {
   MapPin,
@@ -9,8 +8,10 @@ import {
   Filter,
   Leaf,
   User,
-  Package
+  Package,
+  X
 } from 'lucide-react';
+import api from '@/lib/api';
 
 interface UserLocation {
   latitude: number;
@@ -19,10 +20,21 @@ interface UserLocation {
   zipCode: string;
 }
 
+const CATEGORIES = [
+  "Minden termék",
+  "Zöldség",
+  "Gyümölcs",
+  "Hús",
+  "Tejtermék",
+  "Pékáru",
+  "Egyéb"
+];
+
 export default function FeedPage() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Minden termék");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +50,7 @@ export default function FeedPage() {
         }
 
         // FETCH REAL DATA
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+        const res = await api.get('/api/products');
         setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -81,6 +93,16 @@ export default function FeedPage() {
     </div>
   );
 
+  // --- FILTERING LOGIC ---
+  const filteredProducts = products.filter(product => {
+    // 1. Category Filter
+    if (selectedCategory !== "Minden termék" && product.category !== selectedCategory) {
+      return false;
+    }
+    // 2. Distance/Location Filter (Placeholder for now)
+    return true;
+  });
+
   // --- RENDER ---
 
   if (loading) return <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center text-[#1B4332] font-bold">Betöltés...</div>;
@@ -101,7 +123,7 @@ export default function FeedPage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
 
         {/* PAGE TITLE & FILTERS */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-[#1F2937] mb-2 flex items-center gap-3">
               Friss Ajánlatok
@@ -126,74 +148,92 @@ export default function FeedPage() {
           </div>
         </div>
 
+        {/* CATEGORY TABS */}
+        <div className="flex overflow-x-auto pb-4 mb-6 gap-2 no-scrollbar">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${selectedCategory === cat
+                  ? 'bg-[#1B4332] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
         {/* FEED GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.length > 0 ? (
-            products
-              .filter(product => {
-                // HYBRID FILTERING LOGIC:
-                // Show if distance <= 15km OR if product is shippable
-                // Note: Real DB might not have 'distance' calculated yet unless backend does it.
-                // For now, we assume backend returns all, and we filter client side if we had coords.
-                // Since we use mock location, we'll just show everything or mock distance logic if needed.
-                // For this step, we'll just show all products to verify DB connection.
-                return true;
-              })
-              .map((product) => (
-                <article key={product._id} className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group overflow-hidden">
-                  <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden">
-                    {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <article key={product._id} className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
+                  )}
+
+                  {/* BADGES */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                    {product.isShippable && (
+                      <div className="bg-blue-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-700 shadow-sm flex items-center gap-1">
+                        <Package size={12} />
+                        Országos szállítás
+                      </div>
                     )}
-
-                    {/* BADGES */}
-                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                      {product.isShippable && (
-                        <div className="bg-blue-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-700 shadow-sm flex items-center gap-1">
-                          <Package size={12} />
-                          Országos szállítás
-                        </div>
-                      )}
-                      <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
-                        FRISS
-                      </div>
+                    <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
+                      {product.category}
                     </div>
                   </div>
+                </div>
 
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-[#1F2937] group-hover:text-[#1B4332] transition">{product.name}</h3>
-                      <span className="text-lg font-bold text-[#1B4332]">{product.price} Ft/{product.unit}</span>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-6 line-clamp-2">
-                      {product.description}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                          <User size={14} className="text-gray-600" />
-                        </div>
-                        <div className="text-xs">
-                          <p className="font-bold text-gray-900">{product.user?.name || 'Termelő'}</p>
-                          <p className="text-gray-500">
-                            {product.user?.city || 'Helyszín'}
-                          </p>
-                        </div>
-                      </div>
-                      <button className="text-[#1B4332] font-bold text-sm hover:underline">
-                        Részletek
-                      </button>
-                    </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-xl font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">{product.name}</h3>
+                    <span className="text-lg font-bold text-[#1B4332] whitespace-nowrap ml-2">{product.price} Ft/{product.unit}</span>
                   </div>
-                </article>
-              ))
+
+                  <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">
+                    {product.description}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <User size={14} className="text-gray-600" />
+                      </div>
+                      <div className="text-xs">
+                        <p className="font-bold text-gray-900 line-clamp-1">{product.sellerName || product.user?.name || 'Termelő'}</p>
+                        <p className="text-gray-500">
+                          {product.user?.city || 'Helyszín'}
+                        </p>
+                      </div>
+                    </div>
+                    <button className="text-[#1B4332] font-bold text-sm hover:underline">
+                      Részletek
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))
           ) : (
-            <div className="col-span-full text-center py-10 text-gray-500">
-              Nincsenek elérhető termékek jelenleg.
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Search className="text-gray-400 w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Nincs találat</h3>
+              <p className="text-gray-500">
+                Ebben a kategóriában jelenleg nincsenek termékek.
+              </p>
+              <button
+                onClick={() => setSelectedCategory("Minden termék")}
+                className="mt-4 text-[#1B4332] font-bold hover:underline"
+              >
+                Szűrők törlése
+              </button>
             </div>
           )}
         </div>

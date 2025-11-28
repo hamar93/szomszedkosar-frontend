@@ -2,18 +2,27 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/Header';
-import { Upload, Check, AlertCircle } from 'lucide-react';
+import { Upload, Check, AlertCircle, Image as ImageIcon, X } from 'lucide-react';
+import api from '@/lib/api';
+
+const CATEGORIES = [
+  "Zöldség",
+  "Gyümölcs",
+  "Hús",
+  "Tejtermék",
+  "Pékáru",
+  "Egyéb"
+];
 
 export default function AddProductPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // 1. Állapot (State) a űrlap adatoknak
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -24,11 +33,22 @@ export default function AddProductPage() {
     isShippable: false
   });
 
-  // 2. Beküldés kezelése
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Validation
+    if (!formData.name.trim()) {
+      setError('A termék neve kötelező!');
+      setLoading(false);
+      return;
+    }
+    if (Number(formData.price) <= 0) {
+      setError('Az árnak nagyobbnak kell lennie 0-nál!');
+      setLoading(false);
+      return;
+    }
 
     try {
       const payload = {
@@ -38,15 +58,30 @@ export default function AddProductPage() {
         sellerName: session?.user?.name,
       };
 
-      await axios.post('http://localhost:5000/api/products', payload);
-      router.push('/feed');
+      await api.post('/api/products', payload);
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        router.push('/feed');
+      }, 2000);
     } catch (err) {
       console.error('Hiba a feltöltéskor:', err);
       setError('Nem sikerült feltölteni a terméket. Kérlek próbáld újra.');
-    } finally {
       setLoading(false);
     }
   };
+
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-[#1B4332] flex flex-col items-center justify-center text-white animate-in fade-in duration-500">
+        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 animate-bounce">
+          <Check className="text-[#1B4332] w-12 h-12" />
+        </div>
+        <h1 className="text-4xl font-bold mb-2">Sikeres feltöltés!</h1>
+        <p className="text-gray-300">Átirányítás a hírfolyamra...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
@@ -64,25 +99,75 @@ export default function AddProductPage() {
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 flex items-center gap-2">
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 flex items-center gap-2 animate-in slide-in-from-top-2">
               <AlertCircle size={20} />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
 
-            {/* Name */}
+            {/* Image Upload UI */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Termék neve</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
-                placeholder="Pl. Házi Eperlekvár"
-              />
+              <label className="block text-sm font-bold text-gray-700 mb-2">Termék képe</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 transition hover:border-[#1B4332] hover:bg-gray-50 group">
+                {formData.imageUrl ? (
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-100">
+                    <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, imageUrl: '' })}
+                      className="absolute top-2 right-2 p-2 bg-white/90 rounded-full text-red-600 hover:bg-white shadow-sm transition"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center text-center py-4">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                      <ImageIcon className="text-gray-400 w-6 h-6" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-900">Kép URL megadása</p>
+                    <p className="text-xs text-gray-500 mt-1 mb-4">Másold be a kép linkjét</p>
+                    <input
+                      type="url"
+                      value={formData.imageUrl}
+                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      className="w-full max-w-sm px-4 py-2 rounded-lg border border-gray-200 text-sm focus:border-[#1B4332] focus:ring-1 focus:ring-[#1B4332] outline-none"
+                      placeholder="https://..."
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Termék neve</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
+                  placeholder="Pl. Házi Eperlekvár"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Kategória</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
+                >
+                  {CATEGORIES.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Price & Unit */}
@@ -92,7 +177,7 @@ export default function AddProductPage() {
                 <input
                   type="number"
                   required
-                  min="0"
+                  min="1"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
@@ -115,36 +200,6 @@ export default function AddProductPage() {
               </div>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Kategória</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
-              >
-                <option value="Zöldség">Zöldség</option>
-                <option value="Gyümölcs">Gyümölcs</option>
-                <option value="Tejtermék">Tejtermék</option>
-                <option value="Húsáru">Húsáru</option>
-                <option value="Pékáru">Pékáru</option>
-                <option value="Egyéb">Egyéb</option>
-              </select>
-            </div>
-
-            {/* Image URL */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Kép URL</label>
-              <input
-                type="text"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
-                placeholder="https://pelda.hu/kep.jpg"
-              />
-              <p className="text-xs text-gray-500 mt-1">Tipp: Használj Unsplash linket vagy töltsd fel egy képmegosztóra.</p>
-            </div>
-
             {/* Description */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">Leírás</label>
@@ -159,7 +214,7 @@ export default function AddProductPage() {
             </div>
 
             {/* Shippable Checkbox */}
-            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100 transition hover:bg-blue-100/50">
               <input
                 type="checkbox"
                 id="isShippable"
@@ -167,7 +222,7 @@ export default function AddProductPage() {
                 onChange={(e) => setFormData({ ...formData, isShippable: e.target.checked })}
                 className="w-5 h-5 text-[#1B4332] rounded focus:ring-[#1B4332] border-gray-300 cursor-pointer"
               />
-              <label htmlFor="isShippable" className="text-sm font-bold text-blue-900 cursor-pointer select-none">
+              <label htmlFor="isShippable" className="text-sm font-bold text-blue-900 cursor-pointer select-none flex-1">
                 Ez a termék postázható / országosan szállítható
               </label>
             </div>
@@ -175,7 +230,7 @@ export default function AddProductPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.99]"
             >
               {loading ? (
                 <>
