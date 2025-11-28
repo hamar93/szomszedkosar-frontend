@@ -50,6 +50,17 @@ function PaymentStatus() {
     );
   }
 
+  if (!status) {
+    return (
+      <div className="text-center">
+        <p className="text-gray-500">Visszatérés a főoldalra...</p>
+        <Link href="/feed" className="text-[#1B4332] font-bold hover:underline mt-4 inline-block">
+          Vissza a Hírfolyamra
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="text-center">
       <p className="text-gray-500">Ismeretlen státusz.</p>

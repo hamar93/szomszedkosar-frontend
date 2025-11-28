@@ -30,27 +30,6 @@ export default function AddProductPage() {
     setLoading(true);
     setError('');
 
-    if (!session?.user) {
-      setError('Kérjük jelentkezz be a termék feltöltéséhez!');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Backend hívás
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
-        ...formData,
-        price: Number(formData.price), // Ár konvertálása számmá
-      });
-
-      // Siker esetén átirányítás a feedre
-      router.push('/feed');
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      setError(err.response?.data?.message || 'Hiba történt a feltöltés során.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

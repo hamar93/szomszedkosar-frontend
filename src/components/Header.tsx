@@ -102,7 +102,7 @@ export default function Header() {
 
                                             <div className="border-t border-gray-100 mt-1 pt-1">
                                                 <button
-                                                    onClick={() => signOut({ callbackUrl: '/' })}
+                                                    onClick={() => signOut({ callbackUrl: window.location.origin })}
                                                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
                                                 >
                                                     <LogOut size={16} /> Kijelentkezés
@@ -149,7 +149,7 @@ export default function Header() {
                                 <Link href="/profile" className="flex items-center gap-2 text-gray-700">
                                     <User size={18} /> Profilom
                                 </Link>
-                                <button onClick={() => signOut({ callbackUrl: '/' })} className="flex items-center gap-2 text-red-600 font-medium text-left">
+                                <button onClick={() => signOut({ callbackUrl: window.location.origin })} className="flex items-center gap-2 text-red-600 font-medium text-left">
                                     <LogOut size={18} /> Kijelentkezés
                                 </button>
                             </>
