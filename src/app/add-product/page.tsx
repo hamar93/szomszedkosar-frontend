@@ -30,6 +30,22 @@ export default function AddProductPage() {
     setLoading(true);
     setError('');
 
+    try {
+      const payload = {
+        ...formData,
+        price: Number(formData.price),
+        sellerEmail: session?.user?.email,
+        sellerName: session?.user?.name,
+      };
+
+      await axios.post('http://localhost:5000/api/products', payload);
+      router.push('/feed');
+    } catch (err) {
+      console.error('Hiba a feltöltéskor:', err);
+      setError('Nem sikerült feltölteni a terméket. Kérlek próbáld újra.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
