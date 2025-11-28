@@ -59,20 +59,11 @@ export default function LandingPage() {
 
             <div className="relative">
               <div className="absolute -inset-4 bg-[#1B4332]/10 rounded-full blur-3xl"></div>
-              <div className="relative bg-white p-6 rounded-2xl shadow-xl border border-gray-100 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden relative">
-                  {/* Placeholder for Hero Image - In a real app, use next/image */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-[#E8ECE9]">
-                    <ShoppingBasket size={64} className="text-[#1B4332] opacity-20" />
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-lg shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-xs font-bold text-[#1B4332]">Most épp 124 termelő aktív</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <img
+                src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2574&auto=format&fit=crop"
+                alt="Friss zöldségek kosárban"
+                className="relative w-full rounded-2xl shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500 object-cover"
+              />
             </div>
           </div>
         </section>
@@ -150,7 +141,7 @@ export default function LandingPage() {
                   name: 'Friss Tojás',
                   price: '80 Ft/db',
                   seller: 'Szabóék',
-                  image: 'https://images.unsplash.com/photo-1516482790643-47c449546418?auto=format&fit=crop&w=800&q=80'
+                  image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=800&auto=format&fit=crop'
                 },
                 {
                   name: 'Vegyes Zöldségkosár',
