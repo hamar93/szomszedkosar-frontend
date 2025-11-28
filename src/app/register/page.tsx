@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import {
   ShoppingBasket,
   Sprout,
@@ -16,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [userType, setUserType] = useState<'buyer' | 'producer'>('buyer');
   const [isOccasionalSeller, setIsOccasionalSeller] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,9 +35,29 @@ export default function RegisterPage() {
     console.log('Google regisztráció');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Regisztráció:', { ...formData, userType, isOccasionalSeller });
+
+    try {
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        role: userType, // 'buyer' or 'producer'
+        city: formData.address, // Mapping address to city for now
+        bio: formData.businessDescription
+      };
+
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, payload);
+
+      alert('Sikeres regisztráció! Kérjük, jelentkezz be.');
+      router.push('/login');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      alert(error.response?.data?.message || 'Hiba történt a regisztráció során.');
+    }
   };
 
   return (
@@ -79,8 +102,8 @@ export default function RegisterPage() {
                       type="button"
                       onClick={() => setUserType('buyer')}
                       className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-4 ${userType === 'buyer'
-                          ? 'border-[#1B4332] bg-[#F0F4F1] ring-1 ring-[#1B4332]'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-[#1B4332] bg-[#F0F4F1] ring-1 ring-[#1B4332]'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                     >
                       <div className={`p-3 rounded-xl ${userType === 'buyer' ? 'bg-[#1B4332] text-white' : 'bg-gray-100 text-gray-500'}`}>
@@ -96,8 +119,8 @@ export default function RegisterPage() {
                       type="button"
                       onClick={() => setUserType('producer')}
                       className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-4 ${userType === 'producer'
-                          ? 'border-[#1B4332] bg-[#F0F4F1] ring-1 ring-[#1B4332]'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-[#1B4332] bg-[#F0F4F1] ring-1 ring-[#1B4332]'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                     >
                       <div className={`p-3 rounded-xl ${userType === 'producer' ? 'bg-[#1B4332] text-white' : 'bg-gray-100 text-gray-500'}`}>

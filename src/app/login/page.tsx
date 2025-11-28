@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import {
   Mail,
   Lock,
@@ -14,6 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -23,9 +26,21 @@ export default function LoginPage() {
     console.log('Google bejelentkezés');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Bejelentkezés:', formData);
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result?.error) {
+      alert('Hibás email vagy jelszó!');
+    } else {
+      router.push('/feed'); // Or /profile
+    }
   };
 
   return (
