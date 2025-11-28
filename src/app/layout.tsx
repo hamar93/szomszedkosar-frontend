@@ -1,11 +1,8 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import Footer from '@/components/Footer'
+'use client';
 
-export const metadata: Metadata = {
-  title: 'SzomszédKosár - Friss, helyi, házias termékek',
-  description: 'Közvetlenül a termelőktől és környékbeli árusoktól',
-}
+import './globals.css';
+import { SessionProvider } from 'next-auth/react';
+import Footer from '@/components/Footer';
 
 export default function RootLayout({
   children,
@@ -15,11 +12,13 @@ export default function RootLayout({
   return (
     <html lang="hu">
       <body className="flex flex-col min-h-screen">
-        <div className="flex-grow">
-          {children}
-        </div>
-        <Footer />
+        <SessionProvider>
+          <div className="flex-grow">
+            {children}
+          </div>
+          <Footer />
+        </SessionProvider>
       </body>
     </html>
-  )
+  );
 }
