@@ -155,8 +155,8 @@ export default function FeedPage() {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${selectedCategory === cat
-                  ? 'bg-[#1B4332] text-white shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                ? 'bg-[#1B4332] text-white shadow-md'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
             >
               {cat}
@@ -206,38 +206,20 @@ export default function FeedPage() {
                         <User size={14} className="text-gray-600" />
                       </div>
                       <div className="text-xs">
-                        <p className="font-bold text-gray-900 line-clamp-1">{product.sellerName || product.user?.name || 'Termelő'}</p>
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">Nincs találat</h3>
                         <p className="text-gray-500">
-                          {product.user?.city || 'Helyszín'}
+                          Ebben a kategóriában jelenleg nincsenek termékek.
                         </p>
+                        <button
+                          onClick={() => setSelectedCategory("Minden termék")}
+                          className="mt-4 text-[#1B4332] font-bold hover:underline"
+                        >
+                          Szűrők törlése
+                        </button>
                       </div>
-                    </div>
-                    <button className="text-[#1B4332] font-bold text-sm hover:underline">
-                      Részletek
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <Search className="text-gray-400 w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Nincs találat</h3>
-              <p className="text-gray-500">
-                Ebben a kategóriában jelenleg nincsenek termékek.
-              </p>
-              <button
-                onClick={() => setSelectedCategory("Minden termék")}
-                className="mt-4 text-[#1B4332] font-bold hover:underline"
-              >
-                Szűrők törlése
-              </button>
-            </div>
           )}
-        </div>
-      </main>
-    </div>
-  );
+                    </div>
+                  </main>
+                </div>
+                );
 }

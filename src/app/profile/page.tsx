@@ -20,8 +20,11 @@ import {
   X as XIcon,
   Loader2,
   Trash2,
-  Plus
+  Plus,
+  Phone,
+  Truck
 } from 'lucide-react';
+import api from '@/lib/api';
 
 export default function ProfilePage() {
   const { data: session, update } = useSession();
@@ -37,7 +40,9 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     name: '',
     city: '',
-    bio: ''
+    bio: '',
+    phone: '',
+    deliveryOptions: [] as string[]
   });
 
   // Products State
@@ -50,7 +55,9 @@ export default function ProfilePage() {
       setFormData({
         name: session.user.name || '',
         city: (session.user as any).city || '',
-        bio: (session.user as any).bio || ''
+        bio: (session.user as any).bio || '',
+        phone: (session.user as any).phone || '',
+        deliveryOptions: (session.user as any).deliveryOptions || []
       });
     }
   }, [session]);
@@ -65,12 +72,11 @@ export default function ProfilePage() {
   const fetchUserProducts = async () => {
     setProductsLoading(true);
     try {
-      // Assuming backend supports filtering by user or we filter here
-      // Ideally: GET /api/products?user=me
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
-      // Filter for current user's products (if backend returns all)
-      const myProducts = res.data.filter((p: any) => p.sellerEmail === session?.user?.email);
-      setProducts(myProducts);
+      // Fix Privacy Leak: Pass sellerEmail to filter on backend
+      const res = await api.get('/api/products', {
+        params: { sellerEmail: session?.user?.email }
+      });
+      setProducts(res.data);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
@@ -81,7 +87,14 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, formData);
+      // Include email so backend knows who to update
+      const payload = {
+        ...formData,
+        email: session?.user?.email
+      };
+
+      await api.put('/api/users/profile', payload);
+
       setDisplayUser({ ...displayUser, ...formData });
       await update({
         ...session,
@@ -99,7 +112,10 @@ export default function ProfilePage() {
   const handleSubscription = async () => {
     setSubLoading(true);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/create-subscription-checkout`);
+      const response = await api.post('/api/payments/create-subscription-checkout', {
+        priceId: 'price_HelypenzId',
+        userId: (session?.user as any).id || session?.user?.email
+      });
       if (response.data.url) {
         window.location.href = response.data.url;
       }
@@ -109,6 +125,15 @@ export default function ProfilePage() {
     } finally {
       setSubLoading(false);
     }
+  };
+
+  const toggleDeliveryOption = (option: string) => {
+    setFormData(prev => {
+      const options = prev.deliveryOptions.includes(option)
+        ? prev.deliveryOptions.filter(o => o !== option)
+        : [...prev.deliveryOptions, option];
+      return { ...prev, deliveryOptions: options };
+    });
   };
 
   if (!session?.user) {
@@ -140,7 +165,11 @@ export default function ProfilePage() {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
               <div className="w-24 h-24 bg-[#E8ECE9] rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
-                <User size={40} className="text-[#1B4332]" />
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={user.name} className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <User size={40} className="text-[#1B4332]" />
+                )}
               </div>
               <h2 className="text-xl font-bold text-[#1F2937]">{user.name || 'Felhasználó'}</h2>
               <span className="text-sm text-gray-500">{user.email}</span>
@@ -196,6 +225,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-6 max-w-lg">
+                  {/* Name */}
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Név</label>
                     {isEditing ? (
@@ -210,6 +240,7 @@ export default function ProfilePage() {
                     )}
                   </div>
 
+                  {/* City */}
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Város</label>
                     {isEditing ? (
@@ -227,6 +258,26 @@ export default function ProfilePage() {
                     )}
                   </div>
 
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Telefonszám</label>
+                    {isEditing ? (
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
+                        placeholder="+36 30 123 4567"
+                      />
+                    ) : (
+                      <div className="text-gray-900 font-medium flex items-center gap-2">
+                        <Phone size={16} className="text-gray-400" />
+                        {user.phone || 'Nincs megadva'}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bio */}
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Bemutatkozás</label>
                     {isEditing ? (
@@ -239,6 +290,38 @@ export default function ProfilePage() {
                     ) : (
                       <div className="text-gray-600 leading-relaxed">
                         {user.bio || 'Nincs még bemutatkozás.'}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Delivery Options */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Szállítási lehetőségek</label>
+                    {isEditing ? (
+                      <div className="space-y-2">
+                        {['Házhozszállítás', 'Személyes átvétel', 'Posta / Futár'].map(option => (
+                          <label key={option} className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.deliveryOptions.includes(option)}
+                              onChange={() => toggleDeliveryOption(option)}
+                              className="w-4 h-4 text-[#1B4332] rounded focus:ring-[#1B4332]"
+                            />
+                            <span className="text-gray-700">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {user.deliveryOptions && user.deliveryOptions.length > 0 ? (
+                          user.deliveryOptions.map((opt: string) => (
+                            <span key={opt} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              <Truck size={12} /> {opt}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-gray-400 text-sm">Nincs megadva</span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -283,9 +366,9 @@ export default function ProfilePage() {
                   <div className="grid gap-4">
                     {products.map((product) => (
                       <div key={product._id} className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl hover:border-[#1B4332] transition group">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                           {product.imageUrl ? (
-                            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                           ) : (
                             <ShoppingBasket className="text-gray-400" />
                           )}
