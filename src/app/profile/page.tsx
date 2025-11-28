@@ -421,7 +421,20 @@ export default function ProfilePage() {
                           <button className="p-2 text-gray-400 hover:text-[#1B4332] hover:bg-gray-50 rounded-lg">
                             <Edit size={18} />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                          <button
+                            onClick={async () => {
+                              if (confirm('Biztosan törölni szeretnéd ezt a terméket?')) {
+                                try {
+                                  await api.delete(`/api/products/${product._id}`);
+                                  fetchUserProducts(); // Refresh list
+                                } catch (err) {
+                                  console.error('Failed to delete product:', err);
+                                  alert('Hiba történt a törlés során.');
+                                }
+                              }
+                            }}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          >
                             <Trash2 size={18} />
                           </button>
                         </div>
