@@ -94,13 +94,10 @@ export default function Header() {
                                             </div>
 
                                             <Link href="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                <User size={16} /> Profilom
+                                                <User size={16} /> Profil
                                             </Link>
-                                            <Link href="/my-products" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                <Package size={16} /> Termékeim
-                                            </Link>
-                                            <Link href="/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                <Settings size={16} /> Beállítások
+                                            <Link href="/add-product" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                                <PlusCircle size={16} /> Új termék
                                             </Link>
 
                                             <div className="border-t border-gray-100 mt-1 pt-1">
@@ -116,9 +113,14 @@ export default function Header() {
                                 </div>
                             </div>
                         ) : (
-                            <Link href="/login" className="px-5 py-2.5 text-[#1B4332] font-bold hover:bg-[#F0F4F1] rounded-xl transition">
-                                Belépés
-                            </Link>
+                            <div className="flex items-center gap-2">
+                                <Link href="/login" className="px-5 py-2.5 text-[#1B4332] font-bold hover:bg-[#F0F4F1] rounded-xl transition">
+                                    Belépés
+                                </Link>
+                                <Link href="/register" className="px-5 py-2.5 bg-[#1B4332] text-white font-bold hover:bg-[#2D6A4F] rounded-xl transition shadow-md">
+                                    Regisztráció
+                                </Link>
+                            </div>
                         )}
                     </div>
 
@@ -152,7 +154,10 @@ export default function Header() {
                                 </button>
                             </>
                         ) : (
-                            <Link href="/login" className="text-[#1B4332] font-bold">Belépés</Link>
+                            <>
+                                <Link href="/login" className="text-[#1B4332] font-bold">Belépés</Link>
+                                <Link href="/register" className="text-[#1B4332] font-bold">Regisztráció</Link>
+                            </>
                         )}
                     </nav>
                 </div>

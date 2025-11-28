@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-import Header from '@/components/Header';
+import Header from '@/components/Header'; // Biztosítsd, hogy ez a komponens létezik
 import { Upload, Check, AlertCircle } from 'lucide-react';
 
 export default function AddProductPage() {
@@ -13,15 +13,18 @@ export default function AddProductPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 1. Állapot (State) a űrlap adatoknak
   const [formData, setFormData] = useState({
     name: '',
     price: '',
     unit: 'kg',
     category: 'Zöldség',
+    imageUrl: '', // Kép URL mező
     description: '',
     isShippable: false
   });
 
+  // 2. Beküldés kezelése
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -34,19 +37,15 @@ export default function AddProductPage() {
     }
 
     try {
-      // In a real app, we would get the token from the session
-      // For now, we assume the backend handles auth via cookies or we pass the user ID if needed
-      // But typically with NextAuth + External Backend, we'd pass the JWT token in headers.
-
-      // Assuming the backend expects: { name, price, unit, category, description, isShippable, user: userId }
-      // Or if the backend extracts user from token.
-
+      // Backend hívás
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
         ...formData,
-        price: Number(formData.price),
-        // user: session.user.id // If needed explicitly
+        price: Number(formData.price), // Ár konvertálása számmá
+        // Opcionális: Ha a backend nem szedi ki a sessionből a user ID-t, itt átadhatod:
+        // sellerEmail: session.user.email 
       });
 
+      // Siker esetén átirányítás a feedre
       router.push('/feed');
     } catch (err: any) {
       console.error('Upload error:', err);
@@ -58,6 +57,7 @@ export default function AddProductPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+      {/* Header komponens behívása (ha létezik src/components/Header.tsx) */}
       <Header />
 
       <main className="max-w-3xl mx-auto px-4 py-12">
@@ -140,6 +140,19 @@ export default function AddProductPage() {
               </select>
             </div>
 
+            {/* Image URL */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Kép URL</label>
+              <input
+                type="text"
+                value={formData.imageUrl}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
+                placeholder="https://pelda.hu/kep.jpg"
+              />
+              <p className="text-xs text-gray-500 mt-1">Tipp: Használj Unsplash linket vagy töltsd fel egy képmegosztóra.</p>
+            </div>
+
             {/* Description */}
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">Leírás</label>
@@ -160,9 +173,9 @@ export default function AddProductPage() {
                 id="isShippable"
                 checked={formData.isShippable}
                 onChange={(e) => setFormData({ ...formData, isShippable: e.target.checked })}
-                className="w-5 h-5 text-[#1B4332] rounded focus:ring-[#1B4332] border-gray-300"
+                className="w-5 h-5 text-[#1B4332] rounded focus:ring-[#1B4332] border-gray-300 cursor-pointer"
               />
-              <label htmlFor="isShippable" className="text-sm font-bold text-blue-900 cursor-pointer">
+              <label htmlFor="isShippable" className="text-sm font-bold text-blue-900 cursor-pointer select-none">
                 Ez a termék postázható / országosan szállítható
               </label>
             </div>
