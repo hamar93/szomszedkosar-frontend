@@ -1,10 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ShoppingBasket, Leaf, ShieldCheck, Users, ArrowRight } from 'lucide-react';
+import api from '@/lib/api';
 
 export default function LandingPage() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/api/products');
+        // Take first 4 products for showcase
+        setProducts(res.data.slice(0, 4));
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* HEADER */}
@@ -124,49 +140,36 @@ export default function LandingPage() {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  name: 'Ropogós Cseresznye',
-                  price: '1 200 Ft/kg',
-                  seller: 'Kovács Kertészet',
-                  image: 'https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=800&q=80'
-                },
-                {
-                  name: 'Házi Tej',
-                  price: '450 Ft/l',
-                  seller: 'Tóth Tanya',
-                  image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=800&q=80'
-                },
-                {
-                  name: 'Friss Tojás',
-                  price: '80 Ft/db',
-                  seller: 'Szabóék',
-                  image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=800&auto=format&fit=crop'
-                },
-                {
-                  name: 'Vegyes Zöldségkosár',
-                  price: '3 500 Ft',
-                  seller: 'Zöld Kert',
-                  image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'
-                }
-              ].map((item, idx) => (
-                <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer">
-                  <div className="h-48 w-full overflow-hidden relative">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg text-[#1F2937] mb-1">{item.name}</h3>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">{item.seller}</span>
-                      <span className="font-bold text-[#1B4332]">{item.price}</span>
+              {products.length > 0 ? (
+                products.map((product: any) => (
+                  <Link href={`/product/${product._id}`} key={product._id} className="group">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
+                      <div className="h-48 w-full overflow-hidden relative bg-gray-100 flex items-center justify-center">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <Leaf className="text-gray-300 w-12 h-12" />
+                        )}
+                      </div>
+                      <div className="p-6 flex flex-col flex-grow">
+                        <h3 className="font-bold text-lg text-[#1F2937] mb-1 line-clamp-1">{product.name}</h3>
+                        <div className="flex justify-between items-center mt-auto">
+                          <span className="text-sm text-gray-500 line-clamp-1">{product.sellerName || 'Termelő'}</span>
+                          <span className="font-bold text-[#1B4332] whitespace-nowrap">{product.price} Ft</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12 text-gray-500">
+                  Még nincsenek kiemelt termékek.
                 </div>
-              ))}
+              )}
             </div>
 
             <div className="mt-8 text-center md:hidden">

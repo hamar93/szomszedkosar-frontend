@@ -6,8 +6,10 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck } from 'lucide-react';
 import api from '@/lib/api';
+import { useSession } from 'next-auth/react';
 
 export default function ProductDetailPage() {
+  const { data: session } = useSession();
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -40,15 +42,15 @@ export default function ProductDetailPage() {
   const handlePurchase = async () => {
     if (!product || !product.stock || product.stock <= 0) return;
 
-    try {
-      // In a real app, we would get the user ID from the session
-      // For now, we'll send a request and let the backend handle validation or use a mock user ID if needed
-      // Ideally, we should use useSession() here.
+    if (!session?.user) {
+      alert('A vásárláshoz be kell jelentkezned!');
+      return;
+    }
 
-      // Assuming the backend endpoint /api/orders exists as created
+    try {
       const res = await api.post('/api/orders', {
         productId: product._id,
-        buyerId: product.sellerEmail, // MOCK: Using seller as buyer for demo if no session. Ideally: session.user.id
+        buyerId: (session.user as any).id || session.user.email, // Use real session ID
         quantity: 1
       });
 
@@ -170,8 +172,8 @@ export default function ProductDetailPage() {
                     onClick={handlePurchase}
                     disabled={!product.stock || product.stock <= 0}
                     className={`flex-1 py-4 rounded-xl font-bold text-lg transition shadow-md flex items-center justify-center gap-2 ${product.stock > 0
-                        ? 'bg-[#1B4332] text-white hover:bg-[#2D6A4F]'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-[#1B4332] text-white hover:bg-[#2D6A4F]'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                   >
                     <ShoppingCart size={20} />
