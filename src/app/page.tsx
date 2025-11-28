@@ -169,70 +169,28 @@ export default function Home() {
 
       {/* --- PRODUCT SHOWCASE --- */}
       <section className="py-24 px-4 bg-[#F5F5F0]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#1B4332] mb-4">Mit találsz a SzomszédKosárban?</h2>
-            <p className="text-gray-600 text-lg">Ízelítő a környékbeli kínálatból</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', loc: 'Eger', icon: Leaf, color: 'bg-red-100 text-red-600' },
-              { name: 'Házi Eperlekvár', price: '1 500 Ft/üveg', seller: 'Nagyi Kamrája', loc: 'Debrecen', icon: ShoppingBasket, color: 'bg-pink-100 text-pink-600' },
-              { name: 'Kézműves Sajt', price: '3 200 Ft/kg', seller: 'Bükki Sajtműhely', loc: 'Szilvásvárad', icon: ShieldCheck, color: 'bg-yellow-100 text-yellow-600' },
-              { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabó Tanya', loc: 'Gödöllő', icon: Users, color: 'bg-orange-100 text-orange-600' }
-            ].map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-                <div className="h-48 bg-[#F9FAFB] flex items-center justify-center group-hover:bg-opacity-50 transition-colors duration-500">
-                  <div className={`w-24 h-24 ${item.color} rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
-                    <item.icon size={48} />
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-[#1F2937]">{item.name}</h3>
-                    <span className="bg-[#E8ECE9] text-[#1B4332] px-2 py-1 rounded-lg text-xs font-bold">
-                      {item.price}
-                    </span>
-                  </div>
-                  <div className="space-y-2 mt-4">
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
-                      <Users size={16} /> {item.seller}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
-                      <MapPin size={16} /> {item.loc}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/feed" className="inline-flex items-center gap-2 text-[#1B4332] font-bold text-lg hover:underline">
-              Összes termék megtekintése <ArrowRight size={20} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* --- FOOTER --- */}
-      <footer className="bg-[#1B4332] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <ShoppingBasket size={32} className="text-[#E9C46A]" />
-            <span className="text-3xl font-bold">SzomszédKosár</span>
-          </div>
-          <p className="text-green-100/80 mb-12 max-w-lg mx-auto">
-            A helyi közösségek és termelők találkozóhelye.
-            Friss, fenntartható, hazai.
-          </p>
-          <div className="border-t border-green-800 pt-8 text-sm text-green-100/60">
-            © 2025 SzomszédKosár. Minden jog fenntartva.
-          </div>
-        </div>
-      </footer>
-
+      </Link>
     </div>
+        </div >
+      </section >
+
+    {/* --- FOOTER --- */ }
+    < footer className = "bg-[#1B4332] text-white py-16" >
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <ShoppingBasket size={32} className="text-[#E9C46A]" />
+          <span className="text-3xl font-bold">SzomszédKosár</span>
+        </div>
+        <p className="text-green-100/80 mb-12 max-w-lg mx-auto">
+          A helyi közösségek és termelők találkozóhelye.
+          Friss, fenntartható, hazai.
+        </p>
+        <div className="border-t border-green-800 pt-8 text-sm text-green-100/60">
+          © 2025 SzomszédKosár. Minden jog fenntartva.
+        </div>
+      </div>
+      </footer >
+
+    </div >
   );
 }
