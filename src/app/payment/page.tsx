@@ -6,17 +6,25 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import { CheckCircle, XCircle, ArrowRight, CreditCard, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
+import { useSession } from 'next-auth/react';
 
 function PaymentStatus() {
   const searchParams = useSearchParams();
   const status = searchParams.get('status');
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   const handleTestPayment = async () => {
+    if (!session?.user) {
+      alert('Kérlek jelentkezz be a vásárláshoz!');
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await api.post('/create-checkout-session', {
-        items: [{ id: 'test-product', quantity: 1 }],
+      const res = await api.post('/api/payments/create-subscription-checkout', {
+        priceId: 'price_HelypenzId',
+        userId: (session.user as any).id || session.user.email, // Fallback if ID is missing from type
       });
       if (res.data.url) {
         window.location.href = res.data.url;

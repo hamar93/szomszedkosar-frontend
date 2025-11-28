@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/Header';
-import { Upload, Check, AlertCircle, Image as ImageIcon, X } from 'lucide-react';
+import { Upload, Check, AlertCircle, Image as ImageIcon, X, MapPin } from 'lucide-react';
 import api from '@/lib/api';
 
 const CATEGORIES = [
@@ -30,7 +30,8 @@ export default function AddProductPage() {
     category: 'Zöldség',
     imageUrl: '',
     description: '',
-    isShippable: false
+    isShippable: false,
+    location: 'Budapest' // Default location
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +56,8 @@ export default function AddProductPage() {
         ...formData,
         price: Number(formData.price),
         sellerEmail: session?.user?.email,
-        sellerName: session?.user?.name,
+        sellerName: session?.user?.name || 'Ismeretlen',
+        location: formData.location
       };
 
       await api.post('/api/products', payload);
@@ -64,9 +66,9 @@ export default function AddProductPage() {
       setTimeout(() => {
         router.push('/feed');
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Hiba a feltöltéskor:', err);
-      setError('Nem sikerült feltölteni a terméket. Kérlek próbáld újra.');
+      setError(err.response?.data?.message || 'Nem sikerült feltölteni a terméket. Kérlek próbáld újra.');
       setLoading(false);
     }
   };
@@ -198,6 +200,21 @@ export default function AddProductPage() {
                   <option value="csomag">csomag</option>
                 </select>
               </div>
+            </div>
+
+            {/* Location (Read-only) */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Helyszín</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  readOnly
+                  value={formData.location}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed outline-none"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">A helyszín automatikusan a profilod alapján kerül beállításra.</p>
             </div>
 
             {/* Description */}
