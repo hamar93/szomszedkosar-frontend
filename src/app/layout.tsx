@@ -1,22 +1,11 @@
-// src/app/layout.tsx (A JAVÍTOTT KÓD)
-
 import type { Metadata } from 'next'
-import { Source_Sans_3 } from 'next/font/google'
-import './globals.css' // Itt van a Tailwind és az összes többi stílusod
-
-const sourceSans3 = Source_Sans_3({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-})
+import './globals.css'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'SzomszédKosár - Friss, helyi, házias termékek',
   description: 'Közvetlenül a termelőktől és környékbeli árusoktól',
 }
-
-import Footer from '@/components/Footer'
-
-// ... imports
 
 export default function RootLayout({
   children,
@@ -25,13 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hu">
-      {/* A body-ra két kritikus Tailwind osztályt adunk:
-        1. bg-[#FAF7F0] (Krém háttér: felülírja a hibás CSS-t)
-        2. text-[18px] (A 18px-es akadálymentes fontméret)
-      */}
-      <body
-        className={`${sourceSans3.className} bg-[#FAF7F0] text-[18px] flex flex-col min-h-screen`}
-      >
+      <body className="flex flex-col min-h-screen">
         <div className="flex-grow">
           {children}
         </div>
