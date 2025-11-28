@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {
-  ShoppingBasket,
-  MapPin,
-  Search,
-  Leaf,
-  ShieldCheck,
-  Users,
-  ArrowRight,
+import { 
+  ShoppingBasket, 
+  MapPin, 
+  Search, 
+  Leaf, 
+  ShieldCheck, 
+  Users, 
+  ArrowRight, 
   Menu,
   X
 } from 'lucide-react';
@@ -27,12 +27,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
-
+      
       {/* --- HEADER --- */}
       <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-
+            
             {/* LOGO & BRAND */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[#1B4332] rounded-xl flex items-center justify-center shadow-sm">
@@ -90,26 +90,25 @@ export default function Home() {
 
       {/* --- HERO SECTION --- */}
       <section className="relative pt-20 pb-32 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-5"></div>
+        {/* Háttér minta vagy gradiens */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F0F4F1] via-white to-[#E8ECE9] opacity-80"></div>
+        
         <div className="relative max-w-4xl mx-auto text-center z-10">
-
+          
           <span className="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-[#E8ECE9] text-[#1B4332] text-sm font-bold mb-8 border border-[#1B4332]/10">
             <Leaf size={14} className="fill-[#1B4332]" />
             Helyi termékek, közvetlenül a termelőtől
           </span>
-
+          
           <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight text-[#1F2937] tracking-tight">
             Vásárolj a <br className="hidden md:block" />
             <span className="text-[#1B4332] relative inline-block">
               szomszédodtól
-              <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#E9C46A] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
-                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
-              </svg>
             </span>
           </h1>
-
+          
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-            Friss zöldség, gyümölcs, és házi finomságok a környékbeli termelőktől.
+            Friss zöldség, gyümölcs, és házi finomságok a környékbeli termelőktől. 
             Csatlakozz a közösséghez!
           </p>
 
@@ -117,9 +116,9 @@ export default function Home() {
           <div className="max-w-2xl mx-auto bg-white p-2 rounded-2xl shadow-xl border border-gray-200/60 flex flex-col sm:flex-row gap-2 transition-transform hover:scale-[1.01]">
             <div className="flex-grow relative flex items-center">
               <MapPin className="absolute left-4 text-gray-400" size={24} />
-              <input
-                type="text"
-                placeholder="Irányítószám vagy település..."
+              <input 
+                type="text" 
+                placeholder="Irányítószám vagy település..." 
                 className="w-full pl-14 pr-4 py-4 rounded-xl border-none outline-none text-lg text-gray-800 placeholder-gray-400 bg-transparent"
               />
             </div>
@@ -136,21 +135,21 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-12">
             {[
-              {
-                icon: Leaf,
-                title: 'Frissesség Garantálva',
+              { 
+                icon: Leaf, 
+                title: 'Frissesség Garantálva', 
                 desc: 'A termékek közvetlenül a kertből érkeznek, raktározás nélkül.',
                 color: 'bg-green-100 text-green-700'
               },
-              {
-                icon: ShieldCheck,
-                title: 'Megbízható Forrás',
+              { 
+                icon: ShieldCheck, 
+                title: 'Megbízható Forrás', 
                 desc: 'Minden termelő ellenőrzött, valós helyi gazdálkodó.',
                 color: 'bg-blue-100 text-blue-700'
               },
-              {
-                icon: Users,
-                title: 'Közösségi Erő',
+              { 
+                icon: Users, 
+                title: 'Közösségi Erő', 
                 desc: 'Vásárlásoddal a helyi családokat és a gazdaságot támogatod.',
                 color: 'bg-orange-100 text-orange-700'
               }
@@ -169,28 +168,68 @@ export default function Home() {
 
       {/* --- PRODUCT SHOWCASE --- */}
       <section className="py-24 px-4 bg-[#F5F5F0]">
-      </Link>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-[#1B4332] mb-4">Mit találsz a SzomszédKosárban?</h2>
+            <p className="text-gray-600 text-lg">Ízelítő a környékbeli kínálatból</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', loc: 'Eger', img: '🍒' },
+              { name: 'Házi Eperlekvár', price: '1 500 Ft/üveg', seller: 'Nagyi Kamrája', loc: 'Debrecen', img: '🍓' },
+              { name: 'Kézműves Sajt', price: '3 200 Ft/kg', seller: 'Bükki Sajtműhely', loc: 'Szilvásvárad', img: '🧀' },
+              { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabó Tanya', loc: 'Gödöllő', img: '🥚' }
+            ].map((item, idx) => (
+              <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                <div className="h-48 bg-[#F9FAFB] flex items-center justify-center text-8xl group-hover:scale-105 transition-transform duration-500">
+                  {item.img}
+                </div>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold text-[#1F2937]">{item.name}</h3>
+                    <span className="bg-[#E8ECE9] text-[#1B4332] px-2 py-1 rounded-lg text-xs font-bold">
+                      {item.price}
+                    </span>
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <Users size={16} /> {item.seller}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <MapPin size={16} /> {item.loc}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link href="/feed" className="inline-flex items-center gap-2 text-[#1B4332] font-bold text-lg hover:underline">
+              Összes termék megtekintése <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* --- FOOTER --- */}
+      <footer className="bg-[#1B4332] text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <ShoppingBasket size={32} className="text-[#E9C46A]" />
+            <span className="text-3xl font-bold">SzomszédKosár</span>
+          </div>
+          <p className="text-green-100/80 mb-12 max-w-lg mx-auto">
+            A helyi közösségek és termelők találkozóhelye. 
+            Friss, fenntartható, hazai.
+          </p>
+          <div className="border-t border-green-800 pt-8 text-sm text-green-100/60">
+            © 2025 SzomszédKosár. Minden jog fenntartva.
+          </div>
+        </div>
+      </footer>
+
     </div>
-        </div >
-      </section >
-
-    {/* --- FOOTER --- */ }
-    < footer className = "bg-[#1B4332] text-white py-16" >
-      <div className="max-w-7xl mx-auto px-4 text-center">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <ShoppingBasket size={32} className="text-[#E9C46A]" />
-          <span className="text-3xl font-bold">SzomszédKosár</span>
-        </div>
-        <p className="text-green-100/80 mb-12 max-w-lg mx-auto">
-          A helyi közösségek és termelők találkozóhelye.
-          Friss, fenntartható, hazai.
-        </p>
-        <div className="border-t border-green-800 pt-8 text-sm text-green-100/60">
-          © 2025 SzomszédKosár. Minden jog fenntartva.
-        </div>
-      </div>
-      </footer >
-
-    </div >
   );
 }
