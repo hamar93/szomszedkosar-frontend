@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBasket, Leaf, ShieldCheck, Users, ArrowRight, Cherry, Egg, Milk } from 'lucide-react';
+import { ShoppingBasket, Leaf, ShieldCheck, Users, ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -134,19 +134,45 @@ export default function LandingPage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', icon: Cherry, color: 'bg-red-100 text-red-600' },
-                { name: 'Házi Tej', price: '450 Ft/l', seller: 'Tóth Tanya', icon: Milk, color: 'bg-blue-100 text-blue-600' },
-                { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabóék', icon: Egg, color: 'bg-yellow-100 text-yellow-600' },
-                { name: 'Vegyes Zöldségkosár', price: '3 500 Ft', seller: 'Zöld Kert', icon: ShoppingBasket, color: 'bg-green-100 text-green-600' }
+                {
+                  name: 'Ropogós Cseresznye',
+                  price: '1 200 Ft/kg',
+                  seller: 'Kovács Kertészet',
+                  image: 'https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=800&q=80'
+                },
+                {
+                  name: 'Házi Tej',
+                  price: '450 Ft/l',
+                  seller: 'Tóth Tanya',
+                  image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=800&q=80'
+                },
+                {
+                  name: 'Friss Tojás',
+                  price: '80 Ft/db',
+                  seller: 'Szabóék',
+                  image: 'https://images.unsplash.com/photo-1516482790643-47c449546418?auto=format&fit=crop&w=800&q=80'
+                },
+                {
+                  name: 'Vegyes Zöldségkosár',
+                  price: '3 500 Ft',
+                  seller: 'Zöld Kert',
+                  image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'
+                }
               ].map((item, idx) => (
-                <div key={idx} className="card hover:shadow-xl transition-all duration-300 group cursor-pointer">
-                  <div className={`h-40 rounded-lg ${item.color} flex items-center justify-center mb-4 group-hover:scale-[1.02] transition-transform`}>
-                    <item.icon size={48} />
+                <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer">
+                  <div className="h-48 w-full overflow-hidden relative">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
-                  <h3 className="font-bold text-lg text-[#1F2937] mb-1">{item.name}</h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">{item.seller}</span>
-                    <span className="font-bold text-[#1B4332]">{item.price}</span>
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-[#1F2937] mb-1">{item.name}</h3>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">{item.seller}</span>
+                      <span className="font-bold text-[#1B4332]">{item.price}</span>
+                    </div>
                   </div>
                 </div>
               ))}
