@@ -1,6 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import {
+  CreditCard,
+  Check,
+  Minus,
+  Plus,
+  ArrowLeft,
+  ShieldCheck,
+  Zap,
+  BarChart,
+  Headphones,
+  ShoppingBag,
+  Bell,
+  Star,
+  Layout
+} from 'lucide-react';
 
 export default function PaymentPage() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -18,10 +34,12 @@ export default function PaymentPage() {
 
   const services = {
     push: {
+      id: 'push',
       title: 'Push Értesítés',
       description: 'Célzott push értesítés küldése a kiválasztott körzetben (10-30 km). Azonnal értesítsd a vásárlókat új termékeidről!',
       price: 500,
       unit: '/ darab',
+      icon: Bell,
       features: [
         'Célzott körzet kiválasztása',
         'Azonnali kézbesítés',
@@ -30,10 +48,12 @@ export default function PaymentPage() {
       ]
     },
     highlight: {
+      id: 'highlight',
       title: 'Hírfolyam Kiemelés',
       description: 'A termékeid kiemelt helyen jelennek meg a hírfolyamban. Több vásárló fogja látni a hirdetéseidet!',
       price: 800,
       unit: '/ nap',
+      icon: Star,
       features: [
         'Kiemelt pozíció a hírfolyamban',
         'Színes keret a hirdetés körül',
@@ -42,10 +62,12 @@ export default function PaymentPage() {
       ]
     },
     combo: {
+      id: 'combo',
       title: 'Kombinált Csomag',
       description: 'Push értesítés + hírfolyam kiemelés egyben. Maximális láthatóság a legjobb áron!',
       price: 1100,
       unit: '/ csomag',
+      icon: Layout,
       features: [
         'Push értesítés + kiemelés',
         '200 Ft megtakarítás',
@@ -60,13 +82,13 @@ export default function PaymentPage() {
       id: 'simplepay',
       title: 'SimplePay',
       description: 'Bankkártya vagy azonnali átutalás',
-      icon: '💳'
+      icon: CreditCard
     },
     {
       id: 'transfer',
       title: 'Banki átutalás',
       description: 'Hagyományos átutalás',
-      icon: '🏦'
+      icon: ShoppingBag // Using ShoppingBag as a placeholder for Bank icon if Bank is not available, or use Building
     }
   ];
 
@@ -86,12 +108,12 @@ export default function PaymentPage() {
     const service = services[selectedService as keyof typeof services];
     const quantity = quantities[selectedService as keyof typeof quantities];
     let total = service.price * quantity;
-    
+
     // Add addon costs
     if (addons.priority) total += 200;
     if (addons.analytics) total += 300;
     if (addons.support) total += 500;
-    
+
     return total;
   };
 
@@ -101,191 +123,141 @@ export default function PaymentPage() {
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      {/* Simple Header */}
-      <div style={{ backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '15px 0', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ fontSize: '24px' }}>🛒</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>SzomszédKosár</div>
-          </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>🔍 Böngészés</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>📄 Hírfolyam</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>Bejelentkezés</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>Regisztráció</a>
+    <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+
+      {/* HEADER */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Link href="/profile" className="p-2 hover:bg-gray-100 rounded-xl transition text-gray-600">
+              <ArrowLeft size={24} />
+            </Link>
+            <h1 className="text-xl font-bold text-[#1F2937] flex items-center gap-2">
+              <CreditCard size={24} className="text-[#1B4332]" />
+              Szolgáltatások vásárlása
+            </h1>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '30px 20px' }}>
-        {/* Page Title */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '36px', marginBottom: '10px', color: '#333' }}>Fizetés</h1>
-          <p style={{ color: '#666', fontSize: '16px' }}>Válaszd ki a szolgáltatást és fizess SimplePay rendszeren keresztül</p>
+      <main className="max-w-5xl mx-auto px-4 py-8">
+
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-[#1F2937] mb-3">Növeld eladásaidat!</h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Válassz promóciós eszközeink közül, és érd el gyorsabban a környékbeli vásárlókat.
+          </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-          {/* Service Selection */}
-          <div style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '30px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '25px', color: '#333' }}>Szolgáltatások</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {/* LEFT COLUMN - SERVICES */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-[#1F2937] mb-4">Válassz szolgáltatást</h3>
+
+            <div className="space-y-4">
               {Object.entries(services).map(([key, service]) => (
                 <div
                   key={key}
-                  style={{
-                    backgroundColor: '#f8f9fa',
-                    border: selectedService === key ? '2px solid #28a745' : '2px solid #e9ecef',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'all 0.3s ease'
-                  }}
                   onClick={() => selectService(key)}
+                  className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 group ${selectedService === key
+                      ? 'bg-white border-[#1B4332] shadow-md'
+                      : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    }`}
                 >
                   {selectedService === key && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '15px',
-                      right: '15px',
-                      width: '20px',
-                      height: '20px',
-                      backgroundColor: '#28a745',
-                      color: 'white',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold'
-                    }}>
-                      ✓
-                    </div>
-                  )}
-                  
-                  <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', color: '#333' }}>
-                    {service.title}
-                  </div>
-                  <div style={{ fontSize: '14px', color: '#666', marginBottom: '15px', lineHeight: '1.5' }}>
-                    {service.description}
-                  </div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745', marginBottom: '10px' }}>
-                    {service.price.toLocaleString()} Ft 
-                    <span style={{ fontSize: '14px', color: '#666', fontWeight: 'normal' }}>{service.unit}</span>
-                  </div>
-                  
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    {service.features.map((feature, index) => (
-                      <li key={index} style={{ fontSize: '13px', color: '#666', marginBottom: '4px', paddingLeft: '15px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: '#28a745' }}>✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {selectedService === key && (
-                    <div style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          changeQuantity(key, -1);
-                        }}
-                        style={{
-                          width: '30px',
-                          height: '30px',
-                          border: '1px solid #ddd',
-                          backgroundColor: 'white',
-                          borderRadius: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 'bold',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        value={quantities[key as keyof typeof quantities]}
-                        onChange={(e) => {
-                          const value = Math.max(1, Math.min(50, parseInt(e.target.value) || 1));
-                          setQuantities(prev => ({ ...prev, [key]: value }));
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                          width: '60px',
-                          textAlign: 'center',
-                          padding: '6px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          fontSize: '14px'
-                        }}
-                        min="1"
-                        max="50"
-                      />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          changeQuantity(key, 1);
-                        }}
-                        style={{
-                          width: '30px',
-                          height: '30px',
-                          border: '1px solid #ddd',
-                          backgroundColor: 'white',
-                          borderRadius: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 'bold',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        +
-                      </button>
-                      <span style={{ fontSize: '12px', color: '#666', marginLeft: '10px' }}>Max 50 db</span>
+                    <div className="absolute top-4 right-4 w-6 h-6 bg-[#1B4332] text-white rounded-full flex items-center justify-center">
+                      <Check size={14} strokeWidth={3} />
                     </div>
                   )}
 
+                  <div className="flex items-start gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${selectedService === key ? 'bg-[#E8ECE9] text-[#1B4332]' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                      <service.icon size={24} />
+                    </div>
+
+                    <div className="flex-grow">
+                      <h4 className="text-lg font-bold text-[#1F2937] mb-1">{service.title}</h4>
+                      <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                        {service.description}
+                      </p>
+
+                      <div className="flex items-baseline gap-1 mb-4">
+                        <span className="text-2xl font-bold text-[#1B4332]">{service.price.toLocaleString()} Ft</span>
+                        <span className="text-sm text-gray-500 font-medium">{service.unit}</span>
+                      </div>
+
+                      <ul className="space-y-2">
+                        {service.features.map((feature, index) => (
+                          <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
+                            <Check size={14} className="text-[#1B4332]" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      {selectedService === key && (
+                        <div className="mt-6 pt-6 border-t border-gray-100 flex items-center gap-4 animate-in fade-in slide-in-from-top-2">
+                          <span className="text-sm font-bold text-gray-700">Mennyiség:</span>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); changeQuantity(key, -1); }}
+                              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <span className="w-8 text-center font-bold text-[#1F2937]">
+                              {quantities[key as keyof typeof quantities]}
+                            </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); changeQuantity(key, 1); }}
+                              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Addons for Push */}
                   {selectedService === key && key === 'push' && (
-                    <div style={{ 
-                      marginTop: '15px', 
-                      padding: '15px', 
-                      backgroundColor: '#f0f0f0', 
-                      borderRadius: '4px',
-                      border: '1px solid #ddd'
-                    }}>
-                      <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '10px' }}>Kiegészítő opciók</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <input
-                            type="checkbox"
-                            checked={addons.priority}
-                            onChange={(e) => setAddons(prev => ({ ...prev, priority: e.target.checked }))}
-                            style={{ marginRight: '5px' }}
-                          />
-                          <span style={{ fontSize: '13px' }}>Prioritás kézbesítés (+200 Ft)</span>
+                    <div className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-100 animate-in fade-in slide-in-from-top-2">
+                      <h5 className="text-sm font-bold text-gray-700 mb-3">Kiegészítő opciók</h5>
+                      <div className="space-y-3">
+                        <label className="flex items-center gap-3 cursor-pointer group/addon">
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${addons.priority ? 'bg-[#1B4332] border-[#1B4332]' : 'bg-white border-gray-300'}`}>
+                            {addons.priority && <Check size={12} className="text-white" />}
+                          </div>
+                          <input type="checkbox" className="hidden" checked={addons.priority} onChange={(e) => setAddons(prev => ({ ...prev, priority: e.target.checked }))} />
+                          <span className="text-sm text-gray-600 flex items-center gap-2">
+                            <Zap size={14} className="text-orange-500" />
+                            Prioritás kézbesítés (+200 Ft)
+                          </span>
                         </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <input
-                            type="checkbox"
-                            checked={addons.analytics}
-                            onChange={(e) => setAddons(prev => ({ ...prev, analytics: e.target.checked }))}
-                            style={{ marginRight: '5px' }}
-                          />
-                          <span style={{ fontSize: '13px' }}>Részletes analytics (+300 Ft)</span>
+
+                        <label className="flex items-center gap-3 cursor-pointer group/addon">
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${addons.analytics ? 'bg-[#1B4332] border-[#1B4332]' : 'bg-white border-gray-300'}`}>
+                            {addons.analytics && <Check size={12} className="text-white" />}
+                          </div>
+                          <input type="checkbox" className="hidden" checked={addons.analytics} onChange={(e) => setAddons(prev => ({ ...prev, analytics: e.target.checked }))} />
+                          <span className="text-sm text-gray-600 flex items-center gap-2">
+                            <BarChart size={14} className="text-blue-500" />
+                            Részletes statisztika (+300 Ft)
+                          </span>
                         </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <input
-                            type="checkbox"
-                            checked={addons.support}
-                            onChange={(e) => setAddons(prev => ({ ...prev, support: e.target.checked }))}
-                            style={{ marginRight: '5px' }}
-                          />
-                          <span style={{ fontSize: '13px' }}>Prioritás support (+500 Ft)</span>
+
+                        <label className="flex items-center gap-3 cursor-pointer group/addon">
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${addons.support ? 'bg-[#1B4332] border-[#1B4332]' : 'bg-white border-gray-300'}`}>
+                            {addons.support && <Check size={12} className="text-white" />}
+                          </div>
+                          <input type="checkbox" className="hidden" checked={addons.support} onChange={(e) => setAddons(prev => ({ ...prev, support: e.target.checked }))} />
+                          <span className="text-sm text-gray-600 flex items-center gap-2">
+                            <Headphones size={14} className="text-purple-500" />
+                            Prémium támogatás (+500 Ft)
+                          </span>
                         </label>
                       </div>
                     </div>
@@ -295,138 +267,99 @@ export default function PaymentPage() {
             </div>
           </div>
 
-          {/* Checkout Section */}
-          <div style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '30px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '25px', color: '#333' }}>Fizetés</h2>
+          {/* RIGHT COLUMN - CHECKOUT */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-[#1F2937] mb-4">Összesítés és Fizetés</h3>
 
-            {/* Order Summary */}
-            <div style={{ 
-              backgroundColor: '#f8f9fa', 
-              borderRadius: '8px', 
-              padding: '20px', 
-              marginBottom: '25px',
-              border: '1px solid #e9ecef'
-            }}>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+
               {selectedService ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '1px solid #dee2e6' }}>
-                    <span style={{ color: '#666' }}>Szolgáltatás</span>
-                    <span style={{ fontWeight: '500' }}>
-                      {services[selectedService as keyof typeof services].title}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '1px solid #dee2e6' }}>
-                    <span style={{ color: '#666' }}>Mennyiség</span>
-                    <span style={{ fontWeight: '500' }}>
-                      {quantities[selectedService as keyof typeof quantities]} db
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '1px solid #dee2e6' }}>
-                    <span style={{ color: '#666' }}>Egységár</span>
-                    <span style={{ fontWeight: '500' }}>
-                      {services[selectedService as keyof typeof services].price.toLocaleString()} Ft
-                    </span>
-                  </div>
-                  {(addons.priority || addons.analytics || addons.support) && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '10px', borderBottom: '1px solid #dee2e6' }}>
-                      <span style={{ color: '#666' }}>Kiegészítők</span>
-                      <span style={{ fontWeight: '500' }}>
-                        +{(addons.priority ? 200 : 0) + (addons.analytics ? 300 : 0) + (addons.support ? 500 : 0)} Ft
-                      </span>
+                <>
+                  <div className="space-y-4 mb-6">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">Szolgáltatás</span>
+                      <span className="font-bold text-[#1F2937]">{services[selectedService as keyof typeof services].title}</span>
                     </div>
-                  )}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', fontSize: '18px', fontWeight: '600', color: '#28a745' }}>
-                    <span>Összesen</span>
-                    <span>{calculateTotal().toLocaleString()} Ft</span>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">Mennyiség</span>
+                      <span className="font-bold text-[#1F2937]">{quantities[selectedService as keyof typeof quantities]} db</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">Egységár</span>
+                      <span className="font-bold text-[#1F2937]">{services[selectedService as keyof typeof services].price.toLocaleString()} Ft</span>
+                    </div>
+
+                    {(addons.priority || addons.analytics || addons.support) && (
+                      <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
+                        <span className="text-gray-600">Kiegészítők</span>
+                        <span className="font-bold text-[#1F2937]">
+                          +{(addons.priority ? 200 : 0) + (addons.analytics ? 300 : 0) + (addons.support ? 500 : 0)} Ft
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                      <span className="text-lg font-bold text-[#1F2937]">Összesen fizetendő</span>
+                      <span className="text-2xl font-bold text-[#1B4332]">{calculateTotal().toLocaleString()} Ft</span>
+                    </div>
                   </div>
-                </div>
+
+                  <div className="space-y-4 mb-6">
+                    <h4 className="text-sm font-bold text-gray-700">Fizetési mód</h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      {paymentMethods.map((method) => (
+                        <div
+                          key={method.id}
+                          onClick={() => setSelectedPaymentMethod(method.id)}
+                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selectedPaymentMethod === method.id
+                              ? 'bg-[#F0F4F1] border-[#1B4332]'
+                              : 'bg-white border-gray-200 hover:border-gray-300'
+                            }`}
+                        >
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedPaymentMethod === method.id ? 'bg-[#1B4332] text-white' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                            <method.icon size={20} />
+                          </div>
+                          <div>
+                            <div className="font-bold text-sm text-[#1F2937]">{method.title}</div>
+                            <div className="text-xs text-gray-500">{method.description}</div>
+                          </div>
+                          {selectedPaymentMethod === method.id && (
+                            <div className="ml-auto text-[#1B4332]">
+                              <Check size={18} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-lg flex items-center justify-center gap-2 text-lg"
+                  >
+                    Fizetés indítása
+                  </button>
+
+                  <div className="mt-6 bg-green-50 p-4 rounded-xl border border-green-100 flex gap-3">
+                    <ShieldCheck className="text-green-700 flex-shrink-0" size={20} />
+                    <p className="text-xs text-green-800 leading-relaxed">
+                      A fizetés SimplePay rendszeren keresztül történik, amely teljes mértékben biztonságos.
+                      Adataidat titkosítva kezeljük.
+                    </p>
+                  </div>
+                </>
               ) : (
-                <div style={{ textAlign: 'center', color: '#666', padding: '40px 20px' }}>
-                  Válassz egy szolgáltatást a bal oldalról
+                <div className="text-center py-12 text-gray-500">
+                  <ShoppingBag size={48} className="mx-auto mb-4 text-gray-300" />
+                  <p>Válassz egy szolgáltatást a bal oldali listából a folytatáshoz.</p>
                 </div>
               )}
             </div>
-
-            {/* Payment Methods */}
-            {selectedService && (
-              <>
-                <div style={{ marginBottom: '25px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '500', marginBottom: '15px', color: '#333' }}>Fizetési mód</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {paymentMethods.map((method) => (
-                      <div
-                        key={method.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          padding: '15px',
-                          backgroundColor: '#f8f9fa',
-                          border: selectedPaymentMethod === method.id ? '2px solid #28a745' : '2px solid #e9ecef',
-                          borderRadius: '8px',
-                          cursor: 'pointer'
-                        }}
-                        onClick={() => setSelectedPaymentMethod(method.id)}
-                      >
-                        <input
-                          type="radio"
-                          name="payment"
-                          checked={selectedPaymentMethod === method.id}
-                          onChange={() => setSelectedPaymentMethod(method.id)}
-                          style={{ display: 'none' }}
-                        />
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          backgroundColor: '#28a745',
-                          borderRadius: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          fontSize: '18px'
-                        }}>
-                          {method.icon}
-                        </div>
-                        <div>
-                          <h3 style={{ fontWeight: '500', margin: 0, fontSize: '14px' }}>{method.title}</h3>
-                          <p style={{ color: '#666', margin: 0, fontSize: '13px' }}>{method.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleCheckout}
-                  style={{
-                    width: '100%',
-                    padding: '15px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    marginBottom: '15px'
-                  }}
-                >
-                  Fizetés indítása - {calculateTotal().toLocaleString()} Ft
-                </button>
-
-                <div style={{ backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '8px', padding: '15px' }}>
-                  <h4 style={{ color: '#155724', fontWeight: '500', marginBottom: '8px', fontSize: '14px' }}>🔒 Biztonságos fizetés</h4>
-                  <p style={{ fontSize: '13px', color: '#155724', lineHeight: '1.4', margin: 0 }}>
-                    A fizetés SimplePay rendszeren keresztül történik, amely teljes mértékben biztonságos. 
-                    A kártyaadatokat nem tároljuk, és minden tranzakció titkosított kapcsolaton keresztül zajlik.
-                  </p>
-                </div>
-              </>
-            )}
           </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }

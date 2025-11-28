@@ -1,6 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import {
+  FileText,
+  Download,
+  Eye,
+  CreditCard,
+  User,
+  Briefcase,
+  MapPin,
+  Mail,
+  Phone,
+  Save,
+  Info,
+  Filter,
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  AlertCircle
+} from 'lucide-react';
 
 interface Invoice {
   id: string;
@@ -69,346 +88,275 @@ export default function InvoicesPage() {
     alert(`Számla letöltése: ${invoice.invoiceNumber}`);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'paid': return '#28a745';
-      case 'pending': return '#ffc107';
-      case 'failed': return '#dc3545';
-      default: return '#6c757d';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'paid': return 'Fizetve';
-      case 'pending': return 'Függőben';
-      case 'failed': return 'Sikertelen';
-      default: return 'Ismeretlen';
+      case 'paid': return { text: 'Fizetve', color: 'bg-green-100 text-green-700', icon: CheckCircle };
+      case 'pending': return { text: 'Függőben', color: 'bg-yellow-100 text-yellow-700', icon: Clock };
+      case 'failed': return { text: 'Sikertelen', color: 'bg-red-100 text-red-700', icon: AlertCircle };
+      default: return { text: 'Ismeretlen', color: 'bg-gray-100 text-gray-700', icon: Info };
     }
   };
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      {/* Simple Header */}
-      <div style={{ backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '15px 0', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ fontSize: '24px' }}>🛒</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>SzomszédKosár</div>
-          </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>🔍 Böngészés</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>📄 Hírfolyam</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>Bejelentkezés</a>
-            <a href="#" style={{ color: '#007bff', textDecoration: 'underline' }}>Regisztráció</a>
+    <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+
+      {/* HEADER */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Link href="/profile" className="p-2 hover:bg-gray-100 rounded-xl transition text-gray-600">
+              <ArrowLeft size={24} />
+            </Link>
+            <h1 className="text-xl font-bold text-[#1F2937] flex items-center gap-2">
+              <FileText size={24} className="text-[#1B4332]" />
+              Számlák és Pénzügyek
+            </h1>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '30px 20px' }}>
-        {/* Page Title */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '36px', marginBottom: '10px', color: '#333' }}>Számlák és Számlázás</h1>
-          <p style={{ color: '#666', fontSize: '16px' }}>Kezeld a számláidat és állítsd be a számlázási adataidat</p>
-        </div>
+      <main className="max-w-7xl mx-auto px-4 py-8">
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '40px' }}>
-          {/* Billing Settings */}
-          <div>
-            <div style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '30px', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '25px', color: '#333' }}>Számlázási Beállítások</h2>
-              
-              {/* User Type Selection */}
-              <div style={{ marginBottom: '25px' }}>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#333', marginBottom: '10px' }}>
-                  Felhasználó típusa
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="radio"
-                      name="userType"
-                      value="individual"
-                      checked={userType === 'individual'}
-                      onChange={(e) => setUserType(e.target.value as 'individual' | 'farmer')}
-                      style={{ marginRight: '5px' }}
-                    />
-                    <span style={{ fontSize: '14px' }}>Magánszemély</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="radio"
-                      name="userType"
-                      value="farmer"
-                      checked={userType === 'farmer'}
-                      onChange={(e) => setUserType(e.target.value as 'individual' | 'farmer')}
-                      style={{ marginRight: '5px' }}
-                    />
-                    <span style={{ fontSize: '14px' }}>Őstermelő</span>
-                  </label>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* LEFT COLUMN - BILLING SETTINGS */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 bg-[#F9FAFB]">
+                <h2 className="text-lg font-bold text-[#1F2937] flex items-center gap-2">
+                  <CreditCard size={20} className="text-[#1B4332]" />
+                  Számlázási adatok
+                </h2>
               </div>
 
-              {/* Billing Form */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>
-                    {userType === 'farmer' ? 'Gazdaság neve' : 'Teljes név'}
-                  </label>
-                  <input
-                    type="text"
-                    value={billingInfo.name}
-                    onChange={(e) => setBillingInfo(prev => ({ ...prev, name: e.target.value }))}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '14px'
-                    }}
-                    placeholder={userType === 'farmer' ? 'pl. Nagy János Gazdasága' : 'pl. Nagy János'}
-                  />
-                </div>
+              <div className="p-6 space-y-6">
 
+                {/* User Type */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>Cím</label>
-                  <input
-                    type="text"
-                    value={billingInfo.address}
-                    onChange={(e) => setBillingInfo(prev => ({ ...prev, address: e.target.value }))}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '14px'
-                    }}
-                    placeholder="1234 Budapest, Kossuth u. 1."
-                  />
-                </div>
-
-                {userType === 'farmer' && (
-                  <div>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>Adószám</label>
-                    <input
-                      type="text"
-                      value={billingInfo.taxNumber}
-                      onChange={(e) => setBillingInfo(prev => ({ ...prev, taxNumber: e.target.value }))}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                      }}
-                      placeholder="12345678-1-23"
-                    />
+                  <label className="block text-sm font-bold text-gray-700 mb-3">Felhasználó típusa</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setUserType('individual')}
+                      className={`p-3 rounded-xl border-2 text-sm font-bold flex flex-col items-center gap-2 transition-all ${userType === 'individual'
+                          ? 'border-[#1B4332] bg-[#F0F4F1] text-[#1B4332]'
+                          : 'border-gray-200 hover:border-gray-300 text-gray-500'
+                        }`}
+                    >
+                      <User size={20} />
+                      Magánszemély
+                    </button>
+                    <button
+                      onClick={() => setUserType('farmer')}
+                      className={`p-3 rounded-xl border-2 text-sm font-bold flex flex-col items-center gap-2 transition-all ${userType === 'farmer'
+                          ? 'border-[#1B4332] bg-[#F0F4F1] text-[#1B4332]'
+                          : 'border-gray-200 hover:border-gray-300 text-gray-500'
+                        }`}
+                    >
+                      <Briefcase size={20} />
+                      Őstermelő
+                    </button>
                   </div>
-                )}
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>Email cím</label>
-                  <input
-                    type="email"
-                    value={billingInfo.email}
-                    onChange={(e) => setBillingInfo(prev => ({ ...prev, email: e.target.value }))}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '14px'
-                    }}
-                    placeholder="nagy.janos@email.com"
-                  />
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '5px' }}>Telefonszám</label>
-                  <input
-                    type="tel"
-                    value={billingInfo.phone}
-                    onChange={(e) => setBillingInfo(prev => ({ ...prev, phone: e.target.value }))}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      fontSize: '14px'
-                    }}
-                    placeholder="+36 30 123 4567"
-                  />
+                {/* Form Fields */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">
+                      {userType === 'farmer' ? 'Gazdaság neve' : 'Teljes név'}
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="text"
+                        value={billingInfo.name}
+                        onChange={(e) => setBillingInfo(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                        placeholder={userType === 'farmer' ? 'pl. Nagy János Gazdasága' : 'pl. Nagy János'}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Cím</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="text"
+                        value={billingInfo.address}
+                        onChange={(e) => setBillingInfo(prev => ({ ...prev, address: e.target.value }))}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                        placeholder="1234 Budapest, Kossuth u. 1."
+                      />
+                    </div>
+                  </div>
+
+                  {userType === 'farmer' && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Adószám</label>
+                      <div className="relative">
+                        <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                          type="text"
+                          value={billingInfo.taxNumber}
+                          onChange={(e) => setBillingInfo(prev => ({ ...prev, taxNumber: e.target.value }))}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                          placeholder="12345678-1-23"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Email cím</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="email"
+                        value={billingInfo.email}
+                        onChange={(e) => setBillingInfo(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                        placeholder="nagy.janos@email.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wide">Telefonszám</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input
+                        type="tel"
+                        value={billingInfo.phone}
+                        onChange={(e) => setBillingInfo(prev => ({ ...prev, phone: e.target.value }))}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                        placeholder="+36 30 123 4567"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <button
                   onClick={handleSaveBillingInfo}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    marginTop: '10px'
-                  }}
+                  className="w-full bg-[#1B4332] text-white py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
                 >
+                  <Save size={18} />
                   Adatok mentése
                 </button>
-              </div>
-            </div>
 
-            {/* Info Box */}
-            <div style={{ backgroundColor: '#e7f3ff', border: '1px solid #b3d9ff', borderRadius: '4px', padding: '15px' }}>
-              <h3 style={{ color: '#0066cc', fontWeight: '500', marginBottom: '8px', fontSize: '14px' }}>ℹ️ Fontos információ</h3>
-              <p style={{ fontSize: '13px', color: '#004499', lineHeight: '1.4', margin: 0 }}>
-                {userType === 'farmer' 
-                  ? 'Őstermelőként az áfa-mentes szolgáltatások után nem kell áfát fizetned. A számlákon szerepelni fog az őstermelői státusz.'
-                  : 'Magánszemélyként egyszerűsített számlát kapsz, amely tartalmazza az összes szükséges adatot a könyveléshez.'
-                }
-              </p>
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3">
+                  <Info className="text-blue-600 flex-shrink-0" size={20} />
+                  <p className="text-xs text-blue-800 leading-relaxed">
+                    {userType === 'farmer'
+                      ? 'Őstermelőként az áfa-mentes szolgáltatások után nem kell áfát fizetned. A számlákon szerepelni fog az őstermelői státusz.'
+                      : 'Magánszemélyként egyszerűsített számlát kapsz, amely tartalmazza az összes szükséges adatot a könyveléshez.'
+                    }
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Invoices List */}
-          <div>
-            <div style={{ backgroundColor: 'white', border: '1px solid #ddd', padding: '30px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '25px' }}>
-                <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#333', margin: 0 }}>Számlák</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <select style={{ 
-                    padding: '8px 12px', 
-                    border: '1px solid #ddd', 
-                    borderRadius: '4px', 
-                    fontSize: '14px',
-                    backgroundColor: 'white'
-                  }}>
-                    <option>Összes számla</option>
-                    <option>Fizetve</option>
-                    <option>Függőben</option>
-                    <option>Sikertelen</option>
-                  </select>
-                  <button style={{ 
-                    padding: '8px 16px', 
-                    backgroundColor: '#28a745', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '4px', 
-                    fontSize: '14px', 
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}>
-                    Exportálás
+          {/* RIGHT COLUMN - INVOICE LIST */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div className="text-xs font-bold text-gray-500 uppercase mb-1">Összes fizetett</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div className="text-xs font-bold text-gray-500 uppercase mb-1">Függőben</div>
+                <div className="text-2xl font-bold text-yellow-600">
+                  {invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div className="text-xs font-bold text-gray-500 uppercase mb-1">Idei összes</div>
+                <div className="text-2xl font-bold text-[#1B4332]">
+                  {invoices.reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
+                </div>
+              </div>
+            </div>
+
+            {/* Invoices Table Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h2 className="text-lg font-bold text-[#1F2937]">Számlák</h2>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <div className="relative flex-grow sm:flex-grow-0">
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                    <select className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm font-medium outline-none focus:border-[#1B4332]">
+                      <option>Összes számla</option>
+                      <option>Fizetve</option>
+                      <option>Függőben</option>
+                      <option>Sikertelen</option>
+                    </select>
+                  </div>
+                  <button className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition flex items-center gap-2 border border-gray-200">
+                    <Download size={16} />
+                    Export
                   </button>
                 </div>
               </div>
 
-              {/* Invoices Table */}
-              <div style={{ border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ backgroundColor: '#f8f9fa' }}>
-                    <tr>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Számlaszám</th>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Dátum</th>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Szolgáltatás</th>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Összeg</th>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Státusz</th>
-                      <th style={{ padding: '12px', textAlign: 'left', fontSize: '14px', fontWeight: '500', color: '#666', borderBottom: '1px solid #ddd' }}>Műveletek</th>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-100">
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase">Számlaszám</th>
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase">Dátum</th>
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase">Szolgáltatás</th>
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">Összeg</th>
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase text-center">Státusz</th>
+                      <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">Műveletek</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {invoices.map((invoice, index) => (
-                      <tr key={invoice.id} style={{ borderBottom: index < invoices.length - 1 ? '1px solid #eee' : 'none' }}>
-                        <td style={{ padding: '12px', fontSize: '14px', fontWeight: '500' }}>
-                          {invoice.invoiceNumber}
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px', color: '#666' }}>
-                          {new Date(invoice.date).toLocaleDateString('hu-HU')}
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px', color: '#666' }}>
-                          {invoice.service}
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px', fontWeight: '500' }}>
-                          {invoice.amount.toLocaleString()} Ft
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px' }}>
-                          <span style={{
-                            padding: '4px 8px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            backgroundColor: invoice.status === 'paid' ? '#d4edda' : invoice.status === 'pending' ? '#fff3cd' : '#f8d7da',
-                            color: getStatusColor(invoice.status)
-                          }}>
-                            {getStatusText(invoice.status)}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px' }}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              onClick={() => downloadInvoice(invoice)}
-                              style={{
-                                padding: '4px 8px',
-                                backgroundColor: '#d4edda',
-                                color: '#155724',
-                                border: 'none',
-                                borderRadius: '4px',
-                                fontSize: '12px',
-                                fontWeight: '500',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              📄 Letöltés
-                            </button>
-                            <button style={{
-                              padding: '4px 8px',
-                              backgroundColor: '#e9ecef',
-                              color: '#495057',
-                              border: 'none',
-                              borderRadius: '4px',
-                              fontSize: '12px',
-                              fontWeight: '500',
-                              cursor: 'pointer'
-                            }}>
-                              👁️ Megtekintés
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="divide-y divide-gray-100">
+                    {invoices.map((invoice) => {
+                      const statusConfig = getStatusConfig(invoice.status);
+                      return (
+                        <tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="p-4 text-sm font-bold text-[#1F2937]">{invoice.invoiceNumber}</td>
+                          <td className="p-4 text-sm text-gray-500">{new Date(invoice.date).toLocaleDateString('hu-HU')}</td>
+                          <td className="p-4 text-sm text-gray-600">{invoice.service}</td>
+                          <td className="p-4 text-sm font-bold text-[#1F2937] text-right">{invoice.amount.toLocaleString()} Ft</td>
+                          <td className="p-4 text-center">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${statusConfig.color}`}>
+                              <statusConfig.icon size={12} />
+                              {statusConfig.text}
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => downloadInvoice(invoice)}
+                                className="p-2 text-gray-400 hover:text-[#1B4332] hover:bg-green-50 rounded-lg transition"
+                                title="Letöltés"
+                              >
+                                <Download size={18} />
+                              </button>
+                              <button
+                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                title="Megtekintés"
+                              >
+                                <Eye size={18} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
-
-              {/* Summary */}
-              <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid #eee' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-                  <div style={{ backgroundColor: '#d4edda', borderRadius: '4px', padding: '15px' }}>
-                    <div style={{ fontSize: '14px', color: '#155724', fontWeight: '500' }}>Összes fizetett</div>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#155724' }}>
-                      {invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#fff3cd', borderRadius: '4px', padding: '15px' }}>
-                    <div style={{ fontSize: '14px', color: '#856404', fontWeight: '500' }}>Függőben</div>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#856404' }}>
-                      {invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#cce7ff', borderRadius: '4px', padding: '15px' }}>
-                    <div style={{ fontSize: '14px', color: '#004085', fontWeight: '500' }}>Idei összes</div>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#004085' }}>
-                      {invoices.reduce((sum, i) => sum + i.amount, 0).toLocaleString()} Ft
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
+
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

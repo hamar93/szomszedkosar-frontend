@@ -1,40 +1,53 @@
-// src/app/search/page.tsx
-'use client'
-import { useState } from 'react'
-import Link from 'next/link'
-import Header from '@/components/Header'
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import {
+  ShoppingBasket,
+  Search,
+  Filter,
+  MapPin,
+  Leaf,
+  ShieldCheck,
+  Users,
+  ArrowRight,
+  ChevronDown,
+  X,
+  Check,
+  Clock,
+  Tag
+} from 'lucide-react';
 
 // Termék kategóriák és típusok
 const categories = [
   {
     id: 'perishable',
     name: 'Romlandó termékek',
-    icon: '🥬',
+    icon: Leaf,
     subcategories: ['Gyümölcs', 'Zöldség', 'Tojás', 'Hús', 'Tejtermék']
   },
   {
     id: 'preserved',
     name: 'Tartós termékek',
-    icon: '🍯',
+    icon: ShoppingBasket,
     subcategories: ['Lekvár', 'Szörp', 'Füstöltáru', 'Méz', 'Tea', 'Gyógynövény']
   },
   {
     id: 'cosmetics',
     name: 'Házi kozmetikum',
-    icon: '🧼',
+    icon: ShieldCheck,
     subcategories: ['Szappan', 'Krém', 'Balzsam', 'Olaj']
   },
   {
     id: 'rural_marketplace',
     name: 'Falusi marketplace',
-    icon: '🐄',
+    icon: Users,
     subcategories: ['Élő állat', 'Gabona', 'Eszközök', 'Takarmány']
   }
-]
+];
 
 // Mock termékek
 const mockProducts = [
-  // Romlandó termékek
   {
     id: '1',
     name: 'Friss meggy',
@@ -47,12 +60,13 @@ const mockProducts = [
     distance: '2 km',
     rating: 4.9,
     reviews: 23,
-    emoji: '🍒',
     description: 'Frissen szedett házi meggy, vegyszermentes.',
     quantity: '15 kg elérhető',
     delivery: ['pickup', 'local_delivery'],
     urgent: true,
-    organic: true
+    organic: true,
+    icon: Leaf,
+    color: 'bg-red-100 text-red-600'
   },
   {
     id: '2',
@@ -66,33 +80,13 @@ const mockProducts = [
     distance: '5 km',
     rating: 4.8,
     reviews: 45,
-    emoji: '🥚',
     description: 'Szabadtartású tyúkok tojásai.',
     quantity: '50 db készleten',
     delivery: ['pickup'],
-    organic: true
+    organic: true,
+    icon: Users,
+    color: 'bg-orange-100 text-orange-600'
   },
-  {
-    id: '3',
-    name: 'Bakonyi barna csirke',
-    category: 'perishable',
-    subcategory: 'Hús',
-    price: 2500,
-    unit: 'kg',
-    seller: 'János B.',
-    location: 'Bakony',
-    distance: '8 km',
-    rating: 4.9,
-    reviews: 67,
-    emoji: '🐔',
-    description: 'Előrendelés: jövő kedden 10 csirke vágás.',
-    quantity: 'Előrendelés szükséges',
-    delivery: ['pickup'],
-    preorder: true,
-    date: 'Jövő kedd'
-  },
-
-  // Tartós termékek
   {
     id: '4',
     name: 'Házi meggylekvár',
@@ -105,136 +99,13 @@ const mockProducts = [
     distance: '12 km',
     rating: 4.7,
     reviews: 34,
-    emoji: '🍯',
     description: 'Cukor nélkül főzött, steviával édesített.',
     quantity: '20 üveg készleten',
     delivery: ['pickup', 'local_delivery', 'shipping'],
-    organic: true
+    organic: true,
+    icon: ShoppingBasket,
+    color: 'bg-purple-100 text-purple-600'
   },
-  {
-    id: '5',
-    name: 'Akác méz',
-    category: 'preserved',
-    subcategory: 'Méz',
-    price: 2800,
-    unit: 'kg',
-    seller: 'Méhész Pista',
-    location: 'Tata',
-    distance: '15 km',
-    rating: 5.0,
-    reviews: 89,
-    emoji: '🍯',
-    description: 'Kristálytiszta akácméz, saját méhészetből.',
-    quantity: '50 kg elérhető',
-    delivery: ['pickup', 'shipping']
-  },
-  {
-    id: '8',
-    name: 'Házi vadgesztenye méz',
-    category: 'preserved',
-    subcategory: 'Méz',
-    price: 3200,
-    unit: 'kg',
-    seller: 'Bakonyi Méhész',
-    location: 'Zirc',
-    distance: '18 km',
-    rating: 4.9,
-    reviews: 45,
-    emoji: '🍯',
-    description: 'Sötét, aromás vadgesztenye méz. Különleges íz.',
-    quantity: '25 kg készleten',
-    delivery: ['pickup', 'shipping'],
-    organic: true
-  },
-  {
-    id: '9',
-    name: 'Kamilla tea (szárított)',
-    category: 'preserved',
-    subcategory: 'Tea',
-    price: 1800,
-    unit: 'csomag',
-    seller: 'Gyógynövény Kert',
-    location: 'Szentendre',
-    distance: '14 km',
-    rating: 4.8,
-    reviews: 23,
-    emoji: '🌼',
-    description: 'Házi szárítású kamilla virág. Nyugtató hatású.',
-    quantity: '30 csomag (50g)',
-    delivery: ['pickup', 'local_delivery', 'shipping'],
-    organic: true
-  },
-  {
-    id: '10',
-    name: 'Gyógynövény tea keverék',
-    category: 'preserved',
-    subcategory: 'Tea',
-    price: 2200,
-    unit: 'csomag',
-    seller: 'Herbárium Néni',
-    location: 'Visegrád',
-    distance: '16 km',
-    rating: 4.6,
-    reviews: 18,
-    emoji: '🌿',
-    description: 'Saját kertből: menta, citromfű, levendula keverék.',
-    quantity: '15 csomag (100g)',
-    delivery: ['pickup', 'shipping'],
-    organic: true
-  },
-  {
-    id: '11',
-    name: 'Hársfavirág tea',
-    category: 'preserved',
-    subcategory: 'Tea',
-    price: 1600,
-    unit: 'csomag',
-    seller: 'Erdei Gyűjtő',
-    location: 'Pilisszentkereszt',
-    distance: '22 km',
-    rating: 4.7,
-    reviews: 31,
-    emoji: '🌸',
-    description: 'Vadról szedett hársvirág, természetesen szárítva.',
-    quantity: '40 csomag (30g)',
-    delivery: ['pickup', 'shipping']
-  },
-  {
-    id: '12',
-    name: 'Füstölt szalonna',
-    category: 'preserved',
-    subcategory: 'Füstöltáru',
-    price: 4500,
-    unit: 'kg',
-    seller: 'Tanyasi Gazda',
-    location: 'Kunság',
-    distance: '25 km',
-    rating: 4.9,
-    reviews: 67,
-    emoji: '🥓',
-    description: 'Házi füstölésű szalonna, tölgyfa füsttel.',
-    quantity: '20 kg elérhető',
-    delivery: ['pickup']
-  },
-  {
-    id: '13',
-    name: 'Házi kolbász',
-    category: 'preserved',
-    subcategory: 'Füstöltáru',
-    price: 3800,
-    unit: 'kg',
-    seller: 'Mészáros Józsi',
-    location: 'Gödöllő',
-    distance: '19 km',
-    rating: 4.8,
-    reviews: 52,
-    emoji: '🌭',
-    description: 'Házi készítésű, füstölt kolbász. Hagyományos recept.',
-    quantity: '12 kg készleten',
-    delivery: ['pickup', 'local_delivery']
-  },
-
-  // Munch-szerű kedvezmények
   {
     id: '6',
     name: 'Túlérett almák - AKCIÓ!',
@@ -248,817 +119,298 @@ const mockProducts = [
     distance: '7 km',
     rating: 4.5,
     reviews: 12,
-    emoji: '🍎',
     description: 'Túlérett, de még kiváló befőzéshez!',
     quantity: '30 kg - gyorsan elkel',
     delivery: ['pickup'],
     discount: true,
     discountPercent: 37,
-    urgent: true
-  },
-
-  // Falusi marketplace
-  {
-    id: '7',
-    name: 'Mangalica malac',
-    category: 'rural_marketplace',
-    subcategory: 'Élő állat',
-    price: 45000,
-    unit: 'db',
-    seller: 'Tanyasi Gazda',
-    location: 'Kunság',
-    distance: '25 km',
-    rating: 4.8,
-    reviews: 8,
-    emoji: '🐷',
-    description: 'Fajtiszta mangalica malac, 3 hónapos.',
-    quantity: '5 db elérhető',
-    delivery: ['pickup']
+    urgent: true,
+    icon: Leaf,
+    color: 'bg-green-100 text-green-600'
   }
-]
+];
 
 export default function SearchPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedSubcategory, setSelectedSubcategory] = useState('all')
-  const [sortBy, setSortBy] = useState('distance') // distance, price_low, price_high, rating
-  const [showFilters, setShowFilters] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('all');
+  const [sortBy, setSortBy] = useState('distance');
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     maxDistance: 30,
     priceRange: [0, 10000],
     organic: false,
-    delivery: 'all', // pickup, local_delivery, shipping
+    delivery: 'all',
     urgent: false,
     discount: false
-  })
+  });
 
-  // Szűrés és rendezés
+  // Szűrés és rendezés logika (megtartva az eredetit, csak tisztítva)
   const filteredProducts = mockProducts
     .filter(product => {
-      // Szöveges keresés
       if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !product.description.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false
-      }
+        !product.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (selectedCategory !== 'all' && product.category !== selectedCategory) return false;
+      if (selectedSubcategory !== 'all' && product.subcategory !== selectedSubcategory) return false;
 
-      // Kategória szűrés
-      if (selectedCategory !== 'all' && product.category !== selectedCategory) {
-        return false
-      }
+      const distance = parseInt(product.distance.replace(' km', ''));
+      if (distance > filters.maxDistance) return false;
+      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) return false;
+      if (filters.organic && !product.organic) return false;
+      if (filters.urgent && !product.urgent) return false;
+      if (filters.discount && !product.discount) return false;
 
-      // Alkategória szűrés
-      if (selectedSubcategory !== 'all' && product.subcategory !== selectedSubcategory) {
-        return false
-      }
-
-      // Távolság szűrés
-      const distance = parseInt(product.distance.replace(' km', ''))
-      if (distance > filters.maxDistance) {
-        return false
-      }
-
-      // Ár szűrés
-      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) {
-        return false
-      }
-
-      // Bio szűrés
-      if (filters.organic && !product.organic) {
-        return false
-      }
-
-      // Sürgős szűrés
-      if (filters.urgent && !product.urgent) {
-        return false
-      }
-
-      // Kedvezmény szűrés
-      if (filters.discount && !product.discount) {
-        return false
-      }
-
-      return true
+      return true;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'distance':
-          return parseInt(a.distance) - parseInt(b.distance)
-        case 'price_low':
-          return a.price - b.price
-        case 'price_high':
-          return b.price - a.price
-        case 'rating':
-          return b.rating - a.rating
-        default:
-          return 0
+        case 'distance': return parseInt(a.distance) - parseInt(b.distance);
+        case 'price_low': return a.price - b.price;
+        case 'price_high': return b.price - a.price;
+        case 'rating': return b.rating - a.rating;
+        default: return 0;
       }
-    })
+    });
 
-  const selectedCategoryData = categories.find(cat => cat.id === selectedCategory)
+  const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F5F5F0'
-    }}>
-      <Header />
+    <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
 
-      {/* Header */}
-      <div style={{
-        background: 'white',
-        borderBottom: '1px solid #e5e7eb',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        zIndex: 40
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '24px 16px'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '24px'
-          }}>
+      {/* HEADER */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between py-4 gap-4">
+
             <div>
-              <h1 style={{
-                fontSize: '32px',
-                fontWeight: '700',
-                color: '#1f2937',
-                margin: '0 0 8px 0'
-              }}>
+              <h1 className="text-2xl font-bold text-[#1F2937] flex items-center gap-2">
                 Termékek böngészése
               </h1>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>
-                <Link href="/" style={{ color: '#16a34a', textDecoration: 'none' }}>Főoldal</Link>
-                <span>→</span>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <Link href="/" className="text-[#1B4332] hover:underline">Főoldal</Link>
+                <span>/</span>
                 <span>Böngészés</span>
               </div>
-            </div >
+            </div>
 
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              style={{
-                background: showFilters ? '#16a34a' : 'white',
-                color: showFilters ? 'white' : '#16a34a',
-                border: '2px solid #16a34a',
-                borderRadius: '12px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              🔧 Szűrők {showFilters ? '✓' : ''}
-            </button>
-          </div >
-
-          {/* Keresősáv */}
-          < div style={{
-            display: 'flex',
-            gap: '16px',
-            marginBottom: '20px'
-          }
-          }>
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              background: 'white',
-              borderRadius: '12px',
-              border: '2px solid #e5e7eb',
-              overflow: 'hidden'
-            }}>
-              <input
-                type="text"
-                placeholder="Mit keresel? (pl. meggy, lekvár, csirke...)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: '16px',
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: '16px'
-                }}
-              />
-              <button style={{
-                background: '#16a34a',
-                color: 'white',
-                border: 'none',
-                padding: '16px',
-                cursor: 'pointer',
-                fontSize: '16px'
-              }}>
-                🔍
+            <div className="flex gap-3 w-full md:w-auto">
+              <div className="relative flex-grow md:w-96">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Keresés..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition-all"
+                />
+              </div>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`px-4 py-3 rounded-xl font-bold border transition-all flex items-center gap-2 ${showFilters
+                    ? 'bg-[#1B4332] text-white border-[#1B4332]'
+                    : 'bg-white text-[#1B4332] border-gray-200 hover:border-[#1B4332]'
+                  }`}
+              >
+                <Filter size={20} />
+                <span className="hidden sm:inline">Szűrők</span>
               </button>
             </div>
 
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              style={{
-                padding: '16px',
-                border: '2px solid #e5e7eb',
-                borderRadius: '12px',
-                fontSize: '16px',
-                outline: 'none',
-                background: 'white'
-              }}
-            >
-              <option value="distance">Távolság szerint</option>
-              <option value="price_low">Ár: alacsony→magas</option>
-              <option value="price_high">Ár: magas→alacsony</option>
-              <option value="rating">Értékelés szerint</option>
-            </select>
-          </div >
+          </div>
 
-          {/* Kategóriák */}
-          < div style={{
-            display: 'flex',
-            gap: '12px',
-            overflowX: 'auto',
-            paddingBottom: '4px'
-          }}>
+          {/* CATEGORIES SCROLL */}
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
             <button
-              onClick={() => {
-                setSelectedCategory('all')
-                setSelectedSubcategory('all')
-              }}
-              style={{
-                background: selectedCategory === 'all' ? '#16a34a' : 'white',
-                color: selectedCategory === 'all' ? 'white' : '#6b7280',
-                border: '2px solid #e5e7eb',
-                borderColor: selectedCategory === 'all' ? '#16a34a' : '#e5e7eb',
-                borderRadius: '12px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
+              onClick={() => { setSelectedCategory('all'); setSelectedSubcategory('all'); }}
+              className={`px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all ${selectedCategory === 'all'
+                  ? 'bg-[#1B4332] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
+                }`}
             >
-              📋 Összes
+              Összes
             </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory('all'); }}
+                className={`px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all flex items-center gap-2 ${selectedCategory === cat.id
+                    ? 'bg-[#1B4332] text-white shadow-md'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
+                  }`}
+              >
+                <cat.icon size={18} />
+                {cat.name}
+              </button>
+            ))}
+          </div>
 
-            {
-              categories.map((category) => (
+          {/* SUBCATEGORIES */}
+          {selectedCategoryData && (
+            <div className="flex gap-2 overflow-x-auto pb-4 pt-2 border-t border-gray-100">
+              <button
+                onClick={() => setSelectedSubcategory('all')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${selectedSubcategory === 'all'
+                    ? 'bg-[#E8ECE9] text-[#1B4332]'
+                    : 'text-gray-500 hover:bg-gray-50'
+                  }`}
+              >
+                Összes
+              </button>
+              {selectedCategoryData.subcategories.map((sub) => (
                 <button
-                  key={category.id}
-                  onClick={() => {
-                    setSelectedCategory(category.id)
-                    setSelectedSubcategory('all')
-                  }}
-                  style={{
-                    background: selectedCategory === category.id ? '#16a34a' : 'white',
-                    color: selectedCategory === category.id ? 'white' : '#6b7280',
-                    border: '2px solid #e5e7eb',
-                    borderColor: selectedCategory === category.id ? '#16a34a' : '#e5e7eb',
-                    borderRadius: '12px',
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
+                  key={sub}
+                  onClick={() => setSelectedSubcategory(sub)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${selectedSubcategory === sub
+                      ? 'bg-[#E8ECE9] text-[#1B4332]'
+                      : 'text-gray-500 hover:bg-gray-50'
+                    }`}
                 >
-                  <span>{category.icon}</span>
-                  {category.name}
+                  {sub}
                 </button>
-              ))
-            }
-          </div >
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
 
-          {/* Alkategóriák */}
-          {
-            selectedCategoryData && (
-              <div style={{
-                display: 'flex',
-                gap: '8px',
-                marginTop: '12px',
-                overflowX: 'auto',
-                paddingBottom: '4px'
-              }}>
+      {/* FILTERS PANEL */}
+      {showFilters && (
+        <div className="bg-white border-b border-gray-200 py-6 px-4 animate-in slide-in-from-top-2">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Maximum távolság: {filters.maxDistance} km
+              </label>
+              <input
+                type="range"
+                min="5"
+                max="50"
+                value={filters.maxDistance}
+                onChange={(e) => setFilters({ ...filters, maxDistance: parseInt(e.target.value) })}
+                className="w-full accent-[#1B4332]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Rendezés</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full p-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#1B4332]"
+              >
+                <option value="distance">Távolság szerint</option>
+                <option value="price_low">Ár: Alacsony → Magas</option>
+                <option value="price_high">Ár: Magas → Alacsony</option>
+                <option value="rating">Értékelés szerint</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-gray-700 mb-2">Szűrők</label>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => setSelectedSubcategory('all')}
-                  style={{
-                    background: selectedSubcategory === 'all' ? '#dcfce7' : '#f8fafc',
-                    color: selectedSubcategory === 'all' ? '#15803d' : '#6b7280',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    padding: '4px 12px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap'
-                  }}
+                  onClick={() => setFilters({ ...filters, organic: !filters.organic })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.organic ? 'bg-green-100 text-green-800 border-green-200' : 'bg-white border-gray-200 text-gray-600'
+                    }`}
                 >
-                  Összes
+                  🌱 Bio
                 </button>
-
-                {selectedCategoryData.subcategories.map((sub) => (
-                  <button
-                    key={sub}
-                    onClick={() => setSelectedSubcategory(sub)}
-                    style={{
-                      background: selectedSubcategory === sub ? '#dcfce7' : '#f8fafc',
-                      color: selectedSubcategory === sub ? '#15803d' : '#6b7280',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      padding: '4px 12px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {sub}
-                  </button>
-                ))}
-              </div>
-            )
-          }
-        </div >
-      </div >
-
-      {/* Szűrők panel */}
-      {
-        showFilters && (
-          <div style={{
-            background: '#f8fafc',
-            borderBottom: '1px solid #e5e7eb',
-            padding: '20px 16px'
-          }}>
-            <div style={{
-              maxWidth: '1200px',
-              margin: '0 auto',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '20px'
-            }}>
-
-              {/* Távolság */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Maximum távolság: {filters.maxDistance} km
-                </label>
-                <input
-                  type="range"
-                  min="5"
-                  max="50"
-                  value={filters.maxDistance}
-                  onChange={(e) => setFilters({ ...filters, maxDistance: parseInt(e.target.value) })}
-                  style={{
-                    width: '100%',
-                    accentColor: '#16a34a'
-                  }}
-                />
-              </div>
-
-              {/* Gyors szűrők */}
-              <div>
-                <span style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#374151',
-                  marginBottom: '8px'
-                }}>
-                  Gyors szűrők
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={filters.organic}
-                      onChange={(e) => setFilters({ ...filters, organic: e.target.checked })}
-                      style={{ accentColor: '#16a34a' }}
-                    />
-                    <span style={{ fontSize: '14px' }}>🌱 Csak bio termékek</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={filters.urgent}
-                      onChange={(e) => setFilters({ ...filters, urgent: e.target.checked })}
-                      style={{ accentColor: '#16a34a' }}
-                    />
-                    <span style={{ fontSize: '14px' }}>🔥 Sürgős ajánlatok</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={filters.discount}
-                      onChange={(e) => setFilters({ ...filters, discount: e.target.checked })}
-                      style={{ accentColor: '#16a34a' }}
-                    />
-                    <span style={{ fontSize: '14px' }}>💰 Akciós termékek</span>
-                  </label>
-                </div>
+                <button
+                  onClick={() => setFilters({ ...filters, urgent: !filters.urgent })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.urgent ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-white border-gray-200 text-gray-600'
+                    }`}
+                >
+                  🔥 Sürgős
+                </button>
+                <button
+                  onClick={() => setFilters({ ...filters, discount: !filters.discount })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.discount ? 'bg-red-100 text-red-800 border-red-200' : 'bg-white border-gray-200 text-gray-600'
+                    }`}
+                >
+                  💰 Akció
+                </button>
               </div>
             </div>
-          </div>
-        )
-      }
 
-      {/* Termékek listája */}
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '32px 16px'
-      }}>
-
-        {/* Eredmények száma */}
-        <div style={{
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <span style={{
-            fontSize: '16px',
-            color: '#6b7280'
-          }}>
-            {filteredProducts.length} termék találat
-          </span>
-
-          {/* Gyors akcók */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setFilters({ ...filters, urgent: !filters.urgent })}
-              style={{
-                background: filters.urgent ? '#fbbf24' : 'white',
-                color: filters.urgent ? 'white' : '#fbbf24',
-                border: '2px solid #fbbf24',
-                borderRadius: '8px',
-                padding: '4px 8px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              🔥 Sürgős
-            </button>
-            <button
-              onClick={() => setFilters({ ...filters, discount: !filters.discount })}
-              style={{
-                background: filters.discount ? '#dc2626' : 'white',
-                color: filters.discount ? 'white' : '#dc2626',
-                border: '2px solid #dc2626',
-                borderRadius: '8px',
-                padding: '4px 8px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              💰 Akció
-            </button>
           </div>
         </div>
+      )}
 
-        {/* Termékek grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '24px'
-        }}>
+      {/* RESULTS */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-gray-600 font-medium">
+            <span className="text-[#1B4332] font-bold">{filteredProducts.length}</span> találat
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              style={{
-                background: 'white',
-                borderRadius: '20px',
-                overflow: 'hidden',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                border: product.urgent ? '3px solid #fbbf24' : '2px solid #f8fafc',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                position: 'relative'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-8px)'
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.15)'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.1)'
-              }}
-            >
+            <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
 
-              {/* Címkék */}
-              <div style={{
-                position: 'absolute',
-                top: '12px',
-                left: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                zIndex: 10
-              }}>
-                {product.urgent && (
-                  <span style={{
-                    background: '#fbbf24',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    fontSize: '10px',
-                    fontWeight: '600'
-                  }}>
-                    🔥 SÜRGŐS
-                  </span>
-                )}
-                {product.discount && (
-                  <span style={{
-                    background: '#dc2626',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    fontSize: '10px',
-                    fontWeight: '600'
-                  }}>
-                    -{product.discountPercent}%
-                  </span>
-                )}
-                {product.organic && (
-                  <span style={{
-                    background: '#16a34a',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    fontSize: '10px',
-                    fontWeight: '600'
-                  }}>
-                    🌱 BIO
-                  </span>
-                )}
-                {product.preorder && (
-                  <span style={{
-                    background: '#8b5cf6',
-                    color: 'white',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    fontSize: '10px',
-                    fontWeight: '600'
-                  }}>
-                    📅 ELŐRENDEL
-                  </span>
-                )}
+              {/* Card Image Area */}
+              <div className={`h-48 ${product.color.split(' ')[0]} flex items-center justify-center relative`}>
+                <div className={`w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                  <product.icon size={40} className={product.color.split(' ')[1]} />
+                </div>
+
+                {/* Badges */}
+                <div className="absolute top-3 left-3 flex flex-col gap-2">
+                  {product.urgent && (
+                    <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                      SÜRGŐS
+                    </span>
+                  )}
+                  {product.discount && (
+                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                      -{product.discountPercent}%
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Értékelés */}
-              <div style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                background: 'white',
-                borderRadius: '8px',
-                padding: '4px 8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                zIndex: 10
-              }}>
-                <span style={{ fontSize: '12px' }}>⭐</span>
-                <span style={{ fontSize: '12px', fontWeight: '600', color: '#1f2937' }}>
-                  {product.rating}
-                </span>
-                <span style={{ fontSize: '10px', color: '#6b7280' }}>
-                  ({product.reviews})
-                </span>
-              </div>
-
-              {/* Termék kép/emoji */}
-              <div style={{
-                height: '180px',
-                background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '60px'
-              }}>
-                {product.emoji}
-              </div>
-
-              {/* Termék információ */}
-              <div style={{ padding: '20px' }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: '12px'
-                }}>
-                  <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#1f2937',
-                    margin: 0,
-                    lineHeight: '1.2'
-                  }}>
+              {/* Card Content */}
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">
                     {product.name}
                   </h3>
-
-                  <div style={{ textAlign: 'right' }}>
-                    {product.originalPrice && (
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#6b7280',
-                        textDecoration: 'line-through'
-                      }}>
-                        {product.originalPrice} Ft/{product.unit}
-                      </div>
+                  <div className="text-right">
+                    {product.discount && (
+                      <span className="block text-xs text-gray-400 line-through">
+                        {product.originalPrice} Ft
+                      </span>
                     )}
-                    <div style={{
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      color: product.discount ? '#dc2626' : '#16a34a'
-                    }}>
-                      {product.price} Ft/{product.unit}
-                    </div>
+                    <span className="text-[#1B4332] font-bold">
+                      {product.price} Ft
+                      <span className="text-xs font-normal text-gray-500">/{product.unit}</span>
+                    </span>
                   </div>
                 </div>
 
-                <p style={{
-                  fontSize: '14px',
-                  color: '#6b7280',
-                  margin: '0 0 12px 0',
-                  lineHeight: '1.4'
-                }}>
+                <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[40px]">
                   {product.description}
                 </p>
 
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '12px',
-                  color: '#6b7280',
-                  marginBottom: '12px'
-                }}>
-                  <span>👤 {product.seller}</span>
-                  <span>📍 {product.distance}</span>
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 bg-gray-50 p-2 rounded-lg">
+                  <Users size={14} />
+                  <span className="font-medium truncate">{product.seller}</span>
+                  <span className="mx-1">•</span>
+                  <MapPin size={14} />
+                  <span className="truncate">{product.distance}</span>
                 </div>
 
-                <div style={{
-                  fontSize: '12px',
-                  color: '#6b7280',
-                  marginBottom: '16px'
-                }}>
-                  📦 {product.quantity}
-                </div>
-
-                {/* Szállítási opciók */}
-                <div style={{
-                  display: 'flex',
-                  gap: '4px',
-                  marginBottom: '16px',
-                  flexWrap: 'wrap'
-                }}>
-                  {product.delivery.includes('pickup') && (
-                    <span style={{
-                      background: '#f0fdf4',
-                      color: '#16a34a',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      fontSize: '10px',
-                      fontWeight: '600'
-                    }}>
-                      🚚 Átvétel
-                    </span>
-                  )}
-                  {product.delivery.includes('local_delivery') && (
-                    <span style={{
-                      background: '#fef3c7',
-                      color: '#f59e0b',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      fontSize: '10px',
-                      fontWeight: '600'
-                    }}>
-                      🚗 Kiszállítás
-                    </span>
-                  )}
-                  {product.delivery.includes('shipping') && (
-                    <span style={{
-                      background: '#ede9fe',
-                      color: '#8b5cf6',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      fontSize: '10px',
-                      fontWeight: '600'
-                    }}>
-                      📦 Postázás
-                    </span>
-                  )}
-                </div>
-
-                {/* Gombok */}
-                <div style={{
-                  display: 'flex',
-                  gap: '8px'
-                }}>
-                  <button style={{
-                    flex: 1,
-                    background: 'white',
-                    border: '2px solid #16a34a',
-                    color: '#16a34a',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}>
-                    💬 Üzenet
-                  </button>
-                  <Link
-                    href={`/product/${product.id}`}
-                    style={{
-                      flex: 1,
-                      background: '#16a34a',
-                      color: 'white',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      textDecoration: 'none',
-                      textAlign: 'center',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '4px'
-                    }}
-                  >
-                    👁️ Részletek
-                  </Link>
-                </div>
+                <button className="w-full bg-white border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-bold hover:bg-[#1B4332] hover:text-white transition flex items-center justify-center gap-2 group-hover:shadow-md">
+                  Részletek
+                  <ArrowRight size={16} />
+                </button>
               </div>
             </div>
           ))}
         </div>
+      </main>
 
-        {filteredProducts.length === 0 && (
-          <div style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            color: '#6b7280'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>
-              Nincs találat
-            </h3>
-            <p>Próbáld meg módosítani a keresési feltételeket.</p>
-          </div>
-        )}
-
-        {/* Load more gomb */}
-        {filteredProducts.length > 0 && (
-          <div style={{
-            textAlign: 'center',
-            marginTop: '40px'
-          }}>
-            <button style={{
-              background: 'white',
-              border: '2px solid #e5e7eb',
-              borderRadius: '12px',
-              padding: '12px 24px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#6b7280',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = '#16a34a'
-                e.currentTarget.style.color = '#16a34a'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = '#e5e7eb'
-                e.currentTarget.style.color = '#6b7280'
-              }}>
-              További termékek betöltése
-            </button>
-          </div>
-        )}
-      </div>
-    </div >
-  )
+    </div>
+  );
 }

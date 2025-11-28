@@ -1,12 +1,32 @@
-// src/app/profile/page.tsx
-'use client'
-import { useState } from 'react'
-import Link from 'next/link'
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import {
+  User,
+  MapPin,
+  Star,
+  Package,
+  Calendar,
+  MessageCircle,
+  Phone,
+  AlertTriangle,
+  TrendingUp,
+  Clock,
+  Truck,
+  Settings,
+  Plus,
+  ShoppingBasket,
+  Leaf,
+  ShieldCheck,
+  Edit,
+  Eye,
+  Heart
+} from 'lucide-react';
 
 // Mock felhasználó adatok
 const mockUser = {
   name: 'Kiss Margit',
-  avatar: '👵',
   type: 'producer', // 'producer' | 'casual_seller' | 'buyer'
   location: 'Jaszberény',
   memberSince: '2023',
@@ -17,24 +37,24 @@ const mockUser = {
   phone: '+36 20 456 7890',
   email: 'kiss.margit@email.com',
   bio: 'Házi készítésű lekvárok, szörpök és házi sajt készítésével foglalkozom már 15 éve. Minden termékeket házi körülmények között, természetes alapanyagokból készítek.',
-  
+
   // NAV szabályok és limitek
   limits: {
-    monthlyAds: 2, // eddig ennyi hirdetést tett fel ebben a hónapban
-    maxMonthlyAds: 5, // max havi hirdetés (casual_seller esetén)
-    monthlyPushes: 1, // eddig ennyi push értesítést küldött
-    maxMonthlyPushes: 3, // max havi push (casual_seller esetén)
-    activeAds: 1, // jelenleg aktív hirdetések
-    maxActiveAds: 3 // max egyidejű aktív hirdetés (casual_seller esetén)
+    monthlyAds: 2,
+    maxMonthlyAds: 5,
+    monthlyPushes: 1,
+    maxMonthlyPushes: 3,
+    activeAds: 1,
+    maxActiveAds: 3
   },
-  
+
   stats: {
     totalEarnings: 125000,
     avgResponseTime: '2 óra',
     deliveryRating: 4.9,
     qualityRating: 4.7
   }
-}
+};
 
 // Mock termékek
 const mockProducts = [
@@ -43,7 +63,8 @@ const mockProducts = [
     name: 'Házi meggylekvár',
     price: 1200,
     unit: 'üveg',
-    emoji: '🍯',
+    icon: ShoppingBasket,
+    color: 'bg-purple-100 text-purple-600',
     status: 'active',
     views: 156,
     interested: 23,
@@ -56,7 +77,8 @@ const mockProducts = [
     name: 'Bio sajt',
     price: 2800,
     unit: 'kg',
-    emoji: '🧀',
+    icon: ShieldCheck,
+    color: 'bg-yellow-100 text-yellow-600',
     status: 'active',
     views: 89,
     interested: 12,
@@ -69,7 +91,8 @@ const mockProducts = [
     name: 'Málna szörp',
     price: 900,
     unit: 'üveg',
-    emoji: '🧃',
+    icon: Leaf,
+    color: 'bg-red-100 text-red-600',
     status: 'sold_out',
     views: 234,
     interested: 45,
@@ -77,14 +100,13 @@ const mockProducts = [
     createdAt: '2024-06-01',
     urgent: false
   }
-]
+];
 
 // Mock értékelések
 const mockReviews = [
   {
     id: '1',
     reviewer: 'Nagy Péter',
-    avatar: '👨',
     rating: 5,
     date: '2024-06-18',
     product: 'Házi meggylekvár',
@@ -94,1255 +116,346 @@ const mockReviews = [
   {
     id: '2',
     reviewer: 'Kovács Anna',
-    avatar: '👩',
     rating: 5,
     date: '2024-06-15',
     product: 'Bio sajt',
     comment: 'Nagyon finom sajt, természetes ízekkel. Ajánlom mindenkinek!',
     verified: true
   }
-]
+];
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<'products' | 'reviews' | 'stats' | 'settings'>('products')
-  const [productFilter, setProductFilter] = useState<'all' | 'active' | 'sold_out'>('all')
+  const [activeTab, setActiveTab] = useState<'products' | 'reviews' | 'stats' | 'settings'>('products');
+  const [productFilter, setProductFilter] = useState<'all' | 'active' | 'sold_out'>('all');
 
   const filteredProducts = mockProducts.filter(product => {
-    if (productFilter === 'all') return true
-    return product.status === productFilter
-  })
+    if (productFilter === 'all') return true;
+    return product.status === productFilter;
+  });
 
   const canAddProduct = () => {
-    if (mockUser.type === 'producer') return true
+    if (mockUser.type === 'producer') return true;
     if (mockUser.type === 'casual_seller') {
       return mockUser.limits.monthlyAds < mockUser.limits.maxMonthlyAds &&
-             mockUser.limits.activeAds < mockUser.limits.maxActiveAds
+        mockUser.limits.activeAds < mockUser.limits.maxActiveAds;
     }
-    return false
-  }
+    return false;
+  };
 
   const getRemainingLimits = () => {
-    if (mockUser.type === 'producer') return null
-    
+    if (mockUser.type === 'producer') return null;
     return {
       monthlyAds: mockUser.limits.maxMonthlyAds - mockUser.limits.monthlyAds,
       monthlyPushes: mockUser.limits.maxMonthlyPushes - mockUser.limits.monthlyPushes,
       activeAds: mockUser.limits.maxActiveAds - mockUser.limits.activeAds
-    }
-  }
+    };
+  };
 
-  const remainingLimits = getRemainingLimits()
+  const remainingLimits = getRemainingLimits();
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #fefcf3 50%, #fff7ed 100%)'
-    }}>
-      
-      {/* Header - Mobilbarát */}
-      <div style={{
-        background: 'white',
-        borderBottom: '1px solid #e5e7eb',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '16px 16px' // Csökkentett padding mobilra
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column', // Mobil: oszloposan
-            gap: '12px'
-          }}>
+    <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+
+      {/* HEADER */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 style={{
-                fontSize: '24px', // Kisebb címméret mobilra
-                fontWeight: '700',
-                color: '#1f2937',
-                margin: '0 0 8px 0'
-              }}>
-                Profil
+              <h1 className="text-2xl font-bold text-[#1F2937] flex items-center gap-2">
+                Profilom
               </h1>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>
-                <Link href="/" style={{ color: '#16a34a', textDecoration: 'none' }}>Főoldal</Link>
-                <span>→</span>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <Link href="/" className="text-[#1B4332] hover:underline">Főoldal</Link>
+                <span>/</span>
                 <span>Profil</span>
               </div>
             </div>
-            
+
             {canAddProduct() && (
               <Link
                 href="/add-product"
-                style={{
-                  background: '#16a34a',
-                  color: 'white',
-                  padding: '12px 24px',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center', // Centráljuk mobilon
-                  gap: '8px',
-                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)',
-                  alignSelf: 'stretch' // Teljes szélességben mobilon
-                }}
+                className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
               >
-                ➕ Új termék
+                <Plus size={20} />
+                Új termék
               </Link>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '16px' // Egységes padding
-      }}>
-        
-        {/* RESPONSIVE GRID - Ez a kulcs! */}
-       <div className="grid gap-6 grid-cols-1 lg:grid-cols-[350px_1fr]">
-          
-          {/* Bal oldal - profil info - Most felül lesz mobilon */}
-          <div style={{
-            // Desktop-en bal oldali oszlop, mobilon felül
-            order: '1'
-          }}>
-            
-            {/* Profil kártya - Mobiloptimalizált */}
-            <div style={{
-              background: 'white',
-              borderRadius: '20px',
-              padding: '24px', // Kisebb padding mobilon
-              marginBottom: '20px',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-              textAlign: 'center'
-            }}>
-              
-              {/* Avatar és alapadatok - Kisebb mobilon */}
-              <div style={{
-                width: '80px', // Kisebb avatar mobilon
-                height: '80px',
-                background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '40px', // Kisebb emoji
-                margin: '0 auto 16px'
-              }}>
-                {mockUser.avatar}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid gap-8 grid-cols-1 lg:grid-cols-[350px_1fr]">
+
+          {/* LEFT COLUMN - PROFILE INFO */}
+          <div className="space-y-6">
+
+            {/* Profile Card */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+              <div className="w-24 h-24 bg-[#E8ECE9] rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
+                <User size={40} className="text-[#1B4332]" />
               </div>
-              
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexWrap: 'wrap', // Tördelés mobilon
-                gap: '8px',
-                marginBottom: '8px'
-              }}>
-                <h2 style={{
-                  fontSize: '20px', // Kisebb cím mobilon
-                  fontWeight: '700',
-                  color: '#1f2937',
-                  margin: 0
-                }}>
-                  {mockUser.name}
-                </h2>
+
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <h2 className="text-xl font-bold text-[#1F2937]">{mockUser.name}</h2>
                 {mockUser.verified && (
-                  <span style={{
-                    background: '#16a34a',
-                    color: 'white',
-                    fontSize: '12px',
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    fontWeight: '600'
-                  }}>
-                    ✓ Ellenőrzött
+                  <span className="bg-[#1B4332] text-white text-xs px-2 py-1 rounded-md font-bold flex items-center gap-1">
+                    <ShieldCheck size={12} />
+                    Ellenőrzött
                   </span>
                 )}
               </div>
-              
-              <div style={{
-                fontSize: '14px',
-                color: '#6b7280',
-                marginBottom: '16px'
-              }}>
-                📍 {mockUser.location}
+
+              <div className="text-gray-500 text-sm mb-6 flex items-center justify-center gap-1">
+                <MapPin size={14} />
+                {mockUser.location}
               </div>
-              
-              {/* Statisztikák - Responsive grid */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)', // 3 oszlop
-                gap: '12px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    fontSize: '18px', // Kisebb szám mobilon
-                    fontWeight: '700',
-                    color: '#16a34a'
-                  }}>
-                    {mockUser.rating}
-                  </div>
-                  <div style={{
-                    fontSize: '11px', // Még kisebb szöveg
-                    color: '#6b7280'
-                  }}>
-                    ⭐ Értékelés
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-2 mb-6 border-y border-gray-100 py-4">
+                <div>
+                  <div className="text-lg font-bold text-[#1B4332]">{mockUser.rating}</div>
+                  <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
+                    <Star size={10} /> Értékelés
                   </div>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#16a34a'
-                  }}>
-                    {mockUser.totalSales}
-                  </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#6b7280'
-                  }}>
-                    📦 Eladás
+                <div>
+                  <div className="text-lg font-bold text-[#1B4332]">{mockUser.totalSales}</div>
+                  <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
+                    <Package size={10} /> Eladás
                   </div>
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#16a34a'
-                  }}>
-                    {mockUser.memberSince}
-                  </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#6b7280'
-                  }}>
-                    📅 Tag óta
+                <div>
+                  <div className="text-lg font-bold text-[#1B4332]">{mockUser.memberSince}</div>
+                  <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
+                    <Calendar size={10} /> Tag óta
                   </div>
                 </div>
               </div>
-              
-              <p style={{
-                fontSize: '13px', // Kisebb szöveg mobilon
-                color: '#4b5563',
-                lineHeight: '1.4',
-                margin: '0 0 16px 0'
-              }}>
+
+              <p className="text-sm text-gray-600 leading-relaxed mb-6">
                 {mockUser.bio}
               </p>
-              
-              {/* Gombok - Egymás alatt mobilon */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px'
-              }}>
-                <button style={{
-                  background: '#16a34a',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '10px 16px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
-                  💬 Üzenet küldése
+
+              <div className="flex flex-col gap-3">
+                <button className="w-full bg-[#1B4332] text-white py-2.5 rounded-xl font-bold hover:bg-[#2D6A4F] transition flex items-center justify-center gap-2">
+                  <MessageCircle size={18} />
+                  Üzenet küldése
                 </button>
-                <button style={{
-                  background: 'white',
-                  color: '#16a34a',
-                  border: '2px solid #16a34a',
-                  borderRadius: '8px',
-                  padding: '10px 16px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}>
-                  📞 {mockUser.phone}
+                <button className="w-full bg-white border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-bold hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                  <Phone size={18} />
+                  {mockUser.phone}
                 </button>
               </div>
             </div>
-            
-            {/* NAV szabályok - Mobilon is jól látható */}
+
+            {/* NAV Rules (Casual Seller) */}
             {mockUser.type === 'casual_seller' && remainingLimits && (
-              <div style={{
-                background: '#fef3c7',
-                borderRadius: '16px',
-                padding: '16px', // Kisebb padding
-                marginBottom: '20px',
-                border: '2px solid #fbbf24'
-              }}>
-                <h3 style={{
-                  fontSize: '14px', // Kisebb cím
-                  fontWeight: '600',
-                  color: '#92400e',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  ⚖️ NAV szabályok
+              <div className="bg-orange-50 rounded-2xl p-6 border border-orange-200">
+                <h3 className="text-sm font-bold text-orange-900 mb-4 flex items-center gap-2">
+                  <AlertTriangle size={16} />
+                  NAV szabályok
                 </h3>
-                
-                <div style={{
-                  fontSize: '12px', // Kisebb szöveg
-                  color: '#92400e',
-                  lineHeight: '1.4'
-                }}>
-                  <div style={{ marginBottom: '6px' }}>
-                    📅 <strong>Havi hirdetések:</strong> {mockUser.limits.monthlyAds}/{mockUser.limits.maxMonthlyAds} 
-                    ({remainingLimits.monthlyAds} maradt)
+
+                <div className="space-y-3 text-xs text-orange-800">
+                  <div className="flex justify-between">
+                    <span>Havi hirdetések:</span>
+                    <span className="font-bold">{mockUser.limits.monthlyAds}/{mockUser.limits.maxMonthlyAds}</span>
                   </div>
-                  <div style={{ marginBottom: '6px' }}>
-                    📢 <strong>Havi push értesítések:</strong> {mockUser.limits.monthlyPushes}/{mockUser.limits.maxMonthlyPushes} 
-                    ({remainingLimits.monthlyPushes} maradt)
+                  <div className="w-full bg-orange-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-orange-500 h-full" style={{ width: `${(mockUser.limits.monthlyAds / mockUser.limits.maxMonthlyAds) * 100}%` }}></div>
                   </div>
-                  <div>
-                    📋 <strong>Aktív hirdetések:</strong> {mockUser.limits.activeAds}/{mockUser.limits.maxActiveAds} 
-                    ({remainingLimits.activeAds} maradt)
+
+                  <div className="flex justify-between pt-2">
+                    <span>Aktív hirdetések:</span>
+                    <span className="font-bold">{mockUser.limits.activeAds}/{mockUser.limits.maxActiveAds}</span>
+                  </div>
+                  <div className="w-full bg-orange-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-orange-500 h-full" style={{ width: `${(mockUser.limits.activeAds / mockUser.limits.maxActiveAds) * 100}%` }}></div>
                   </div>
                 </div>
-                
+
                 {(remainingLimits.monthlyAds === 0 || remainingLimits.activeAds === 0) && (
-                  <div style={{
-                    marginTop: '12px',
-                    padding: '8px',
-                    background: '#fee2e2',
-                    borderRadius: '8px',
-                    border: '1px solid #fecaca'
-                  }}>
-                    <p style={{
-                      fontSize: '11px',
-                      color: '#dc2626',
-                      margin: 0,
-                      lineHeight: '1.3'
-                    }}>
-                      ⚠️ Elérted a havi limitet. További hirdetésekhez regisztrálj őstermelőként vagy vállalkozóként.
-                    </p>
+                  <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-100 text-xs text-red-600 leading-relaxed">
+                    ⚠️ Elérted a havi limitet. További hirdetésekhez regisztrálj őstermelőként.
                   </div>
                 )}
               </div>
             )}
-            
-            {/* Gyors statisztikák - Kompaktabb mobilon */}
-            <div style={{
-              background: 'white',
-              borderRadius: '16px',
-              padding: '16px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-            }}>
-              <h3 style={{
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#1f2937',
-                marginBottom: '12px'
-              }}>
-                📊 Statisztikák
+
+            {/* Detailed Stats */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-bold text-[#1F2937] mb-4 flex items-center gap-2">
+                <TrendingUp size={16} className="text-[#1B4332]" />
+                Részletes statisztikák
               </h3>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                fontSize: '12px'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ color: '#6b7280' }}>💰 Összes bevétel:</span>
-                  <span style={{ fontWeight: '600', color: '#16a34a' }}>
-                    {mockUser.stats.totalEarnings.toLocaleString()} Ft
-                  </span>
+
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Összes bevétel:</span>
+                  <span className="font-bold text-[#1B4332]">{mockUser.stats.totalEarnings.toLocaleString()} Ft</span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ color: '#6b7280' }}>⏱️ Átlag válaszidő:</span>
-                  <span style={{ fontWeight: '600' }}>{mockUser.stats.avgResponseTime}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Clock size={14} /> Átlag válaszidő:</span>
+                  <span className="font-bold">{mockUser.stats.avgResponseTime}</span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ color: '#6b7280' }}>🚚 Szállítás értékelés:</span>
-                  <span style={{ fontWeight: '600' }}>{mockUser.stats.deliveryRating} ⭐</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Truck size={14} /> Szállítás:</span>
+                  <span className="font-bold">{mockUser.stats.deliveryRating} ⭐</span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ color: '#6b7280' }}>✨ Minőség értékelés:</span>
-                  <span style={{ fontWeight: '600' }}>{mockUser.stats.qualityRating} ⭐</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Star size={14} /> Minőség:</span>
+                  <span className="font-bold">{mockUser.stats.qualityRating} ⭐</span>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Jobb oldal - tartalom - Mobilon alul */}
-          <div style={{
-            order: '2'
-          }}>
-            
-            {/* Tabok - Responsive scrollozható mobilon */}
-            <div style={{
-              background: 'white',
-              borderRadius: '20px',
-              padding: '8px',
-              marginBottom: '20px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-              overflowX: 'auto' // Scroll mobilon ha szükséges
-            }}>
-              <div style={{
-                display: 'flex',
-                gap: '6px',
-                minWidth: 'max-content' // Prevents shrinking
-              }}>
-                {[
-                  { key: 'products', label: '📦 Termékeim', count: mockProducts.length },
-                  { key: 'reviews', label: '💬 Értékelések', count: mockReviews.length },
-                  { key: 'stats', label: '📊 Statisztikák', count: null },
-                  { key: 'settings', label: '⚙️ Beállítások', count: null }
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key as any)}
-                    style={{
-                      flex: '1',
-                      minWidth: 'max-content', // Prevents shrinking
-                      background: activeTab === tab.key ? '#16a34a' : 'transparent',
-                      color: activeTab === tab.key ? 'white' : '#6b7280',
-                      border: 'none',
-                      borderRadius: '12px',
-                      padding: '10px 12px', // Kisebb padding mobilon
-                      fontSize: '13px', // Kisebb szöveg
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '4px',
-                      whiteSpace: 'nowrap' // Nincs tördelés
-                    }}
-                  >
-                    {tab.label}
-                    {tab.count !== null && (
-                      <span style={{
-                        background: activeTab === tab.key ? 'rgba(255,255,255,0.2)' : '#e5e7eb',
-                        color: activeTab === tab.key ? 'white' : '#6b7280',
-                        borderRadius: '12px',
-                        padding: '2px 6px',
-                        fontSize: '11px'
-                      }}>
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Termékek tab - Mobilbarát kártya nézet */}
-            {activeTab === 'products' && (
-              <div style={{
-                background: 'white',
-                borderRadius: '20px',
-                padding: '20px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
-              }}>
-                
-                {/* Termék szűrők - Mobilbarát */}
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                  marginBottom: '20px'
-                }}>
-                  {/* Szűrők - Responsive */}
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap', // Tördelés mobilon
-                    gap: '8px'
-                  }}>
-                    {[
-                      { key: 'all', label: 'Összes', count: mockProducts.length },
-                      { key: 'active', label: 'Aktív', count: mockProducts.filter(p => p.status === 'active').length },
-                      { key: 'sold_out', label: 'Elfogyott', count: mockProducts.filter(p => p.status === 'sold_out').length }
-                    ].map((filter) => (
-                      <button
-                        key={filter.key}
-                        onClick={() => setProductFilter(filter.key as any)}
-                        style={{
-                          background: productFilter === filter.key ? '#dcfce7' : '#f8fafc',
-                          color: productFilter === filter.key ? '#15803d' : '#6b7280',
-                          border: '2px solid',
-                          borderColor: productFilter === filter.key ? '#16a34a' : '#e5e7eb',
-                          borderRadius: '8px',
-                          padding: '6px 12px', // Kisebb padding
-                          fontSize: '12px', // Kisebb szöveg
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px'
-                        }}
-                      >
-                        {filter.label}
-                        <span style={{
-                          background: productFilter === filter.key ? '#16a34a' : '#e5e7eb',
-                          color: productFilter === filter.key ? 'white' : '#6b7280',
-                          borderRadius: '12px',
-                          padding: '2px 6px',
-                          fontSize: '10px'
-                        }}>
-                          {filter.count}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {/* Új termék gomb - Mobilon teljes szélességben */}
-                  {canAddProduct() && (
-                    <Link
-                      href="/add-product"
-                      style={{
-                        background: '#16a34a',
-                        color: 'white',
-                        padding: '10px 16px',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        textDecoration: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        alignSelf: 'stretch' // Teljes szélességben
-                      }}
-                    >
-                      ➕ Új termék
-                    </Link>
+
+          {/* RIGHT COLUMN - CONTENT */}
+          <div>
+
+            {/* Tabs */}
+            <div className="bg-white rounded-2xl p-2 mb-6 shadow-sm border border-gray-100 flex overflow-x-auto">
+              {[
+                { key: 'products', label: 'Termékeim', icon: Package, count: mockProducts.length },
+                { key: 'reviews', label: 'Értékelések', icon: MessageCircle, count: mockReviews.length },
+                { key: 'stats', label: 'Statisztikák', icon: TrendingUp, count: null },
+                { key: 'settings', label: 'Beállítások', icon: Settings, count: null }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === tab.key
+                      ? 'bg-[#1B4332] text-white shadow-md'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B4332]'
+                    }`}
+                >
+                  <tab.icon size={16} />
+                  {tab.label}
+                  {tab.count !== null && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-md ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                      {tab.count}
+                    </span>
                   )}
+                </button>
+              ))}
+            </div>
+
+            {/* PRODUCTS TAB */}
+            {activeTab === 'products' && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+
+                {/* Filters */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {[
+                    { key: 'all', label: 'Összes' },
+                    { key: 'active', label: 'Aktív' },
+                    { key: 'sold_out', label: 'Elfogyott' }
+                  ].map((filter) => (
+                    <button
+                      key={filter.key}
+                      onClick={() => setProductFilter(filter.key as any)}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${productFilter === filter.key
+                          ? 'bg-[#E8ECE9] text-[#1B4332]'
+                          : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
                 </div>
-                
-                {/* Termékek listája - KÁRTYA NÉZET MOBILON */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr', // Mobil: 1 oszlop
-                  gap: '16px'
-                }}>
+
+                {/* Product Grid */}
+                <div className="grid grid-cols-1 gap-4">
                   {filteredProducts.map((product) => (
-                    <div key={product.id} style={{
-                      display: 'flex',
-                      flexDirection: 'column', // Mobilon oszloposan
-                      gap: '16px',
-                      padding: '16px',
-                      border: '2px solid #f3f4f6',
-                      borderRadius: '16px',
-                      transition: 'all 0.2s ease',
-                      position: 'relative'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.borderColor = '#16a34a'
-                      e.currentTarget.style.background = '#f8fafc'
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.borderColor = '#f3f4f6'
-                      e.currentTarget.style.background = 'white'
-                    }}>
-                      
-                      {/* Felső sor: emoji + info + státusz */}
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '12px'
-                      }}>
-                        {/* Termék emoji */}
-                        <div style={{
-                          width: '60px',
-                          height: '60px',
-                          background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-                          borderRadius: '12px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '30px',
-                          flexShrink: 0
-                        }}>
-                          {product.emoji}
-                        </div>
-                        
-                        {/* Termék információ */}
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            color: '#1f2937',
-                            marginBottom: '4px'
-                          }}>
-                            {product.name}
-                          </h4>
-                          
-                          <div style={{
-                            fontSize: '18px',
-                            fontWeight: '700',
-                            color: '#16a34a',
-                            marginBottom: '8px'
-                          }}>
-                            {product.price} Ft/{product.unit}
+                    <div key={product.id} className="flex flex-col md:flex-row gap-4 p-4 border border-gray-100 rounded-xl hover:border-[#1B4332] transition-colors group">
+
+                      {/* Icon */}
+                      <div className={`w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 ${product.color}`}>
+                        <product.icon size={32} />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-bold text-[#1F2937] text-lg mb-1">{product.name}</h4>
+                            <div className="text-[#1B4332] font-bold mb-2">
+                              {product.price} Ft/{product.unit}
+                            </div>
                           </div>
-                          
-                          {/* Státusz címkék */}
-                          <div style={{
-                            display: 'flex',
-                            gap: '4px',
-                            flexWrap: 'wrap'
-                          }}>
+                          <div className="flex flex-col items-end gap-2">
                             {product.urgent && (
-                              <span style={{
-                                background: '#fbbf24',
-                                color: 'white',
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                fontSize: '10px',
-                                fontWeight: '600'
-                              }}>
-                                🔥 SÜRGŐS
+                              <span className="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded-md">
+                                SÜRGŐS
                               </span>
                             )}
-                            <span style={{
-                              background: product.status === 'active' ? '#16a34a' : product.status === 'sold_out' ? '#dc2626' : '#6b7280',
-                              color: 'white',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              fontSize: '10px',
-                              fontWeight: '600'
-                            }}>
-                              {product.status === 'active' ? 'AKTÍV' : product.status === 'sold_out' ? 'ELFOGYOTT' : 'INAKTÍV'}
+                            <span className={`text-xs font-bold px-2 py-1 rounded-md ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                              }`}>
+                              {product.status === 'active' ? 'AKTÍV' : 'ELFOGYOTT'}
                             </span>
                           </div>
                         </div>
+
+                        <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
+                          <span className="flex items-center gap-1"><Eye size={12} /> {product.views} megtekintés</span>
+                          <span className="flex items-center gap-1"><Heart size={12} /> {product.interested} érdeklődő</span>
+                          <span className="flex items-center gap-1"><Package size={12} /> {product.sold} eladva</span>
+                        </div>
                       </div>
-                      
-                      {/* Statisztikák - Responsive grid */}
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(2, 1fr)', // 2 oszlop mobilon
-                        gap: '8px',
-                        fontSize: '12px',
-                        color: '#6b7280'
-                      }}>
-                        <div>👀 {product.views} megtekintés</div>
-                        <div>❤️ {product.interested} érdeklődő</div>
-                        <div>📦 {product.sold} eladva</div>
-                        <div>📅 {product.createdAt}</div>
-                      </div>
-                      
-                      {/* Műveletek - Mobilbarát gombok */}
-                      <div style={{
-                        display: 'flex',
-                        gap: '8px',
-                        flexWrap: 'wrap'
-                      }}>
-                        <Link
-                          href={`/product/${product.id}`}
-                          style={{
-                            background: '#f3f4f6',
-                            color: '#374151',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            textDecoration: 'none',
-                            flex: '1',
-                            textAlign: 'center',
-                            minWidth: '80px'
-                          }}
-                        >
-                          👁️ Megtekintés
-                        </Link>
-                        <button style={{
-                          background: '#16a34a',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 12px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          cursor: 'pointer',
-                          flex: '1',
-                          minWidth: '80px'
-                        }}>
-                          ✏️ Szerkesztés
+
+                      {/* Actions */}
+                      <div className="flex md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-4">
+                        <button className="flex-1 md:flex-none px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                          <Edit size={14} /> Szerkesztés
                         </button>
-                        {product.status === 'active' && (
-                          <button style={{
-                            background: '#dc2626',
-                            color: 'white',
-                            border: 'none',
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            flex: '1',
-                            minWidth: '60px'
-                          }}>
-                            🗑️ Törlés
-                          </button>
-                        )}
+                        <button className="flex-1 md:flex-none px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm font-bold hover:bg-[#2D6A4F] transition flex items-center justify-center gap-2">
+                          <Eye size={14} /> Megtekintés
+                        </button>
                       </div>
                     </div>
                   ))}
-                  
-                  {filteredProducts.length === 0 && (
-                    <div style={{
-                      textAlign: 'center',
-                      padding: '40px 20px',
-                      color: '#6b7280'
-                    }}>
-                      <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-                      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
-                        Nincs termék
-                      </h3>
-                      <p style={{ fontSize: '14px', marginBottom: '16px' }}>Még nem adtál fel terméket ebben a kategóriában.</p>
-                      {canAddProduct() && (
-                        <Link
-                          href="/add-product"
-                          style={{
-                            background: '#16a34a',
-                            color: 'white',
-                            padding: '12px 24px',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            textDecoration: 'none',
-                            display: 'inline-block'
-                          }}
-                        >
-                          ➕ Első termék hozzáadása
-                        </Link>
-                      )}
-                    </div>
-                  )}
                 </div>
               </div>
             )}
-            
-            {/* Értékelések tab - Mobiloptimalizált */}
+
+            {/* REVIEWS TAB */}
             {activeTab === 'reviews' && (
-              <div style={{
-                background: 'white',
-                borderRadius: '20px',
-                padding: '20px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
-              }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  marginBottom: '20px'
-                }}>
-                  Értékelések ({mockReviews.length})
-                </h3>
-                
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px'
-                }}>
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="space-y-6">
                   {mockReviews.map((review) => (
-                    <div key={review.id} style={{
-                      padding: '16px',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '12px'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        flexDirection: 'column', // Mobilon oszloposan
-                        gap: '12px',
-                        marginBottom: '12px'
-                      }}>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px'
-                        }}>
-                          <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '20px'
-                          }}>
-                            {review.avatar}
+                    <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <User size={20} className="text-gray-500" />
                           </div>
-                          
-                          <div style={{ flex: 1 }}>
-                            <div style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              flexWrap: 'wrap',
-                              gap: '6px',
-                              marginBottom: '4px'
-                            }}>
-                              <span style={{
-                                fontSize: '15px',
-                                fontWeight: '600',
-                                color: '#1f2937'
-                              }}>
-                                {review.reviewer}
-                              </span>
-                              {review.verified && (
-                                <span style={{
-                                  background: '#16a34a',
-                                  color: 'white',
-                                  fontSize: '10px',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  fontWeight: '600'
-                                }}>
-                                  ✓ Ellenőrzött
-                                </span>
-                              )}
-                            </div>
-                            
-                            <div style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              flexWrap: 'wrap',
-                              gap: '8px'
-                            }}>
-                              <div style={{ display: 'flex' }}>
-                                {[1,2,3,4,5].map(star => (
-                                  <span key={star} style={{
-                                    color: star <= review.rating ? '#fbbf24' : '#e5e7eb',
-                                    fontSize: '14px'
-                                  }}>
-                                    ⭐
-                                  </span>
-                                ))}
-                              </div>
-                              <span style={{
-                                fontSize: '12px',
-                                color: '#6b7280'
-                              }}>
-                                {review.date}
-                              </span>
-                            </div>
+                          <div>
+                            <div className="font-bold text-[#1F2937]">{review.reviewer}</div>
+                            <div className="text-xs text-gray-500">{review.date}</div>
                           </div>
                         </div>
-                        
-                        <span style={{
-                          background: '#f0fdf4',
-                          color: '#16a34a',
-                          padding: '4px 8px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          alignSelf: 'flex-start'
-                        }}>
-                          {review.product}
-                        </span>
+                        <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
+                          <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                          <span className="font-bold text-yellow-700">{review.rating}</span>
+                        </div>
                       </div>
-                      
-                      <p style={{
-                        fontSize: '14px',
-                        color: '#4b5563',
-                        lineHeight: '1.5',
-                        margin: 0
-                      }}>
-                        {review.comment}
+                      <div className="text-sm font-medium text-[#1B4332] mb-2">
+                        Termék: {review.product}
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        "{review.comment}"
                       </p>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
-            {/* Statisztikák tab - Mobiloptimalizált */}
-            {activeTab === 'stats' && (
-              <div style={{
-                background: 'white',
-                borderRadius: '20px',
-                padding: '20px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
-              }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  marginBottom: '20px'
-                }}>
-                  Részletes statisztikák
-                </h3>
-                
-                {/* Responsive statisztika kártyák */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', // Responsive grid
-                  gap: '16px',
-                  marginBottom: '24px'
-                }}>
-                  {[
-                    { title: 'Havi bevétel', value: '45,000 Ft', change: '+12%', color: '#16a34a', icon: '💰' },
-                    { title: 'Új vásárlók', value: '23', change: '+8%', color: '#3b82f6', icon: '👥' },
-                    { title: 'Átlag rendelésérték', value: '2,800 Ft', change: '+5%', color: '#8b5cf6', icon: '🛒' },
-                    { title: 'Visszatérő vásárlók', value: '67%', change: '+15%', color: '#f59e0b', icon: '🔄' }
-                  ].map((stat, index) => (
-                    <div key={index} style={{
-                      background: '#f8fafc',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      border: `2px solid ${stat.color}20`
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '8px'
-                      }}>
-                        <span style={{ fontSize: '20px' }}>{stat.icon}</span>
-                        <span style={{
-                          background: stat.color,
-                          color: 'white',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          fontSize: '10px',
-                          fontWeight: '600'
-                        }}>
-                          {stat.change}
-                        </span>
-                      </div>
-                      <div style={{
-                        fontSize: '20px',
-                        fontWeight: '700',
-                        color: stat.color,
-                        marginBottom: '4px'
-                      }}>
-                        {stat.value}
-                      </div>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#6b7280',
-                        fontWeight: '600'
-                      }}>
-                        {stat.title}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div style={{
-                  background: '#f8fafc',
-                  borderRadius: '12px',
-                  padding: '16px'
-                }}>
-                  <h4 style={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: '#1f2937',
-                    marginBottom: '12px'
-                  }}>
-                    📈 Havi teljesítmény
-                  </h4>
-                  <p style={{
-                    fontSize: '13px',
-                    color: '#6b7280',
-                    margin: 0,
-                    lineHeight: '1.4'
-                  }}>
-                    Itt jelennek meg a részletes grafikonok és elemzések a forgalmadról.
-                  </p>
-                </div>
-              </div>
-            )}
-            
-            {/* Beállítások tab - Mobiloptimalizált */}
-            {activeTab === 'settings' && (
-              <div style={{
-                background: 'white',
-                borderRadius: '20px',
-                padding: '20px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)'
-              }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  marginBottom: '20px'
-                }}>
-                  Beállítások
-                </h3>
-                
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '20px'
-                }}>
-                  
-                  {/* Profil beállítások */}
-                  <div style={{
-                    padding: '16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px'
-                  }}>
-                    <h4 style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '16px'
-                    }}>
-                      👤 Profil információk
-                    </h4>
-                    
-                    {/* Responsive form layout */}
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr', // Mobil: 1 oszlop
-                      gap: '12px'
-                    }}>
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          color: '#374151',
-                          marginBottom: '6px'
-                        }}>
-                          Név
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={mockUser.name}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          color: '#374151',
-                          marginBottom: '6px'
-                        }}>
-                          Telefon
-                        </label>
-                        <input
-                          type="text"
-                          defaultValue={mockUser.phone}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          color: '#374151',
-                          marginBottom: '6px'
-                        }}>
-                          Bemutatkozás
-                        </label>
-                        <textarea
-                          defaultValue={mockUser.bio}
-                          rows={3}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            resize: 'vertical',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                      </div>
-                    </div>
-                    
-                    <button style={{
-                      background: '#16a34a',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '10px 16px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      marginTop: '16px',
-                      width: '100%' // Teljes szélességben mobilon
-                    }}>
-                      Mentés
-                    </button>
-                  </div>
-                  
-                  {/* Értesítési beállítások */}
-                  <div style={{
-                    padding: '16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px'
-                  }}>
-                    <h4 style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '16px'
-                    }}>
-                      🔔 Értesítések
-                    </h4>
-                    
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '12px'
-                    }}>
-                      {[
-                        { label: 'Email értesítések új üzenetekről', checked: true },
-                        { label: 'Push értesítések mobil alkalmazásban', checked: false },
-                        { label: 'Heti összesítő email', checked: true },
-                        { label: 'Értékelési emlékeztetők', checked: false }
-                      ].map((setting, index) => (
-                        <label key={index} style={{
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '12px',
-                          cursor: 'pointer'
-                        }}>
-                          <input
-                            type="checkbox"
-                            defaultChecked={setting.checked}
-                            style={{ accentColor: '#16a34a', marginTop: '2px' }}
-                          />
-                          <span style={{ fontSize: '13px', lineHeight: '1.4' }}>{setting.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Adatvédelem */}
-                  <div style={{
-                    padding: '16px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px'
-                  }}>
-                    <h4 style={{
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '16px'
-                    }}>
-                      🔒 Adatvédelem és biztonság
-                    </h4>
-                    
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px'
-                    }}>
-                      <button style={{
-                        background: 'white',
-                        color: '#374151',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        padding: '10px 16px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        width: '100%'
-                      }}>
-                        🔑 Jelszó megváltoztatása
-                      </button>
-                      <button style={{
-                        background: 'white',
-                        color: '#374151',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        padding: '10px 16px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        width: '100%'
-                      }}>
-                        📄 Adatletöltés (GDPR)
-                      </button>
-                      <button style={{
-                        background: '#dc2626',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '10px 16px',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        width: '100%'
-                      }}>
-                        🗑️ Fiók törlése
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
-      </div>
-      
-      {/* CSS for responsive grid */}
-      <style jsx>{`
-        .responsive-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 24px;
-        }
-        
-        @media (min-width: 1024px) {
-          .responsive-grid {
-            grid-template-columns: 350px 1fr;
-          }
-        }
-      `}</style>
+      </main>
     </div>
-  )
+  );
 }

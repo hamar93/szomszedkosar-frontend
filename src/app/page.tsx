@@ -177,14 +177,16 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', loc: 'Eger', img: '🍒' },
-              { name: 'Házi Eperlekvár', price: '1 500 Ft/üveg', seller: 'Nagyi Kamrája', loc: 'Debrecen', img: '🍓' },
-              { name: 'Kézműves Sajt', price: '3 200 Ft/kg', seller: 'Bükki Sajtműhely', loc: 'Szilvásvárad', img: '🧀' },
-              { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabó Tanya', loc: 'Gödöllő', img: '🥚' }
+              { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', loc: 'Eger', icon: Leaf, color: 'bg-red-100 text-red-600' },
+              { name: 'Házi Eperlekvár', price: '1 500 Ft/üveg', seller: 'Nagyi Kamrája', loc: 'Debrecen', icon: ShoppingBasket, color: 'bg-pink-100 text-pink-600' },
+              { name: 'Kézműves Sajt', price: '3 200 Ft/kg', seller: 'Bükki Sajtműhely', loc: 'Szilvásvárad', icon: ShieldCheck, color: 'bg-yellow-100 text-yellow-600' },
+              { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabó Tanya', loc: 'Gödöllő', icon: Users, color: 'bg-orange-100 text-orange-600' }
             ].map((item, idx) => (
               <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
-                <div className="h-48 bg-[#F9FAFB] flex items-center justify-center text-8xl group-hover:scale-105 transition-transform duration-500">
-                  {item.img}
+                <div className="h-48 bg-[#F9FAFB] flex items-center justify-center group-hover:bg-opacity-50 transition-colors duration-500">
+                  <div className={`w-24 h-24 ${item.color} rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                    <item.icon size={48} />
+                  </div>
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">
