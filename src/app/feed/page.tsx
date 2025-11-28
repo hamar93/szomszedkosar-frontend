@@ -173,7 +173,7 @@ export default function FeedPage() {
                 <article className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
                   <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                     ) : (
                       <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
                     )}
@@ -186,6 +186,14 @@ export default function FeedPage() {
                           Országos szállítás
                         </div>
                       )}
+
+                      {/* Discount Badge */}
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </div>
+                      )}
+
                       <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
                         {product.category}
                       </div>

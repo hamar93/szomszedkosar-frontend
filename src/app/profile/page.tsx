@@ -391,9 +391,33 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex-grow">
                           <h3 className="font-bold text-[#1F2937]">{product.name}</h3>
-                          <p className="text-[#1B4332] font-bold text-sm">{product.price} Ft / {product.unit}</p>
+                          <p className="text-[#1B4332] font-bold text-sm">
+                            {product.price} Ft / {product.unit}
+                            {product.originalPrice && (
+                              <span className="text-gray-400 text-xs line-through ml-2">{product.originalPrice} Ft</span>
+                            )}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                          <button
+                            onClick={() => {
+                              const salePrice = prompt('Add meg az akciós árat (Ft):', product.price);
+                              if (salePrice && !isNaN(Number(salePrice)) && Number(salePrice) < product.price) {
+                                api.put(`/api/products/${product._id}/sale`, { salePrice: Number(salePrice) })
+                                  .then(() => {
+                                    alert('Sikeres leértékelés!');
+                                    fetchUserProducts();
+                                  })
+                                  .catch(err => console.error(err));
+                              } else if (salePrice) {
+                                alert('Az akciós árnak kisebbnek kell lennie az eredetinél!');
+                              }
+                            }}
+                            className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg"
+                            title="Leértékelés"
+                          >
+                            <Star size={18} />
+                          </button>
                           <button className="p-2 text-gray-400 hover:text-[#1B4332] hover:bg-gray-50 rounded-lg">
                             <Edit size={18} />
                           </button>
