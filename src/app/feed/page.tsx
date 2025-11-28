@@ -93,8 +93,15 @@ export default function FeedPage() {
             <Link href="/feed" className="text-lg font-bold text-[#1B4332]">Hírfolyam</Link>
             <Link href="/termelok" className="text-lg font-medium text-gray-700">Termelők</Link>
             <hr className="border-gray-100" />
-            <div className="text-sm text-gray-500">
-              {userLocation ? `📍 ${userLocation.city}` : 'Nincs hely megadva'}
+            <div className="text-sm text-gray-500 flex items-center gap-1">
+              {userLocation ? (
+                <>
+                  <MapPin size={14} />
+                  {userLocation.city}
+                </>
+              ) : (
+                'Nincs hely megadva'
+              )}
             </div>
           </nav>
         </div>
