@@ -2,32 +2,52 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import {
+  Home,
+  Search,
+  Newspaper,
+  Plus,
+  Briefcase,
+  Bell,
+  Star,
+  MessageCircle,
+  User,
+  LogIn,
+  UserPlus,
+  HelpCircle,
+  Settings,
+  Mail,
+  Info,
+  FileText,
+  Lock,
+  ShoppingBasket
+} from 'lucide-react'
 
 export default function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
   const menuItems = [
-    { href: '/', icon: '🏠', label: 'Főoldal' },
-    { href: '/search', icon: '🔍', label: 'Keresés' },
-    { href: '/feed', icon: '📢', label: 'Hírfolyam' },
-    { href: '/add-product', icon: '➕', label: 'Új termék' },
-    { href: '/upgrade', icon: '💼', label: 'Előfizetés' },
-    { href: '/notifications', icon: '🔔', label: 'Értesítések' },
-    { href: '/favorites', icon: '⭐', label: 'Kedvencek' },
-    { href: '/messages', icon: '💬', label: 'Üzenetek' },
-    { href: '/profile', icon: '👤', label: 'Profil' },
-    { href: '/login', icon: '👋', label: 'Bejelentkezés' },
-    { href: '/register', icon: '🚀', label: 'Regisztráció' }
+    { href: '/', icon: Home, label: 'Főoldal' },
+    { href: '/search', icon: Search, label: 'Keresés' },
+    { href: '/feed', icon: Newspaper, label: 'Hírfolyam' },
+    { href: '/add-product', icon: Plus, label: 'Új termék' },
+    { href: '/upgrade', icon: Briefcase, label: 'Előfizetés' },
+    { href: '/notifications', icon: Bell, label: 'Értesítések' },
+    { href: '/favorites', icon: Star, label: 'Kedvencek' },
+    { href: '/messages', icon: MessageCircle, label: 'Üzenetek' },
+    { href: '/profile', icon: User, label: 'Profil' },
+    { href: '/login', icon: LogIn, label: 'Bejelentkezés' },
+    { href: '/register', icon: UserPlus, label: 'Regisztráció' }
   ]
 
   const secondaryItems = [
-    { href: '/help', icon: '❓', label: 'Súgó' },
-    { href: '/settings', icon: '⚙️', label: 'Beállítások' },
-    { href: '/contact', icon: '📧', label: 'Kapcsolat' },
-    { href: '/about', icon: 'ℹ️', label: 'Rólunk' },
-    { href: '/terms', icon: '📄', label: 'ÁSZF' },
-    { href: '/privacy', icon: '🔒', label: 'Adatvédelem' }
+    { href: '/help', icon: HelpCircle, label: 'Súgó' },
+    { href: '/settings', icon: Settings, label: 'Beállítások' },
+    { href: '/contact', icon: Mail, label: 'Kapcsolat' },
+    { href: '/about', icon: Info, label: 'Rólunk' },
+    { href: '/terms', icon: FileText, label: 'ÁSZF' },
+    { href: '/privacy', icon: Lock, label: 'Adatvédelem' }
   ]
 
   const toggleMenu = () => {
@@ -125,7 +145,7 @@ export default function MobileNavigation() {
         transition: 'transform 0.3s ease',
         overflowY: 'auto'
       }}>
-        
+
         {/* Header */}
         <div style={{
           padding: '24px 20px',
@@ -146,9 +166,9 @@ export default function MobileNavigation() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '20px'
+              color: 'white'
             }}>
-              🛒
+              <ShoppingBasket size={24} />
             </div>
             <div>
               <h2 style={{
@@ -183,7 +203,7 @@ export default function MobileNavigation() {
           }}>
             Navigáció
           </h3>
-          
+
           {menuItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -216,11 +236,11 @@ export default function MobileNavigation() {
                 }}
               >
                 <span style={{
-                  fontSize: '20px',
                   width: '24px',
-                  textAlign: 'center'
+                  display: 'flex',
+                  justifyContent: 'center'
                 }}>
-                  {item.icon}
+                  <item.icon size={20} />
                 </span>
                 <span>{item.label}</span>
                 {isActive && (
@@ -257,7 +277,7 @@ export default function MobileNavigation() {
           }}>
             Információk
           </h3>
-          
+
           {secondaryItems.map((item) => (
             <Link
               key={item.href}
@@ -284,11 +304,11 @@ export default function MobileNavigation() {
               }}
             >
               <span style={{
-                fontSize: '16px',
                 width: '20px',
-                textAlign: 'center'
+                display: 'flex',
+                justifyContent: 'center'
               }}>
-                {item.icon}
+                <item.icon size={18} />
               </span>
               <span>{item.label}</span>
             </Link>
@@ -309,7 +329,7 @@ export default function MobileNavigation() {
             margin: 0,
             lineHeight: '1.5'
           }}>
-            © 2025 Szomszéd Kosara
+            © 2025 SzomszédKosár
             <br />
             Helyi termékek piactere
           </p>

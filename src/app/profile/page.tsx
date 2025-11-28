@@ -270,149 +270,199 @@ export default function ProfilePage() {
                     <span>Aktív hirdetések:</span>
                     <span className="font-bold">{mockUser.limits.activeAds}/{mockUser.limits.maxActiveAds}</span>
                   </div>
-
-                  {/* Tabs */}
-                  <div className="bg-white rounded-2xl p-2 mb-6 shadow-sm border border-gray-100 flex overflow-x-auto">
-                    {[
-                      { key: 'products', label: 'Termékeim', icon: Package, count: mockProducts.length },
-                      { key: 'reviews', label: 'Értékelések', icon: MessageCircle, count: mockReviews.length },
-                      { key: 'stats', label: 'Statisztikák', icon: TrendingUp, count: null },
-                      { key: 'settings', label: 'Beállítások', icon: Settings, count: null }
-                    ].map((tab) => (
-                      <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key as any)}
-                        className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === tab.key
-                          ? 'bg-[#1B4332] text-white shadow-md'
-                          : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B4332]'
-                          }`}
-                      >
-                        <tab.icon size={16} />
-                        {tab.label}
-                        {tab.count !== null && (
-                          <span className={`text-xs px-1.5 py-0.5 rounded-md ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                            }`}>
-                            {tab.count}
-                          </span>
-                        )}
-                      </button>
-                    ))}
+                  <div className="w-full bg-orange-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-orange-500 h-full" style={{ width: `${(mockUser.limits.activeAds / mockUser.limits.maxActiveAds) * 100}%` }}></div>
                   </div>
+                </div>
 
-                  {/* PRODUCTS TAB */}
-                  {activeTab === 'products' && (
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                {(remainingLimits.monthlyAds === 0 || remainingLimits.activeAds === 0) && (
+                  <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-100 text-xs text-red-600 leading-relaxed flex items-start gap-2">
+                    <AlertTriangle size={16} className="flex-shrink-0" />
+                    <span>Elérted a havi limitet. További hirdetésekhez regisztrálj őstermelőként.</span>
+                  </div>
+                )}
+              </div>
+            )}
 
-                      {/* Filters */}
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {[
-                          { key: 'all', label: 'Összes' },
-                          { key: 'active', label: 'Aktív' },
-                          { key: 'sold_out', label: 'Elfogyott' }
-                        ].map((filter) => (
-                          <button
-                            key={filter.key}
-                            onClick={() => setProductFilter(filter.key as any)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${productFilter === filter.key
-                              ? 'bg-[#E8ECE9] text-[#1B4332]'
-                              : 'text-gray-500 hover:bg-gray-50'
-                              }`}
-                          >
-                            {filter.label}
-                          </button>
-                        ))}
-                      </div>
+            {/* Detailed Stats */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-bold text-[#1F2937] mb-4 flex items-center gap-2">
+                <TrendingUp size={16} className="text-[#1B4332]" />
+                Részletes statisztikák
+              </h3>
 
-                      {/* Product Grid */}
-                      <div className="grid grid-cols-1 gap-4">
-                        {filteredProducts.map((product) => (
-                          <div key={product.id} className="flex flex-col md:flex-row gap-4 p-4 border border-gray-100 rounded-xl hover:border-[#1B4332] transition-colors group">
-
-                            {/* Icon */}
-                            <div className={`w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 ${product.color}`}>
-                              <product.icon size={32} />
-                            </div>
-
-                            {/* Info */}
-                            <div className="flex-grow">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h4 className="font-bold text-[#1F2937] text-lg mb-1">{product.name}</h4>
-                                  <div className="text-[#1B4332] font-bold mb-2">
-                                    {product.price} Ft/{product.unit}
-                                  </div>
-                                </div>
-                                <div className="flex flex-col items-end gap-2">
-                                  {product.urgent && (
-                                    <span className="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded-md">
-                                      SÜRGŐS
-                                    </span>
-                                  )}
-                                  <span className={`text-xs font-bold px-2 py-1 rounded-md ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                    }`}>
-                                    {product.status === 'active' ? 'AKTÍV' : 'ELFOGYOTT'}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
-                                <span className="flex items-center gap-1"><Eye size={12} /> {product.views} megtekintés</span>
-                                <span className="flex items-center gap-1"><Heart size={12} /> {product.interested} érdeklődő</span>
-                                <span className="flex items-center gap-1"><Package size={12} /> {product.sold} eladva</span>
-                              </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-4">
-                              <button className="flex-1 md:flex-none px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                                <Edit size={14} /> Szerkesztés
-                              </button>
-                              <button className="flex-1 md:flex-none px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm font-bold hover:bg-[#2D6A4F] transition flex items-center justify-center gap-2">
-                                <Eye size={14} /> Megtekintés
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* REVIEWS TAB */}
-                  {activeTab === 'reviews' && (
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                      <div className="space-y-6">
-                        {mockReviews.map((review) => (
-                          <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                  <User size={20} className="text-gray-500" />
-                                </div>
-                                <div>
-                                  <div className="font-bold text-[#1F2937]">{review.reviewer}</div>
-                                  <div className="text-xs text-gray-500">{review.date}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
-                                <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                                <span className="font-bold text-yellow-700">{review.rating}</span>
-                              </div>
-                            </div>
-                            <div className="text-sm font-medium text-[#1B4332] mb-2">
-                              Termék: {review.product}
-                            </div>
-                            <p className="text-gray-600 text-sm leading-relaxed">
-                              "{review.comment}"
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Összes bevétel:</span>
+                  <span className="font-bold text-[#1B4332]">{mockUser.stats.totalEarnings.toLocaleString()} Ft</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Clock size={14} /> Átlag válaszidő:</span>
+                  <span className="font-bold">{mockUser.stats.avgResponseTime}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Truck size={14} /> Szállítás:</span>
+                  <span className="font-bold flex items-center gap-1">
+                    {mockUser.stats.deliveryRating}
+                    <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 flex items-center gap-1"><Star size={14} /> Minőség:</span>
+                  <span className="font-bold flex items-center gap-1">
+                    {mockUser.stats.qualityRating}
+                    <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                  </span>
                 </div>
               </div>
-      </main>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN - CONTENT */}
+          <div>
+
+            {/* Tabs */}
+            <div className="bg-white rounded-2xl p-2 mb-6 shadow-sm border border-gray-100 flex overflow-x-auto">
+              {[
+                { key: 'products', label: 'Termékeim', icon: Package, count: mockProducts.length },
+                { key: 'reviews', label: 'Értékelések', icon: MessageCircle, count: mockReviews.length },
+                { key: 'stats', label: 'Statisztikák', icon: TrendingUp, count: null },
+                { key: 'settings', label: 'Beállítások', icon: Settings, count: null }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === tab.key
+                    ? 'bg-[#1B4332] text-white shadow-md'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-[#1B4332]'
+                    }`}
+                >
+                  <tab.icon size={16} />
+                  {tab.label}
+                  {tab.count !== null && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-md ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* PRODUCTS TAB */}
+            {activeTab === 'products' && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+
+                {/* Filters */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {[
+                    { key: 'all', label: 'Összes' },
+                    { key: 'active', label: 'Aktív' },
+                    { key: 'sold_out', label: 'Elfogyott' }
+                  ].map((filter) => (
+                    <button
+                      key={filter.key}
+                      onClick={() => setProductFilter(filter.key as any)}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${productFilter === filter.key
+                        ? 'bg-[#E8ECE9] text-[#1B4332]'
+                        : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Product Grid */}
+                <div className="grid grid-cols-1 gap-4">
+                  {filteredProducts.map((product) => (
+                    <div key={product.id} className="flex flex-col md:flex-row gap-4 p-4 border border-gray-100 rounded-xl hover:border-[#1B4332] transition-colors group">
+
+                      {/* Icon */}
+                      <div className={`w-20 h-20 rounded-xl flex items-center justify-center flex-shrink-0 ${product.color}`}>
+                        <product.icon size={32} />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-bold text-[#1F2937] text-lg mb-1">{product.name}</h4>
+                            <div className="text-[#1B4332] font-bold mb-2">
+                              {product.price} Ft/{product.unit}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            {product.urgent && (
+                              <span className="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded-md">
+                                SÜRGŐS
+                              </span>
+                            )}
+                            <span className={`text-xs font-bold px-2 py-1 rounded-md ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                              }`}>
+                              {product.status === 'active' ? 'AKTÍV' : 'ELFOGYOTT'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
+                          <span className="flex items-center gap-1"><Eye size={12} /> {product.views} megtekintés</span>
+                          <span className="flex items-center gap-1"><Heart size={12} /> {product.interested} érdeklődő</span>
+                          <span className="flex items-center gap-1"><Package size={12} /> {product.sold} eladva</span>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex md:flex-col gap-2 justify-center border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-4">
+                        <button className="flex-1 md:flex-none px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                          <Edit size={14} /> Szerkesztés
+                        </button>
+                        <button className="flex-1 md:flex-none px-4 py-2 bg-[#1B4332] text-white rounded-lg text-sm font-bold hover:bg-[#2D6A4F] transition flex items-center justify-center gap-2">
+                          <Eye size={14} /> Megtekintés
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* REVIEWS TAB */}
+            {activeTab === 'reviews' && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="space-y-6">
+                  {mockReviews.map((review) => (
+                    <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <User size={20} className="text-gray-500" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-[#1F2937]">{review.reviewer}</div>
+                            <div className="text-xs text-gray-500">{review.date}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
+                          <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                          <span className="font-bold text-yellow-700">{review.rating}</span>
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-[#1B4332] mb-2">
+                        Termék: {review.product}
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        "{review.comment}"
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
         </div>
-        );
+      </main>
+    </div>
+  );
 }

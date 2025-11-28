@@ -1,6 +1,16 @@
 "use client";
 
 import React, { useState } from 'react';
+import {
+  Wheat,
+  Cherry,
+  ShoppingBasket,
+  MapPin,
+  Clock,
+  User,
+  ArrowRight,
+  MessageCircle
+} from 'lucide-react';
 
 // 1. Alert Interface (TypeScript)
 interface FreshAlert {
@@ -8,13 +18,14 @@ interface FreshAlert {
   postTitle: string;
   productName: string;
   productPrice: string;
-  productEmoji: string;
+  ProductIcon: React.ElementType;
   sellerName: string;
   sellerAvatar: string;
   sellerLat: number;
   sellerLon: number;
   isUrgent: boolean;
   category: string;
+  color: string;
 }
 
 // Hardcoded data for rendering
@@ -24,39 +35,42 @@ const hardcodedAlerts: FreshAlert[] = [
     postTitle: "Friss, ropogós kenyér a pékségből!",
     productName: "Kovászos kenyér",
     productPrice: "850 Ft",
-    productEmoji: "🍞",
+    ProductIcon: Wheat,
     sellerName: "Pékműhely",
     sellerAvatar: "https://via.placeholder.com/100/D3D3D3/000000?text=Avatar",
     sellerLat: 47.4979,
     sellerLon: 19.0402,
     isUrgent: true,
     category: 'PÉKSÜTI',
+    color: 'bg-orange-100 text-orange-600'
   },
   {
     id: 2,
     postTitle: "Ma reggeli szüretelésű eper",
     productName: "Földieper",
     productPrice: "1500 Ft / kg",
-    productEmoji: "🍓",
+    ProductIcon: Cherry,
     sellerName: "Gergő Gazda",
     sellerAvatar: "https://via.placeholder.com/100/FF7F7F/000000?text=Avatar",
     sellerLat: 47.5000,
     sellerLon: 19.0500,
     isUrgent: false,
     category: 'GYÜMÖLCS',
+    color: 'bg-red-100 text-red-600'
   },
   {
     id: 3,
     postTitle: "Kézműves sajtok a legjobb áron",
     productName: "Gouda sajt",
     productPrice: "2500 Ft / kg",
-    productEmoji: "🧀",
+    ProductIcon: ShoppingBasket,
     sellerName: "Sajtmester",
     sellerAvatar: "https://via.placeholder.com/100/ADD8E6/000000?text=Avatar",
     sellerLat: 47.4950,
     sellerLon: 19.0450,
     isUrgent: true,
     category: 'SAJT',
+    color: 'bg-yellow-100 text-yellow-600'
   },
 ];
 
@@ -107,8 +121,8 @@ const Newsfeed: React.FC = () => {
           <button
             key={filter}
             className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${activeFilter === filter
-                ? 'bg-[#1B4332] text-white'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              ? 'bg-[#1B4332] text-white'
+              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
               }`}
             onClick={() => setActiveFilter(filter)}
           >
@@ -119,7 +133,7 @@ const Newsfeed: React.FC = () => {
 
       <section className="flex flex-col gap-4">
         {filteredAlerts.map(alert => (
-          <article key={alert.id} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+          <article key={alert.id} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
               <img src={alert.sellerAvatar} alt={`${alert.sellerName} profilképe`} className="w-10 h-10 rounded-full object-cover border border-gray-100" />
               <div>
@@ -131,12 +145,16 @@ const Newsfeed: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">2 km távolságra</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <MapPin size={12} /> 2 km távolságra
+                </div>
               </div>
             </div>
 
             <div className="bg-[#F5F5F0] rounded-xl p-4 mb-4 flex items-center gap-4">
-              <div className="text-4xl">{alert.productEmoji}</div>
+              <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${alert.color}`}>
+                <alert.ProductIcon size={32} />
+              </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg mb-1">{alert.productName}</h3>
                 <p className="text-[#1B4332] font-bold">{alert.productPrice}</p>
@@ -144,11 +162,11 @@ const Newsfeed: React.FC = () => {
             </div>
 
             <div className="flex gap-3">
-              <button className="flex-1 bg-[#1B4332] text-white py-2.5 rounded-xl font-semibold hover:bg-[#153326] transition-colors">
-                Megnézem
+              <button className="flex-1 bg-[#1B4332] text-white py-2.5 rounded-xl font-semibold hover:bg-[#153326] transition-colors flex items-center justify-center gap-2">
+                Megnézem <ArrowRight size={16} />
               </button>
-              <button className="flex-1 border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-semibold hover:bg-[#F5F5F0] transition-colors">
-                Üzenet
+              <button className="flex-1 border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-semibold hover:bg-[#F5F5F0] transition-colors flex items-center justify-center gap-2">
+                <MessageCircle size={16} /> Üzenet
               </button>
             </div>
           </article>

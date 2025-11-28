@@ -15,7 +15,8 @@ import {
   X,
   Check,
   Clock,
-  Tag
+  Tag,
+  Flame
 } from 'lucide-react';
 
 // Termék kategóriák és típusok
@@ -207,8 +208,8 @@ export default function SearchPage() {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`px-4 py-3 rounded-xl font-bold border transition-all flex items-center gap-2 ${showFilters
-                    ? 'bg-[#1B4332] text-white border-[#1B4332]'
-                    : 'bg-white text-[#1B4332] border-gray-200 hover:border-[#1B4332]'
+                  ? 'bg-[#1B4332] text-white border-[#1B4332]'
+                  : 'bg-white text-[#1B4332] border-gray-200 hover:border-[#1B4332]'
                   }`}
               >
                 <Filter size={20} />
@@ -223,8 +224,8 @@ export default function SearchPage() {
             <button
               onClick={() => { setSelectedCategory('all'); setSelectedSubcategory('all'); }}
               className={`px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all ${selectedCategory === 'all'
-                  ? 'bg-[#1B4332] text-white shadow-md'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
+                ? 'bg-[#1B4332] text-white shadow-md'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
                 }`}
             >
               Összes
@@ -234,8 +235,8 @@ export default function SearchPage() {
                 key={cat.id}
                 onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory('all'); }}
                 className={`px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all flex items-center gap-2 ${selectedCategory === cat.id
-                    ? 'bg-[#1B4332] text-white shadow-md'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
+                  ? 'bg-[#1B4332] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#1B4332]'
                   }`}
               >
                 <cat.icon size={18} />
@@ -250,8 +251,8 @@ export default function SearchPage() {
               <button
                 onClick={() => setSelectedSubcategory('all')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${selectedSubcategory === 'all'
-                    ? 'bg-[#E8ECE9] text-[#1B4332]'
-                    : 'text-gray-500 hover:bg-gray-50'
+                  ? 'bg-[#E8ECE9] text-[#1B4332]'
+                  : 'text-gray-500 hover:bg-gray-50'
                   }`}
               >
                 Összes
@@ -261,8 +262,8 @@ export default function SearchPage() {
                   key={sub}
                   onClick={() => setSelectedSubcategory(sub)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${selectedSubcategory === sub
-                      ? 'bg-[#E8ECE9] text-[#1B4332]'
-                      : 'text-gray-500 hover:bg-gray-50'
+                    ? 'bg-[#E8ECE9] text-[#1B4332]'
+                    : 'text-gray-500 hover:bg-gray-50'
                     }`}
                 >
                   {sub}
@@ -311,24 +312,24 @@ export default function SearchPage() {
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setFilters({ ...filters, organic: !filters.organic })}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.organic ? 'bg-green-100 text-green-800 border-green-200' : 'bg-white border-gray-200 text-gray-600'
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all flex items-center gap-1 ${filters.organic ? 'bg-green-100 text-green-800 border-green-200' : 'bg-white border-gray-200 text-gray-600'
                     }`}
                 >
-                  🌱 Bio
+                  <Leaf size={14} /> Bio
                 </button>
                 <button
                   onClick={() => setFilters({ ...filters, urgent: !filters.urgent })}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.urgent ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-white border-gray-200 text-gray-600'
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all flex items-center gap-1 ${filters.urgent ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-white border-gray-200 text-gray-600'
                     }`}
                 >
-                  🔥 Sürgős
+                  <Flame size={14} /> Sürgős
                 </button>
                 <button
                   onClick={() => setFilters({ ...filters, discount: !filters.discount })}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${filters.discount ? 'bg-red-100 text-red-800 border-red-200' : 'bg-white border-gray-200 text-gray-600'
+                  className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all flex items-center gap-1 ${filters.discount ? 'bg-red-100 text-red-800 border-red-200' : 'bg-white border-gray-200 text-gray-600'
                     }`}
                 >
-                  💰 Akció
+                  <Tag size={14} /> Akció
                 </button>
               </div>
             </div>
