@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+import Header from '@/components/Header'
+
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
@@ -18,283 +20,104 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #fefcf3 50%, #fff7ed 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '16px'
-    }}>
-      <div style={{
-        maxWidth: '400px',
-        width: '100%'
-      }}>
-        
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <Link href="/" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '32px',
-            textDecoration: 'none'
-          }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '24px',
-              boxShadow: '0 4px 12px rgba(22, 163, 74, 0.3)'
-            }}>
-              🛒
+    <div className="min-h-screen bg-[#F5F5F0]">
+      <Header />
+
+      <div className="flex items-center justify-center p-4 min-h-[calc(100vh-80px)]">
+        <div className="max-w-[400px] w-full">
+
+          {/* Welcome Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-white to-[#f0fdf4] rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#dcfce7]">
+              <span className="text-4xl">👋</span>
             </div>
-            <span style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1f2937'
-            }}>
-              Szomszéd Kosara
-            </span>
-          </Link>
-          
-          <div style={{
-            width: '80px',
-            height: '80px',
-            margin: '0 auto 24px',
-            background: 'linear-gradient(135deg, #ffffff, #f0fdf4)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-            border: '3px solid #dcfce7'
-          }}>
-            <span style={{ fontSize: '32px' }}>👋</span>
+
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Üdvözlünk vissza!
+            </h1>
+            <p className="text-gray-500">
+              Jelentkezz be a fiókodba
+            </p>
           </div>
-          
-          <h1 style={{
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#1f2937',
-            marginBottom: '8px'
-          }}>
-            Üdvözlünk vissza!
-          </h1>
-          <p style={{
-            fontSize: '16px',
-            color: '#6b7280'
-          }}>
-            Jelentkezz be a fiókodba
-          </p>
-        </div>
 
-        {/* Login Form */}
-        <div style={{
-          background: 'white',
-          borderRadius: '24px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-          padding: '32px',
-          border: '1px solid #f3f4f6'
-        }}>
-          <form onSubmit={handleSubmit}>
-            
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px'
-              }}>
-                E-mail cím
-              </label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'all 0.2s',
-                  boxSizing: 'border-box'
-                }}
-                placeholder="janos@example.com"
-                onFocus={(e) => e.target.style.borderColor = '#16a34a'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
+          {/* Login Form */}
+          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <form onSubmit={handleSubmit}>
 
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px'
-              }}>
-                Jelszó
-              </label>
-              <input
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  outline: 'none',
-                  transition: 'all 0.2s',
-                  boxSizing: 'border-box'
-                }}
-                placeholder="••••••••"
-                onFocus={(e) => e.target.style.borderColor = '#16a34a'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '24px'
-            }}>
-              <label style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>
+              <div className="mb-5">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  E-mail cím
+                </label>
                 <input
-                  type="checkbox"
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    accentColor: '#16a34a'
-                  }}
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base outline-none transition-all focus:border-[#16a34a]"
+                  placeholder="janos@example.com"
                 />
-                Emlékezz rám
-              </label>
-              
-              <Link href="/forgot-password" style={{
-                fontSize: '14px',
-                color: '#16a34a',
-                textDecoration: 'none',
-                fontWeight: '500'
-              }}>
-                Elfelejtett jelszó?
-              </Link>
-            </div>
+              </div>
 
-            <button
-              type="submit"
-              style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #16a34a, #15803d)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '16px',
-                padding: '16px',
-                fontSize: '18px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 8px 24px rgba(22, 163, 74, 0.3)',
-                transition: 'all 0.2s',
-                marginBottom: '16px'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(22, 163, 74, 0.4)'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(22, 163, 74, 0.3)'
-              }}
-            >
-              Bejelentkezés 🚀
-            </button>
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Jelszó
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-base outline-none transition-all focus:border-[#16a34a]"
+                  placeholder="••••••••"
+                />
+              </div>
 
-            <div style={{
-              position: 'relative',
-              textAlign: 'center',
-              marginBottom: '16px'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                background: '#e5e7eb'
-              }}></div>
-              <span style={{
-                background: 'white',
-                padding: '0 16px',
-                fontSize: '14px',
-                color: '#6b7280'
-              }}>
-                vagy
-              </span>
-            </div>
+              <div className="flex justify-between items-center mb-6">
+                <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-500">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 accent-[#16a34a]"
+                  />
+                  Emlékezz rám
+                </label>
 
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              style={{
-                width: '100%',
-                background: 'white',
-                border: '2px solid #e5e7eb',
-                borderRadius: '16px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '12px',
-                marginBottom: '24px'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = '#f9fafb'
-                e.currentTarget.style.borderColor = '#d1d5db'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'white'
-                e.currentTarget.style.borderColor = '#e5e7eb'
-              }}
-            >
-              <span style={{ fontSize: '18px' }}>🔍</span>
-              <span>Bejelentkezés Google-lal</span>
-            </button>
+                <Link href="/forgot-password" className="text-sm text-[#16a34a] font-medium hover:underline">
+                  Elfelejtett jelszó?
+                </Link>
+              </div>
 
-            {/* Register Link */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ color: '#6b7280' }}>Nincs még fiókod? </span>
-              <Link href="/register" style={{
-                color: '#16a34a',
-                textDecoration: 'none',
-                fontWeight: '600'
-              }}>
-                Regisztráció
-              </Link>
-            </div>
-          </form>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-br from-[#16a34a] to-[#15803d] text-white border-none rounded-2xl py-4 text-lg font-semibold cursor-pointer shadow-lg shadow-green-700/20 transition-transform hover:-translate-y-0.5 hover:shadow-green-700/30 mb-4"
+              >
+                Bejelentkezés 🚀
+              </button>
+
+              <div className="relative text-center mb-4">
+                <div className="absolute top-1/2 left-0 right-0 h-px bg-gray-200"></div>
+                <span className="relative bg-white px-4 text-sm text-gray-500">
+                  vagy
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full bg-white border-2 border-gray-200 rounded-2xl py-4 text-base font-semibold cursor-pointer transition-colors flex items-center justify-center gap-3 hover:bg-gray-50 hover:border-gray-300 mb-6"
+              >
+                <span className="text-xl">🔍</span>
+                <span>Bejelentkezés Google-lal</span>
+              </button>
+
+              {/* Register Link */}
+              <div className="text-center">
+                <span className="text-gray-500">Nincs még fiókod? </span>
+                <Link href="/register" className="text-[#16a34a] font-semibold hover:underline">
+                  Regisztráció
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

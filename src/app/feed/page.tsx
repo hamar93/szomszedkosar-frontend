@@ -25,8 +25,18 @@ export default function FeedPage() {
 
   // 3. Conditional Rendering Logic
   if (!userLocation) {
-    return <LocationPrompt />;
+    return (
+      <div className="min-h-screen bg-[#F5F5F0]">
+        <Header />
+        <LocationPrompt />
+      </div>
+    );
   }
 
-  return <Newsfeed />;
+  return (
+    <div className="min-h-screen bg-[#F5F5F0]">
+      <Header />
+      <Newsfeed />
+    </div>
+  );
 }

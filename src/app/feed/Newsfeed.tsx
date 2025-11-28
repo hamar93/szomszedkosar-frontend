@@ -101,44 +101,59 @@ const Newsfeed: React.FC = () => {
       : geographicallyFilteredAlerts.filter(alert => alert.category === activeFilter);
 
   return (
-    <div>
-      <header className="header">
-        <h1>Szomszéd Kosara</h1>
-        <a href="#" className="btn-primary">Kijelentkezés</a>
-      </header>
+    <div className="max-w-2xl mx-auto p-4 pb-20">
+      <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+        {['MIND', 'HÚS', 'PÉKSÜTI', 'ZÖLDSÉG', 'GYÜMÖLCS'].map((filter) => (
+          <button
+            key={filter}
+            className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${activeFilter === filter
+                ? 'bg-[#1B4332] text-white'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              }`}
+            onClick={() => setActiveFilter(filter)}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
 
-      <main className="container">
-        <div className="filters">
-          <button className={`filter-btn ${activeFilter === 'MIND' ? 'active' : ''}`} onClick={() => setActiveFilter('MIND')}>MIND</button>
-          <button className={`filter-btn ${activeFilter === 'HÚS' ? 'active' : ''}`} onClick={() => setActiveFilter('HÚS')}>HÚS</button>
-          <button className={`filter-btn ${activeFilter === 'PÉKSÜTI' ? 'active' : ''}`} onClick={() => setActiveFilter('PÉKSÜTI')}>PÉKSÜTI</button>
-          <button className={`filter-btn ${activeFilter === 'ZÖLDSÉG' ? 'active' : ''}`} onClick={() => setActiveFilter('ZÖLDSÉG')}>ZÖLDSÉG</button>
-          <button className={`filter-btn ${activeFilter === 'GYÜMÖLCS' ? 'active' : ''}`} onClick={() => setActiveFilter('GYÜMÖLCS')}>GYÜMÖLCS</button>
-        </div>
-
-        <section className="posts-list">
-          {filteredAlerts.map(alert => (
-            <article key={alert.id} className="post">
-              <div className="post-top">
-                <img src={alert.sellerAvatar} alt={`${alert.sellerName} profilképe`} className="author-avatar" />
-                <div>
-                  <strong>{alert.sellerName}</strong>
-                  {alert.isUrgent && <span className="urgent-label red">SÜRGŐS</span>}
+      <section className="flex flex-col gap-4">
+        {filteredAlerts.map(alert => (
+          <article key={alert.id} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <img src={alert.sellerAvatar} alt={`${alert.sellerName} profilképe`} className="w-10 h-10 rounded-full object-cover border border-gray-100" />
+              <div>
+                <div className="flex items-center gap-2">
+                  <strong className="text-gray-900">{alert.sellerName}</strong>
+                  {alert.isUrgent && (
+                    <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      SÜRGŐS
+                    </span>
+                  )}
                 </div>
+                <div className="text-xs text-gray-500">2 km távolságra</div>
               </div>
-              <div className="product-box">
-                <div className="emoji">{alert.productEmoji}</div>
-                <h3>{alert.productName}</h3>
-                <p className="price">{alert.productPrice}</p>
+            </div>
+
+            <div className="bg-[#F5F5F0] rounded-xl p-4 mb-4 flex items-center gap-4">
+              <div className="text-4xl">{alert.productEmoji}</div>
+              <div>
+                <h3 className="font-bold text-gray-900 text-lg mb-1">{alert.productName}</h3>
+                <p className="text-[#1B4332] font-bold">{alert.productPrice}</p>
               </div>
-              <div className="post-footer">
-                <button className="action-btn primary">Megnézem</button>
-                <button className="action-btn">Üzenet</button>
-              </div>
-            </article>
-          ))}
-        </section>
-      </main>
+            </div>
+
+            <div className="flex gap-3">
+              <button className="flex-1 bg-[#1B4332] text-white py-2.5 rounded-xl font-semibold hover:bg-[#153326] transition-colors">
+                Megnézem
+              </button>
+              <button className="flex-1 border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-semibold hover:bg-[#F5F5F0] transition-colors">
+                Üzenet
+              </button>
+            </div>
+          </article>
+        ))}
+      </section>
     </div>
   );
 };

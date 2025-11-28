@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   description: 'Közvetlenül a termelőktől és környékbeli árusoktól',
 }
 
+import Footer from '@/components/Footer'
+
+// ... imports
+
 export default function RootLayout({
   children,
 }: {
@@ -25,10 +29,13 @@ export default function RootLayout({
         1. bg-[#FAF7F0] (Krém háttér: felülírja a hibás CSS-t)
         2. text-[18px] (A 18px-es akadálymentes fontméret)
       */}
-      <body 
-        className={`${sourceSans3.className} bg-[#FAF7F0] text-[18px]`}
+      <body
+        className={`${sourceSans3.className} bg-[#FAF7F0] text-[18px] flex flex-col min-h-screen`}
       >
-        {children}
+        <div className="flex-grow">
+          {children}
+        </div>
+        <Footer />
       </body>
     </html>
   )
