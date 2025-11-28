@@ -12,6 +12,7 @@ import {
   X
 } from 'lucide-react';
 import api from '@/lib/api';
+import Link from 'next/link';
 
 interface UserLocation {
   latitude: number;
@@ -168,58 +169,78 @@ export default function FeedPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (
-              <article key={product._id} className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group overflow-hidden flex flex-col h-full">
-                <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
-                  )}
-
-                  {/* BADGES */}
-                  <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                    {product.isShippable && (
-                      <div className="bg-blue-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-700 shadow-sm flex items-center gap-1">
-                        <Package size={12} />
-                        Országos szállítás
-                      </div>
+              <Link key={product._id} href={`/product/${product._id}`} className="group">
+                <article className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
+                  <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
                     )}
-                    <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
-                      {product.category}
+
+                    {/* BADGES */}
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                      {product.isShippable && (
+                        <div className="bg-blue-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-700 shadow-sm flex items-center gap-1">
+                          <Package size={12} />
+                          Országos szállítás
+                        </div>
+                      )}
+                      <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
+                        {product.category}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-xl font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">{product.name}</h3>
-                    <span className="text-lg font-bold text-[#1B4332] whitespace-nowrap ml-2">{product.price} Ft/{product.unit}</span>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">{product.name}</h3>
+                      <span className="text-lg font-bold text-[#1B4332] whitespace-nowrap ml-2">{product.price} Ft/{product.unit}</span>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">
+                      {product.description}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <User size={14} className="text-gray-600" />
+                        </div>
+                        <div className="text-xs">
+                          <p className="font-bold text-gray-900 line-clamp-1">{product.sellerName || product.user?.name || 'Termelő'}</p>
+                          <p className="text-gray-500">
+                            {product.user?.city || 'Helyszín'}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[#1B4332] font-bold text-sm hover:underline">
+                        Részletek
+                      </span>
+                    </div>
                   </div>
-
-                  <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">
-                    {product.description}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                        <User size={14} className="text-gray-600" />
-                      </div>
-                      <div className="text-xs">
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">Nincs találat</h3>
-                        <p className="text-gray-500">
-                          Ebben a kategóriában jelenleg nincsenek termékek.
-                        </p>
-                        <button
-                          onClick={() => setSelectedCategory("Minden termék")}
-                          className="mt-4 text-[#1B4332] font-bold hover:underline"
-                        >
-                          Szűrők törlése
-                        </button>
-                      </div>
+                </article>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Search className="text-gray-400 w-8 h-8" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Nincs találat</h3>
+              <p className="text-gray-500">
+                Ebben a kategóriában jelenleg nincsenek termékek.
+              </p>
+              <button
+                onClick={() => setSelectedCategory("Minden termék")}
+                className="mt-4 text-[#1B4332] font-bold hover:underline"
+              >
+                Szűrők törlése
+              </button>
+            </div>
           )}
-                    </div>
-                  </main>
-                </div>
-                );
+        </div>
+      </main>
+    </div>
+  );
 }
