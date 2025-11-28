@@ -1,392 +1,233 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header'; // Feltételezem, hogy van egy Header komponensed, vagy a kódban lévőt használod
-import LocationPrompt from '../components/LocationPrompt'; // Feltételezem, hogy ez a komponens létezik
+import Link from 'next/link';
+import {
+  ShoppingBasket,
+  MapPin,
+  Search,
+  Leaf,
+  ShieldCheck,
+  Users,
+  ArrowRight,
+  Menu,
+  X
+} from 'lucide-react';
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Mobil detektálás
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F5F5F0',
-      fontFamily: '"Source Sans 3", sans-serif'
-    }}>
+    <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
 
-      {/* Header - Ha van külön komponensed, használd azt, ha nincs, a lenti kódban lévő inline header kell */}
-      {/* <Header />  <- Ezt akkor használd, ha van külön Header.tsx fájlod */}
-      
-      {/* Ideiglenes inline Header a demonstrációhoz (vagy cseréld a sajátodra) */}
-      <header style={{
-        background: '#ffffff',
-        padding: '1.5rem 0',
-        borderBottom: '2px solid #f0f0f0',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-           <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-             <div style={{ width: '12px', height: '12px', background: '#4caf50', borderRadius: '50%' }}></div>
-             SzomszédKosár
-           </div>
-           {/* ... további header elemek ... */}
+      {/* --- HEADER --- */}
+      <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+
+            {/* LOGO & BRAND */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#1B4332] rounded-xl flex items-center justify-center shadow-sm">
+                <ShoppingBasket className="text-white w-6 h-6" />
+              </div>
+              <span className="text-2xl font-bold text-[#1B4332] tracking-tight">
+                SzomszédKosár
+              </span>
+            </div>
+
+            {/* DESKTOP NAV */}
+            <nav className="hidden md:flex items-center gap-8">
+              <Link href="/feed" className="text-gray-600 hover:text-[#1B4332] font-medium transition flex items-center gap-1">
+                Hírfolyam
+              </Link>
+              <Link href="/termelok" className="text-gray-600 hover:text-[#1B4332] font-medium transition">
+                Termelők
+              </Link>
+              <Link href="/rolunk" className="text-gray-600 hover:text-[#1B4332] font-medium transition">
+                Rólunk
+              </Link>
+            </nav>
+
+            {/* AUTH BUTTONS */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/login" className="px-5 py-2.5 text-[#1B4332] font-bold hover:bg-[#F0F4F1] rounded-xl transition">
+                Belépés
+              </Link>
+              <Link href="/register" className="px-5 py-2.5 bg-[#1B4332] text-white font-bold rounded-xl hover:bg-[#2D6A4F] transition shadow-md flex items-center gap-2">
+                Regisztráció
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+
+            {/* MOBILE MENU TOGGLE */}
+            <button className="md:hidden p-2 text-gray-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
+
+        {/* MOBILE MENU */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 p-4 shadow-lg">
+            <nav className="flex flex-col gap-4">
+              <Link href="/feed" className="text-lg font-medium text-gray-700">Hírfolyam</Link>
+              <Link href="/termelok" className="text-lg font-medium text-gray-700">Termelők</Link>
+              <hr className="border-gray-100" />
+              <Link href="/login" className="text-lg font-bold text-[#1B4332]">Belépés</Link>
+              <Link href="/register" className="text-lg font-bold text-[#1B4332]">Regisztráció</Link>
+            </nav>
+          </div>
+        )}
       </header>
 
+      {/* --- HERO SECTION --- */}
+      <section className="relative pt-20 pb-32 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-5"></div>
+        <div className="relative max-w-4xl mx-auto text-center z-10">
 
-      {/* Hero Section */}
-      <section style={{
-        padding: isMobile ? '40px 16px' : '80px 16px',
-        textAlign: 'center',
-        background: 'linear-gradient(to bottom, #F0F4F1, #FFFFFF, #E8ECE9)'
-      }}>
-        <h1 style={{
-          fontSize: isMobile ? '32px' : '56px',
-          fontWeight: '700',
-          color: '#1F2937',
-          marginBottom: '24px',
-          lineHeight: '1.2',
-          letterSpacing: '-0.5px'
-        }}>
-          Vásárolj közvetlenül a
-          <br />
-          <span className="text-primary" style={{ color: '#1B4332' }}>
-            környékbeli termelőktől
+          <span className="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-[#E8ECE9] text-[#1B4332] text-sm font-bold mb-8 border border-[#1B4332]/10">
+            <Leaf size={14} className="fill-[#1B4332]" />
+            Helyi termékek, közvetlenül a termelőtől
           </span>
-        </h1>
 
-        <p style={{
-          fontSize: isMobile ? '18px' : '22px',
-          color: '#4B5563',
-          marginBottom: isMobile ? '40px' : '64px',
-          maxWidth: '600px',
-          margin: `0 auto ${isMobile ? '40px' : '64px'}`,
-          fontWeight: '400',
-          lineHeight: '1.6'
-        }}>
-          Friss, helyi, házias termékek megbízható forrásból.
-        </p>
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight text-[#1F2937] tracking-tight">
+            Vásárolj a <br className="hidden md:block" />
+            <span className="text-[#1B4332] relative inline-block">
+              szomszédodtól
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#E9C46A] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+              </svg>
+            </span>
+          </h1>
 
-        {/* Hero kép helye */}
-        <div style={{
-          maxWidth: isMobile ? '300px' : '700px',
-          height: isMobile ? '250px' : '400px',
-          margin: `0 auto ${isMobile ? '40px' : '64px'}`,
-          borderRadius: '12px',
-          background: '#e0e0e0', // Placeholder szín, ha nincs kép
-          // backgroundImage: 'url(/images/hero-image.png)', // Ha van képed
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-           {/* Placeholder szöveg a kép helyett */}
-           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666' }}>Hero Image Placeholder</div>
-        </div>
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+            Friss zöldség, gyümölcs, és házi finomságok a környékbeli termelőktől.
+            Csatlakozz a közösséghez!
+          </p>
 
-        {/* Search Bar */}
-        <div style={{
-          maxWidth: '800px',
-          margin: '0 auto',
-          padding: '0 16px'
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-            border: '1px solid #E5E7EB',
-            overflow: 'hidden'
-          }}>
-            <input
-              type="text"
-              placeholder={isMobile ? "Mit keresel?" : "Mit keresel? (pl. meggy, lekvár...)"}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                flex: 1,
-                padding: isMobile ? '16px' : '20px',
-                border: 'none',
-                outline: 'none',
-                fontSize: '16px',
-                color: '#1F2937',
-                minHeight: '56px'
-              }}
-            />
-            <button className="btn-primary" style={{
-              borderRadius: 0,
-              padding: isMobile ? '16px' : '0 32px',
-              fontSize: '18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '56px',
-              background: '#1B4332',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer'
-            }}>
+          {/* SEARCH BOX */}
+          <div className="max-w-2xl mx-auto bg-white p-2 rounded-2xl shadow-xl border border-gray-200/60 flex flex-col sm:flex-row gap-2 transition-transform hover:scale-[1.01]">
+            <div className="flex-grow relative flex items-center">
+              <MapPin className="absolute left-4 text-gray-400" size={24} />
+              <input
+                type="text"
+                placeholder="Irányítószám vagy település..."
+                className="w-full pl-14 pr-4 py-4 rounded-xl border-none outline-none text-lg text-gray-800 placeholder-gray-400 bg-transparent"
+              />
+            </div>
+            <button className="bg-[#1B4332] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#2D6A4F] transition shadow-lg flex items-center justify-center gap-2">
+              <Search size={20} />
               Keresés
             </button>
           </div>
         </div>
       </section>
 
-      {/* Location Prompt Komponens */}
-      {/* <LocationPrompt /> */} 
-
-      {/* Categories / Features */}
-      <section style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: `0 16px ${isMobile ? '40px' : '80px'}`
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: '32px'
-        }}>
-          {[
-            { title: 'Frissesség', desc: 'Közvetlenül a kertből az asztalra.', icon: '🥕' },
-            { title: 'Megbízhatóság', desc: 'Ellenőrzött helyi termelők.', icon: '🤝' },
-            { title: 'Közösség', desc: 'Támogasd a helyi gazdaságot.', icon: '🏡' }
-          ].map((feature, index) => (
-            <div key={index} style={{
-              textAlign: 'center',
-              padding: '24px'
-            }}>
-              <div style={{
-                width: '64px',
-                height: '64px',
-                background: '#1B4332',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                fontSize: '28px',
-                color: 'white'
-              }}>
-                {feature.icon}
+      {/* --- FEATURES --- */}
+      <section className="py-20 bg-white border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                icon: Leaf,
+                title: 'Frissesség Garantálva',
+                desc: 'A termékek közvetlenül a kertből érkeznek, raktározás nélkül.',
+                color: 'bg-green-100 text-green-700'
+              },
+              {
+                icon: ShieldCheck,
+                title: 'Megbízható Forrás',
+                desc: 'Minden termelő ellenőrzött, valós helyi gazdálkodó.',
+                color: 'bg-blue-100 text-blue-700'
+              },
+              {
+                icon: Users,
+                title: 'Közösségi Erő',
+                desc: 'Vásárlásoddal a helyi családokat és a gazdaságot támogatod.',
+                color: 'bg-orange-100 text-orange-700'
+              }
+            ].map((feature, i) => (
+              <div key={i} className="text-center group p-6 rounded-3xl hover:bg-[#F9FAFB] transition duration-300">
+                <div className={`w-20 h-20 ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-6 transition-transform group-hover:scale-110 group-hover:rotate-3`}>
+                  <feature.icon size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1F2937] mb-4">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed text-lg">{feature.desc}</p>
               </div>
-              <h3 style={{
-                fontSize: '20px',
-                fontWeight: '700',
-                color: '#1F2937',
-                marginBottom: '8px'
-              }}>
-                {feature.title}
-              </h3>
-              <p style={{ color: '#6B7280' }}>
-                {feature.desc}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Products */}
-      <section style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: `0 16px ${isMobile ? '60px' : '100px'}`
-      }}>
-        <h2 style={{
-          fontSize: isMobile ? '28px' : '32px',
-          fontWeight: '700',
-          color: '#1F2937',
-          textAlign: 'center',
-          marginBottom: '48px'
-        }}>
-          Kiemelt termékek
-        </h2>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px'
-        }}>
-          {[
-            { name: 'Meggy', price: '800 Ft/kg', seller: 'Marika Néni', location: 'Balatonfüred', emoji: '🍒', rating: 4.9 },
-            { name: 'Meggyszörp', price: '1200 Ft/üveg', seller: 'Marika Néni', location: 'Balatonfüred', emoji: '🧃', rating: 4.8 },
-            { name: 'Baracklekvár', price: '1000 Ft/üveg', seller: 'Kiss Margit', location: 'Jaszberény', emoji: '🍑', rating: 4.7 },
-            { name: 'Összibarack', price: '600 Ft/kg', seller: 'Szabó Anna', location: 'Esztergom', emoji: '🍑', rating: 4.9 }
-          ].map((product, index) => (
-            <div key={index} className="card" style={{
-              overflow: 'hidden',
-              transition: 'transform 0.2s ease',
-              cursor: 'pointer',
-              background: 'white',
-              borderRadius: '12px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-            }}>
-
-              <div style={{
-                height: '200px',
-                background: '#F9FAFB',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '64px',
-                position: 'relative'
-              }}>
-                {product.emoji}
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: 'white',
-                  borderRadius: '6px',
-                  padding: '4px 8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  ⭐ {product.rating}
-                </div>
-              </div>
-
-              <div style={{ padding: '20px' }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: '8px'
-                }}>
-                  <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#1F2937',
-                    margin: 0
-                  }}>
-                    {product.name}
-                  </h3>
-                  <span style={{
-                    fontSize: '16px',
-                    fontWeight: '700',
-                    color: '#1B4332'
-                  }}>
-                    {product.price}
-                  </span>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  marginBottom: '4px',
-                  fontSize: '14px',
-                  color: '#6B7280'
-                }}>
-                  <span>👤</span>
-                  <span>{product.seller}</span>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '14px',
-                  color: '#6B7280'
-                }}>
-                  <span>📍</span>
-                  <span>{product.location}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{
-        background: '#1F2937',
-        color: 'white',
-        padding: '64px 16px',
-        textAlign: 'center'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            marginBottom: '24px'
-          }}>
-            <div style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              background: '#1B4332'
-            }}></div>
-            <span style={{
-              fontSize: '20px',
-              fontWeight: '700'
-            }}>
-              SzomszédKosara
-            </span>
+      {/* --- PRODUCT SHOWCASE --- */}
+      <section className="py-24 px-4 bg-[#F5F5F0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-[#1B4332] mb-4">Mit találsz a SzomszédKosárban?</h2>
+            <p className="text-gray-600 text-lg">Ízelítő a környékbeli kínálatból</p>
           </div>
 
-          <p style={{
-            color: '#9CA3AF',
-            marginBottom: '32px'
-          }}>
-            Helyi termékek, közösségi kapcsolatok
-          </p>
-
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '24px',
-            marginBottom: '32px',
-            flexWrap: 'wrap'
-          }}>
-            {['Rólunk', 'ÁSZF', 'Adatvédelem', 'Kapcsolat'].map((link, index) => (
-              <a key={index} href="#" style={{
-                color: '#D1D5DB',
-                textDecoration: 'none',
-                fontSize: '14px',
-                transition: 'color 0.2s ease'
-              }}>
-                {link}
-              </a>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { name: 'Ropogós Cseresznye', price: '1 200 Ft/kg', seller: 'Kovács Kertészet', loc: 'Eger', img: '🍒' },
+              { name: 'Házi Eperlekvár', price: '1 500 Ft/üveg', seller: 'Nagyi Kamrája', loc: 'Debrecen', img: '🍓' },
+              { name: 'Kézműves Sajt', price: '3 200 Ft/kg', seller: 'Bükki Sajtműhely', loc: 'Szilvásvárad', img: '🧀' },
+              { name: 'Friss Tojás', price: '80 Ft/db', seller: 'Szabó Tanya', loc: 'Gödöllő', img: '🥚' }
+            ].map((item, idx) => (
+              <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                <div className="h-48 bg-[#F9FAFB] flex items-center justify-center text-8xl group-hover:scale-105 transition-transform duration-500">
+                  {item.img}
+                </div>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold text-[#1F2937]">{item.name}</h3>
+                    <span className="bg-[#E8ECE9] text-[#1B4332] px-2 py-1 rounded-lg text-xs font-bold">
+                      {item.price}
+                    </span>
+                  </div>
+                  <div className="space-y-2 mt-4">
+                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <Users size={16} /> {item.seller}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                      <MapPin size={16} /> {item.loc}
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
-          <p style={{
-            fontSize: '14px',
-            color: '#6B7280',
-            margin: 0
-          }}>
-            © 2025 SzomszédKosara. Minden jog fenntartva.
+          <div className="text-center mt-12">
+            <Link href="/feed" className="inline-flex items-center gap-2 text-[#1B4332] font-bold text-lg hover:underline">
+              Összes termék megtekintése <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* --- FOOTER --- */}
+      <footer className="bg-[#1B4332] text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <ShoppingBasket size={32} className="text-[#E9C46A]" />
+            <span className="text-3xl font-bold">SzomszédKosár</span>
+          </div>
+          <p className="text-green-100/80 mb-12 max-w-lg mx-auto">
+            A helyi közösségek és termelők találkozóhelye.
+            Friss, fenntartható, hazai.
           </p>
+          <div className="border-t border-green-800 pt-8 text-sm text-green-100/60">
+            © 2025 SzomszédKosár. Minden jog fenntartva.
+          </div>
         </div>
       </footer>
 
