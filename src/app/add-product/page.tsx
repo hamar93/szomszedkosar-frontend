@@ -61,6 +61,9 @@ export default function AddProductPage() {
         location: formData.location
       };
 
+      console.log('🔍 DEBUG: Product creation payload:', payload);
+      console.log('🔍 DEBUG: sellerEmail =', payload.sellerEmail);
+
       await api.post('/api/products', payload);
 
       setShowSuccess(true);

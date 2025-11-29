@@ -23,15 +23,15 @@ function PaymentStatus() {
     setLoading(true);
     try {
       const res = await api.post('/api/payments/create-subscription-checkout', {
-        priceId: 'price_HelypenzId',
-        userId: (session.user as any).id || session.user.email, // Fallback if ID is missing from type
+        userId: (session.user as any).id || session.user.email,
       });
       if (res.data.url) {
         window.location.href = res.data.url;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment error:', error);
-      alert('Hiba történt a fizetés indításakor. Ellenőrizd a konzolt.');
+      const errorMsg = error.response?.data?.error || error.message || 'Ismeretlen hiba történt.';
+      alert(`Fizetési hiba: ${errorMsg}`);
     } finally {
       setLoading(false);
     }

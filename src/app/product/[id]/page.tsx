@@ -63,9 +63,10 @@ export default function ProductDetailPage() {
         await fetchProduct();
         setQuantity(1);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Purchase failed:', error);
-      alert('Hiba történt a megrendelés során.');
+      const errorMsg = error.response?.data?.message || error.message || 'Ismeretlen hiba történt.';
+      alert(`Megrendelési hiba: ${errorMsg}`);
     } finally {
       setPurchasing(false);
     }
