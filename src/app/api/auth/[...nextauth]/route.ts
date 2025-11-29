@@ -20,9 +20,9 @@ const handler = NextAuth({
                         }
                     );
 
-                    if (res.data) {
+                    if (res.data && res.data.user) {
                         // Return user object including token
-                        return res.data;
+                        return res.data.user;
                     }
                     return null;
                 } catch (error) {
