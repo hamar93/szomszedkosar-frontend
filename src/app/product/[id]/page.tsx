@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck } from 'lucide-react';
+import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck, Minus, Plus } from 'lucide-react';
 import api from '@/lib/api';
 import { useSession } from 'next-auth/react';
 
@@ -13,27 +13,29 @@ export default function ProductDetailPage() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [purchasing, setPurchasing] = useState(false);
+
+  const fetchProduct = async () => {
+    try {
+      // Try specific endpoint first
+      try {
+        const specificRes = await api.get(`/api/products/${params.id}`);
+        setProduct(specificRes.data);
+      } catch (e) {
+        // Fallback if specific endpoint not implemented in backend yet
+        const allRes = await api.get('/api/products');
+        const found = allRes.data.find((p: any) => p._id === params.id);
+        setProduct(found);
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        // Try specific endpoint first
-        try {
-          const specificRes = await api.get(`/api/products/${params.id}`);
-          setProduct(specificRes.data);
-        } catch (e) {
-          // Fallback if specific endpoint not implemented in backend yet
-          const allRes = await api.get('/api/products');
-          const found = allRes.data.find((p: any) => p._id === params.id);
-          setProduct(found);
-        }
-      } catch (error) {
-        console.error('Error fetching product:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (params.id) {
       fetchProduct();
     }
@@ -47,21 +49,37 @@ export default function ProductDetailPage() {
       return;
     }
 
+    setPurchasing(true);
     try {
       const res = await api.post('/api/orders', {
         productId: product._id,
         buyerId: (session.user as any).id || session.user.email, // Use real session ID
-        quantity: 1
+        quantity: quantity
       });
 
       if (res.status === 201) {
-        alert('Sikeres megrendelés!');
-        // Update local stock
-        setProduct({ ...product, stock: product.stock - 1 });
+        alert('Sikeres rendelés!');
+        // Refresh product to get new stock
+        await fetchProduct();
+        setQuantity(1);
       }
     } catch (error) {
       console.error('Purchase failed:', error);
       alert('Hiba történt a megrendelés során.');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const incrementQty = () => {
+    if (product && quantity < product.stock) {
+      setQuantity(q => q + 1);
+    }
+  };
+
+  const decrementQty = () => {
+    if (quantity > 1) {
+      setQuantity(q => q - 1);
     }
   };
 
@@ -86,6 +104,8 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const isOutOfStock = !product.stock || product.stock <= 0;
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
@@ -160,31 +180,70 @@ export default function ProductDetailPage() {
               </div>
 
               {/* ACTIONS */}
-              <div className="flex flex-col gap-4 mt-8">
+              <div className="flex flex-col gap-6 mt-8">
                 <div className="flex items-center justify-between">
-                  <span className={`font-bold ${product.stock > 0 ? 'text-[#1B4332]' : 'text-red-600'}`}>
-                    {product.stock > 0 ? `Készleten: ${product.stock} db` : 'ELFOGYOTT'}
+                  <span className={`font-bold text-lg ${!isOutOfStock ? 'text-[#1B4332]' : 'text-red-600'}`}>
+                    {!isOutOfStock ? `Készleten: ${product.stock} ${product.unit}` : 'ELFOGYOTT'}
                   </span>
                 </div>
+
+                {!isOutOfStock && (
+                  <div className="flex items-center gap-4">
+                    <span className="font-bold text-gray-700">Mennyiség:</span>
+                    <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden">
+                      <button
+                        onClick={decrementQty}
+                        className="p-3 hover:bg-gray-100 transition text-gray-600"
+                        disabled={quantity <= 1}
+                      >
+                        <Minus size={18} />
+                      </button>
+                      <input
+                        type="number"
+                        value={quantity}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          if (!isNaN(val) && val >= 1 && val <= product.stock) {
+                            setQuantity(val);
+                          }
+                        }}
+                        className="w-16 text-center font-bold text-[#1F2937] outline-none"
+                        min="1"
+                        max={product.stock}
+                      />
+                      <button
+                        onClick={incrementQty}
+                        className="p-3 hover:bg-gray-100 transition text-gray-600"
+                        disabled={quantity >= product.stock}
+                      >
+                        <Plus size={18} />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={handlePurchase}
-                    disabled={!product.stock || product.stock <= 0}
-                    className={`flex-1 py-4 rounded-xl font-bold text-lg transition shadow-md flex items-center justify-center gap-2 ${product.stock > 0
+                    disabled={isOutOfStock || purchasing}
+                    className={`flex-1 py-4 rounded-xl font-bold text-lg transition shadow-md flex items-center justify-center gap-2 ${!isOutOfStock
                       ? 'bg-[#1B4332] text-white hover:bg-[#2D6A4F]'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                   >
-                    <ShoppingCart size={20} />
-                    {product.stock > 0 ? 'Megrendelem' : 'ELFOGYOTT'}
+                    {purchasing ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    ) : (
+                      <ShoppingCart size={20} />
+                    )}
+                    {!isOutOfStock ? 'Megrendelem' : 'ELFOGYOTT'}
                   </button>
-                  <button
-                    onClick={() => console.log('Üzenet:', product)}
+                  <Link
+                    href={`/messages?recipient=${product.sellerEmail || ''}&product=${product._id}`}
                     className="flex-1 bg-white text-[#1F2937] border-2 border-gray-200 py-4 rounded-xl font-bold text-lg hover:border-[#1B4332] hover:text-[#1B4332] transition flex items-center justify-center gap-2"
                   >
                     <MessageCircle size={20} /> Üzenet az eladónak
-                  </button>
+                  </Link>
                 </div>
               </div>
 

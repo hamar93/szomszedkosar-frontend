@@ -10,9 +10,10 @@ import api from '@/lib/api';
 const CATEGORIES = [
   "Zöldség",
   "Gyümölcs",
-  "Hús",
+  "Húsáru",
   "Tejtermék",
   "Pékáru",
+  "Kamra",
   "Egyéb"
 ];
 

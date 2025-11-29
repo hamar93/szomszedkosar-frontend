@@ -9,7 +9,8 @@ import {
   Leaf,
   User,
   Package,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import api from '@/lib/api';
 import Link from 'next/link';
@@ -25,9 +26,10 @@ const CATEGORIES = [
   "Minden termék",
   "Zöldség",
   "Gyümölcs",
-  "Hús",
+  "Húsáru",
   "Tejtermék",
   "Pékáru",
+  "Kamra",
   "Egyéb"
 ];
 
@@ -36,6 +38,7 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Minden termék");
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,15 +66,49 @@ export default function FeedPage() {
     fetchData();
   }, []);
 
-  const handleSetDefaultLocation = () => {
-    const defaultLocation: UserLocation = {
-      latitude: 47.4979,
-      longitude: 19.0402,
-      city: "Budapest (Teszt)",
-      zipCode: "1000"
-    };
-    localStorage.setItem('szomszedkosar_user_location', JSON.stringify(defaultLocation));
-    setUserLocation(defaultLocation);
+  const handleGeolocation = () => {
+    if (!navigator.geolocation) {
+      alert('A böngésződ nem támogatja a helymeghatározást.');
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        let city = "Saját pozíció";
+        let zipCode = "";
+
+        // Reverse Geocoding (Nominatim)
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data && data.address) {
+            city = data.address.city || data.address.town || data.address.village || data.address.district || "Ismeretlen hely";
+            zipCode = data.address.postcode || "";
+          }
+        } catch (error) {
+          console.error("Reverse geocoding failed:", error);
+        }
+
+        const newLocation: UserLocation = {
+          latitude,
+          longitude,
+          city,
+          zipCode
+        };
+
+        localStorage.setItem('szomszedkosar_user_location', JSON.stringify(newLocation));
+        setUserLocation(newLocation);
+        setLocating(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert('Nem sikerült lekérni a pozíciódat. Kérlek engedélyezd a helymeghatározást.');
+        setLocating(false);
+      }
+    );
   };
 
   const LocationPrompt = () => (
@@ -85,10 +122,12 @@ export default function FeedPage() {
           Add meg a címedet vagy engedélyezd a helymeghatározást, hogy láthasd a környékbeli termelőket!
         </p>
         <button
-          onClick={handleSetDefaultLocation}
-          className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md"
+          onClick={handleGeolocation}
+          disabled={locating}
+          className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
         >
-          Helyzetem megosztása
+          {locating ? <Loader2 className="animate-spin" /> : <MapPin size={20} />}
+          {locating ? 'Helymeghatározás...' : 'Helyzetem megosztása'}
         </button>
       </div>
     </div>
@@ -103,8 +142,6 @@ export default function FeedPage() {
     // 2. Distance/Location Filter (Placeholder for now)
     return true;
   });
-
-  // --- RENDER ---
 
   if (loading) return <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center text-[#1B4332] font-bold">Betöltés...</div>;
 
