@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -35,7 +35,7 @@ interface Conversation {
   unreadCount: number;
 }
 
-export default function MessagesPage() {
+function MessagesClientLogic() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -269,5 +269,13 @@ export default function MessagesPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F5F5F0] text-[#1B4332]">Betöltés...</div>}>
+      <MessagesClientLogic />
+    </Suspense>
   );
 }
