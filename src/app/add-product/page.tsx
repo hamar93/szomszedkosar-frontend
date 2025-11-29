@@ -32,6 +32,7 @@ export default function AddProductPage() {
     imageUrl: '',
     description: '',
     isShippable: false,
+    stock: 1,
     location: 'Budapest' // Default location
   });
 
@@ -58,6 +59,7 @@ export default function AddProductPage() {
         price: Number(formData.price),
         sellerEmail: session?.user?.email,
         sellerName: session?.user?.name || 'Ismeretlen',
+        stock: Number(formData.stock),
         location: formData.location
       };
 
@@ -204,6 +206,21 @@ export default function AddProductPage() {
                   <option value="csomag">csomag</option>
                 </select>
               </div>
+            </div>
+
+            {/* Stock */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Készlet (Mennyiség)</label>
+              <input
+                type="number"
+                required
+                min="1"
+                value={formData.stock}
+                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none transition bg-gray-50 focus:bg-white"
+                placeholder="Pl. 10"
+              />
+              <p className="text-xs text-gray-500 mt-1">A vásárlások automatikusan csökkentik a készletet.</p>
             </div>
 
             {/* Location (Read-only) */}

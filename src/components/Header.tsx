@@ -12,7 +12,8 @@ import {
     LogOut,
     Settings,
     Package,
-    PlusCircle
+    PlusCircle,
+    MessageCircle
 } from 'lucide-react';
 
 export default function Header() {
@@ -75,6 +76,15 @@ export default function Header() {
                                 >
                                     <PlusCircle size={16} />
                                     Termék feltöltése
+                                </Link>
+
+                                {/* Messages Link */}
+                                <Link
+                                    href="/messages"
+                                    className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition text-gray-700 hover:text-[#1B4332]"
+                                    title="Üzenetek"
+                                >
+                                    <MessageCircle size={20} />
                                 </Link>
 
                                 {/* User Dropdown */}
@@ -145,6 +155,9 @@ export default function Header() {
                             <>
                                 <Link href="/add-product" className="flex items-center gap-2 text-[#1B4332] font-bold">
                                     <PlusCircle size={18} /> Termék feltöltése
+                                </Link>
+                                <Link href="/messages" className="flex items-center gap-2 text-gray-700">
+                                    <MessageCircle size={18} /> Üzenetek
                                 </Link>
                                 <Link href="/profile" className="flex items-center gap-2 text-gray-700">
                                     <User size={18} /> Profilom

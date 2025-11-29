@@ -19,7 +19,8 @@ import {
   Plus,
   Phone,
   Truck,
-  ShoppingBasket
+  ShoppingBasket,
+  Bell
 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -31,6 +32,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+  const [pushMessage, setPushMessage] = useState('');
 
   // Local user state
   const [displayUser, setDisplayUser] = useState<any>(null);
@@ -140,6 +143,29 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Credits purchase error:', error);
       alert('Hiba történt a vásárlás indításakor.');
+    }
+  };
+
+  const handleSendPush = async () => {
+    if (!pushMessage.trim()) return;
+    setPushLoading(true);
+    try {
+      const userId = (session?.user as any).id || session?.user?.email;
+      await api.post('/api/notifications/send', {
+        userId,
+        message: pushMessage,
+        radius: 15
+      });
+
+      alert('Sikeres küldés! A környékbeli vásárlók értesítést kaptak.');
+      setPushMessage('');
+      // Force page reload to update credits or handle state update if needed
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Push send error:', error);
+      alert(error.response?.data?.message || 'Hiba történt a küldéskor.');
+    } finally {
+      setPushLoading(false);
     }
   };
 
@@ -520,6 +546,43 @@ export default function ProfilePage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Send Push Notification Section */}
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                  <h3 className="text-xl font-bold text-[#1F2937] mb-4 flex items-center gap-2">
+                    <Bell className="text-[#1B4332]" /> Sürgős Értesítés Küldése
+                  </h3>
+                  <div className="bg-orange-50 border border-orange-100 rounded-2xl p-6">
+                    <p className="text-sm text-orange-800 mb-4">
+                      Van valami, amit gyorsan el kell adnod? Küldj értesítést a 15 km-es körzetben lévő vásárlóknak!
+                      <br />
+                      <strong>Ár: 1 kredit / küldés</strong>
+                    </p>
+
+                    <textarea
+                      rows={3}
+                      value={pushMessage}
+                      onChange={(e) => setPushMessage(e.target.value)}
+                      placeholder="Pl. Ma 17:00-ig friss eper kapható féláron a Fő téren!"
+                      className="w-full px-4 py-3 rounded-xl border border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none bg-white mb-4"
+                    />
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold text-gray-500">
+                        Egyenleg: {(user as any).pushCredits || 0} kredit
+                      </span>
+                      <button
+                        onClick={handleSendPush}
+                        disabled={pushLoading || !pushMessage.trim()}
+                        className="bg-orange-500 text-white px-6 py-2 rounded-xl font-bold hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {pushLoading ? <Loader2 size={18} className="animate-spin" /> : <Bell size={18} />}
+                        Küldés (1 kredit)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             )}
 
