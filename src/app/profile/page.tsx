@@ -358,7 +358,7 @@ export default function ProfilePage() {
                     ) : (
                       <div className="text-gray-900 font-medium flex items-center gap-2">
                         <MapPin size={16} className="text-gray-400" />
-                        {user.city || 'Nincs megadva'}
+                        {typeof user.city === 'string' ? user.city : 'Nincs megadva'}
                       </div>
                     )}
                   </div>
