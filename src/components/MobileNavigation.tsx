@@ -45,7 +45,7 @@ export default function MobileNavigation() {
     { href: '/help', icon: HelpCircle, label: 'Súgó' },
     { href: '/settings', icon: Settings, label: 'Beállítások' },
     { href: '/contact', icon: Mail, label: 'Kapcsolat' },
-    { href: '/about', icon: Info, label: 'Rólunk' },
+    { href: '/rolunk', icon: Info, label: 'Rólunk' },
     { href: '/terms', icon: FileText, label: 'ÁSZF' },
     { href: '/privacy', icon: Lock, label: 'Adatvédelem' }
   ]

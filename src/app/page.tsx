@@ -38,7 +38,7 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
             <Link href="/search" className="hover:text-[#1B4332] transition-colors">Termékek</Link>
             <Link href="/feed" className="hover:text-[#1B4332] transition-colors">Hírfolyam</Link>
-            <Link href="/about" className="hover:text-[#1B4332] transition-colors">Rólunk</Link>
+            <Link href="/rolunk" className="hover:text-[#1B4332] transition-colors">Rólunk</Link>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -67,7 +67,7 @@ export default function LandingPage() {
                 <Link href="/search" className="btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
                   Böngéssz a termékek között
                 </Link>
-                <Link href="/about" className="px-8 py-4 rounded-lg font-bold text-[#1B4332] border-2 border-[#1B4332] hover:bg-[#1B4332] hover:text-white transition-all text-center">
+                <Link href="/rolunk" className="px-8 py-4 rounded-lg font-bold text-[#1B4332] border-2 border-[#1B4332] hover:bg-[#1B4332] hover:text-white transition-all text-center">
                   Hogyan működik?
                 </Link>
               </div>
