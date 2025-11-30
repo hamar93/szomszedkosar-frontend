@@ -60,6 +60,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const storedLocation = localStorage.getItem('szomszedkosar_user_location');
         const params: any = {};
@@ -133,8 +134,26 @@ export default function FeedPage() {
       },
       (error) => {
         console.error("Geolocation error:", error);
-        alert('Nem sikerült lekérni a pozíciódat. Kérlek engedélyezd a helymeghatározást.');
+        alert('Nem sikerült lekérni a pozíciódat. Alapértelmezett helyszín (Budapest) beállítása.');
+
+        // Fallback to Budapest
+        const fallbackLocation: UserLocation = {
+          latitude: 47.4979,
+          longitude: 19.0402,
+          city: "Budapest",
+          zipCode: "1051"
+        };
+
+        localStorage.setItem('szomszedkosar_user_location', JSON.stringify(fallbackLocation));
+        setUserLocation(fallbackLocation);
         setLocating(false);
+
+        // Fetch products for Budapest
+        setLoading(true);
+        api.get('/api/products', { params: { city: "Budapest" } })
+          .then(res => setProducts(res.data))
+          .catch(e => console.error(e))
+          .finally(() => setLoading(false));
       }
     );
   };
@@ -170,7 +189,7 @@ export default function FeedPage() {
     return true;
   });
 
-  if (loading) return <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center text-[#1B4332] font-bold">Betöltés...</div>;
+  if (loading && !userLocation) return <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center text-[#1B4332] font-bold">Betöltés...</div>;
 
   if (!userLocation) {
     return (
