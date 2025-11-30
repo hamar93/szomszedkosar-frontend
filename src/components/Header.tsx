@@ -42,6 +42,15 @@ export default function Header() {
         }
     }, []);
 
+    const handleLogout = async () => {
+        if (typeof window !== 'undefined') {
+            // Clear all local storage to ensure clean state
+            localStorage.removeItem('szomszedkosar_user_location');
+            localStorage.clear(); // Hard clear to be safe
+        }
+        await signOut({ callbackUrl: window.location.origin });
+    };
+
     return (
         <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -135,7 +144,7 @@ export default function Header() {
 
                                             <div className="border-t border-gray-100 mt-1 pt-1">
                                                 <button
-                                                    onClick={() => signOut({ callbackUrl: window.location.origin })}
+                                                    onClick={handleLogout}
                                                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
                                                 >
                                                     <LogOut size={16} /> Kijelentkezés
@@ -185,7 +194,7 @@ export default function Header() {
                                 <Link href="/profile" className="flex items-center gap-2 text-gray-700">
                                     <User size={18} /> Profilom
                                 </Link>
-                                <button onClick={() => signOut({ callbackUrl: window.location.origin })} className="flex items-center gap-2 text-red-600 font-medium text-left">
+                                <button onClick={handleLogout} className="flex items-center gap-2 text-red-600 font-medium text-left">
                                     <LogOut size={18} /> Kijelentkezés
                                 </button>
                             </>

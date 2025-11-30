@@ -34,7 +34,7 @@ const MOCK_INVOICES = [
 ];
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const [activeTab, setActiveTab] = useState<'details' | 'products' | 'finance' | 'logistics'>('details');
 
   // Editing State
@@ -71,8 +71,37 @@ export default function ProfilePage() {
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
 
+  // Loading State for Session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F0]">
+        <div className="text-center">
+          <Loader2 className="animate-spin text-[#1B4332] mx-auto mb-4" size={48} />
+          <p className="text-gray-600 font-medium">Profil betöltése...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Unauthenticated State
+  if (status === 'unauthenticated' || !session?.user) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Kérjük jelentkezz be a profilod megtekintéséhez!</h2>
+            <Link href="/login" className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md">
+              Bejelentkezés
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
-    if (session?.user) {
+    if (status === 'authenticated' && session?.user) {
       setDisplayUser(session.user);
       setFormData({
         name: session.user.name || '',
@@ -90,14 +119,14 @@ export default function ProfilePage() {
         }
       });
     }
-  }, [session]);
+  }, [session, status]);
 
   // Fetch products when tab changes
   useEffect(() => {
-    if (activeTab === 'products' && session?.user) {
+    if (activeTab === 'products' && status === 'authenticated' && session?.user?.email) {
       fetchUserProducts();
     }
-  }, [activeTab, session]);
+  }, [activeTab, session, status]);
 
   const fetchUserProducts = async () => {
     setProductsLoading(true);
@@ -238,22 +267,6 @@ export default function ProfilePage() {
       return { ...prev, deliveryOptions: options };
     });
   };
-
-  if (!session?.user) {
-    return (
-      <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Kérjük jelentkezz be a profilod megtekintéséhez!</h2>
-            <Link href="/login" className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md">
-              Bejelentkezés
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const user = displayUser || session.user as any;
   const isProducer = user.role === 'producer';
@@ -834,60 +847,23 @@ export default function ProfilePage() {
                     )}
                   </div>
 
-                  {/* 3. Shipping */}
-                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                  {/* 3. Shipping (Foxpost/GLS) */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 opacity-70 pointer-events-none">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
                           <Package size={20} />
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900">Postai csomagküldés</h3>
-                          <p className="text-sm text-gray-500">Foxpost, Packeta, MPL, stb.</p>
+                          <h3 className="font-bold text-gray-900">Csomagküldés (Foxpost, GLS)</h3>
+                          <p className="text-sm text-gray-500">Hamarosan érkezik...</p>
                         </div>
                       </div>
-                      {isEditing ? (
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={formData.logistics.hasShipping}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              logistics: { ...formData.logistics, hasShipping: e.target.checked }
-                            })}
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
-                        </label>
-                      ) : (
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${formData.logistics.hasShipping ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
-                          {formData.logistics.hasShipping ? 'Engedélyezve' : 'Kikapcsolva'}
-                        </span>
-                      )}
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-500">
+                        Hamarosan
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500 ml-13">
-                      Ha bekapcsolod, a "Postázható" jelölésű termékeidnél megjelenik a csomagküldés opció a vevőknek.
-                    </p>
                   </div>
-
-                  {isEditing && (
-                    <div className="flex gap-3 pt-4">
-                      <button
-                        onClick={handleSave}
-                        disabled={loading}
-                        className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition flex items-center gap-2"
-                      >
-                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
-                        Mentés
-                      </button>
-                      <button
-                        onClick={() => setIsEditing(false)}
-                        className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition flex items-center gap-2"
-                      >
-                        <X size={18} /> Mégse
-                      </button>
-                    </div>
-                  )}
 
                 </div>
               </div>
@@ -895,58 +871,6 @@ export default function ProfilePage() {
 
           </div>
         </div>
-
-        {/* CHEF UPGRADE MODAL */}
-        {showChefModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[#1F2937]">Regisztráció Séfként</h2>
-                <button onClick={() => setShowChefModal(false)} className="text-gray-400 hover:text-gray-600">
-                  <X size={24} />
-                </button>
-              </div>
-
-              <p className="text-gray-600 mb-6">
-                Séfként vagy étteremként hozzáférhetsz a B2B funkciókhoz, nagy tételben vásárolhatsz és közvetlen kapcsolatba léphetsz a termelőkkel.
-              </p>
-
-              <form onSubmit={handleChefUpgrade} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Cégnév / Étterem neve</label>
-                  <input
-                    type="text"
-                    required
-                    value={chefData.companyName}
-                    onChange={(e) => setChefData({ ...chefData, companyName: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
-                    placeholder="Pl. Kisvendéglő Kft."
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Adószám</label>
-                  <input
-                    type="text"
-                    required
-                    value={chefData.taxNumber}
-                    onChange={(e) => setChefData({ ...chefData, taxNumber: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
-                    placeholder="12345678-1-42"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 mt-4"
-                >
-                  {loading ? <Loader2 className="animate-spin" /> : <Check size={20} />}
-                  Regisztráció megerősítése
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
