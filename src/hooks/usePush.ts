@@ -5,6 +5,11 @@ import { useSession } from 'next-auth/react';
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BL45wWzteYh93_KYUFF9UZOu9GSuK10Z2ubePP3Um23y9i9DCV6-1giYFPeX-k85jMWDhi16aOE4zA-4DtXu5Mk';
 
 function urlBase64ToUint8Array(base64String: string) {
+    // SSR Guard - window.atob is not available on server
+    if (typeof window === 'undefined') {
+        return new Uint8Array();
+    }
+
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
         .replace(/\-/g, '+')
@@ -26,12 +31,19 @@ export function usePush() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.pushManager.getSubscription().then(subscription => {
+        // SSR Guard - Only run in browser environment
+        if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.ready
+                .then(registration => {
+                    return registration.pushManager.getSubscription();
+                })
+                .then(subscription => {
                     setIsSubscribed(!!subscription);
+                })
+                .catch((error) => {
+                    // Silently fail if service worker is not available
+                    console.debug('Push notification check failed:', error);
                 });
-            });
         }
     }, []);
 
@@ -45,7 +57,8 @@ export function usePush() {
         setError(null);
 
         try {
-            if (!('serviceWorker' in navigator)) {
+            // SSR Guard - Only run in browser environment
+            if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
                 throw new Error('A böngésző nem támogatja a Service Workereket.');
             }
 
