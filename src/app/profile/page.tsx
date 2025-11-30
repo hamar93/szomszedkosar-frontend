@@ -71,34 +71,7 @@ export default function ProfilePage() {
   const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
 
-  // Loading State for Session
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F0]">
-        <div className="text-center">
-          <Loader2 className="animate-spin text-[#1B4332] mx-auto mb-4" size={48} />
-          <p className="text-gray-600 font-medium">Profil betöltése...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Unauthenticated State
-  if (status === 'unauthenticated' || !session?.user) {
-    return (
-      <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Kérjük jelentkezz be a profilod megtekintéséhez!</h2>
-            <Link href="/login" className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md">
-              Bejelentkezés
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // --- EFFECTS (Must be unconditional) ---
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
@@ -267,6 +240,37 @@ export default function ProfilePage() {
       return { ...prev, deliveryOptions: options };
     });
   };
+
+  // --- CONDITIONAL RENDERS (Must be after hooks) ---
+
+  // Loading State for Session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F0]">
+        <div className="text-center">
+          <Loader2 className="animate-spin text-[#1B4332] mx-auto mb-4" size={48} />
+          <p className="text-gray-600 font-medium">Profil betöltése...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Unauthenticated State
+  if (status === 'unauthenticated' || !session?.user) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Kérjük jelentkezz be a profilod megtekintéséhez!</h2>
+            <Link href="/login" className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md">
+              Bejelentkezés
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const user = displayUser || session.user as any;
   const isProducer = user.role === 'producer';
