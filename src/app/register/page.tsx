@@ -19,7 +19,7 @@ import {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [userType, setUserType] = useState<'buyer' | 'producer'>('buyer');
+  const [userType, setUserType] = useState<'buyer' | 'producer' | 'chef'>('buyer');
   const [isOccasionalSeller, setIsOccasionalSeller] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -28,7 +28,9 @@ export default function RegisterPage() {
     confirmPassword: '',
     phone: '',
     address: '',
-    businessDescription: ''
+    businessDescription: '',
+    taxNumber: '',
+    companyName: ''
   });
 
   const handleGoogleRegister = () => {
@@ -40,14 +42,22 @@ export default function RegisterPage() {
     console.log('Regisztráció:', { ...formData, userType, isOccasionalSeller });
 
     try {
+      // Validation for B2B fields
+      if ((userType === 'producer' || userType === 'chef') && (!formData.taxNumber || !formData.companyName)) {
+        alert('Kérjük, töltsd ki az adószámot és a cégnevet!');
+        return;
+      }
+
       const payload = {
         name: formData.fullName,
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-        role: userType, // 'buyer' or 'producer'
+        role: userType, // 'buyer', 'producer', or 'chef'
         city: formData.address, // Mapping address to city for now
-        bio: formData.businessDescription
+        bio: formData.businessDescription,
+        taxNumber: formData.taxNumber,
+        companyName: formData.companyName
       };
 
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register`, payload);
@@ -129,6 +139,23 @@ export default function RegisterPage() {
                       <div>
                         <span className={`block text-lg font-bold mb-1 ${userType === 'producer' ? 'text-[#1B4332]' : 'text-gray-900'}`}>Termelő vagyok</span>
                         <span className="text-sm text-gray-600">Saját termesztésű árut szeretnék eladni.</span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setUserType('chef')}
+                      className={`p-6 rounded-2xl border-2 text-left transition-all duration-200 flex items-start gap-4 ${userType === 'chef'
+                        ? 'border-[#1B4332] bg-[#F0F4F1] ring-1 ring-[#1B4332]'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        }`}
+                    >
+                      <div className={`p-3 rounded-xl ${userType === 'chef' ? 'bg-[#1B4332] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        <ShoppingBasket size={24} />
+                      </div>
+                      <div>
+                        <span className={`block text-lg font-bold mb-1 ${userType === 'chef' ? 'text-[#1B4332]' : 'text-gray-900'}`}>Étterem / Séf</span>
+                        <span className="text-sm text-gray-600">Nagy tételben vásárolnék termelőktől.</span>
                       </div>
                     </button>
                   </div>
@@ -247,6 +274,43 @@ export default function RegisterPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* B2B Fields for Producer and Chef */}
+                {(userType === 'producer' || userType === 'chef') && (
+                  <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 space-y-6">
+                    <h3 className="font-bold text-blue-900 flex items-center gap-2">
+                      <FileText size={20} />
+                      {userType === 'producer' ? 'Őstermelői / Vállalkozói Adatok' : 'Cégadatok'}
+                    </h3>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                          {userType === 'producer' ? 'Őstermelői név / Cégnév' : 'Cégnév / Étterem neve'}
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.companyName}
+                          onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                          placeholder={userType === 'producer' ? "Pl. Kiss János E.V." : "Pl. Finom Falatok Kft."}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Adószám</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.taxNumber}
+                          onChange={(e) => setFormData({ ...formData, taxNumber: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                          placeholder="12345678-1-42"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {(userType === 'producer' || isOccasionalSeller) && (
                   <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">

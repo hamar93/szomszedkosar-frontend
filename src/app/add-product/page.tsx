@@ -39,7 +39,10 @@ export default function AddProductPage() {
     description: '',
     isShippable: false,
     stock: 1,
-    location: 'Budapest' // Default location
+    location: 'Budapest', // Default location
+    isWholesaleAvailable: false,
+    wholesalePrice: '',
+    minWholesaleQuantity: 10
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,6 +62,25 @@ export default function AddProductPage() {
       return;
     }
 
+    // Wholesale Validation
+    if (formData.isWholesaleAvailable) {
+      if (!formData.wholesalePrice || Number(formData.wholesalePrice) <= 0) {
+        setError('A nagykereskedelmi árnak nagyobbnak kell lennie 0-nál!');
+        setLoading(false);
+        return;
+      }
+      if (Number(formData.wholesalePrice) >= Number(formData.price)) {
+        setError('A nagykereskedelmi árnak alacsonyabbnak kell lennie a normál árnál!');
+        setLoading(false);
+        return;
+      }
+      if (Number(formData.minWholesaleQuantity) <= 1) {
+        setError('A minimum rendelési mennyiségnek nagyobbnak kell lennie 1-nél!');
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const payload = {
         ...formData,
@@ -66,7 +88,10 @@ export default function AddProductPage() {
         sellerEmail: session?.user?.email,
         sellerName: session?.user?.name || 'Ismeretlen',
         stock: Number(formData.stock),
-        location: formData.location
+        location: formData.location,
+        isWholesaleAvailable: formData.isWholesaleAvailable,
+        wholesalePrice: formData.isWholesaleAvailable ? Number(formData.wholesalePrice) : undefined,
+        minWholesaleQuantity: formData.isWholesaleAvailable ? Number(formData.minWholesaleQuantity) : undefined
       };
 
       console.log('🔍 DEBUG: Product creation payload:', payload);
@@ -227,6 +252,54 @@ export default function AddProductPage() {
                 placeholder="Pl. 10"
               />
               <p className="text-xs text-gray-500 mt-1">A vásárlások automatikusan csökkentik a készletet.</p>
+            </div>
+
+            {/* Wholesale Settings */}
+            <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-bold text-green-900 text-lg">Nagykereskedelmi Beállítások</h3>
+                  <p className="text-sm text-green-700">Étteremnek vagy séfeknek történő eladás esetén.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.isWholesaleAvailable}
+                    onChange={(e) => setFormData({ ...formData, isWholesaleAvailable: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+                </label>
+              </div>
+
+              {formData.isWholesaleAvailable && (
+                <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Nagyker ár (Ft/{formData.unit})</label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={formData.wholesalePrice}
+                      onChange={(e) => setFormData({ ...formData, wholesalePrice: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                      placeholder="Pl. 1200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Minimum rendelési mennyiség</label>
+                    <input
+                      type="number"
+                      required
+                      min="2"
+                      value={formData.minWholesaleQuantity}
+                      onChange={(e) => setFormData({ ...formData, minWholesaleQuantity: Number(e.target.value) })}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                      placeholder="Pl. 10"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Location (Read-only) */}

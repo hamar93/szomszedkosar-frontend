@@ -16,6 +16,15 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [purchasing, setPurchasing] = useState(false);
 
+  // Check if user is a chef
+  const isChef = (session?.user as any)?.role === 'chef';
+  // Check if wholesale is available and user is eligible
+  const isWholesaleEligible = product?.isWholesaleAvailable && isChef;
+  // Calculate current price based on quantity and eligibility
+  const currentPrice = isWholesaleEligible && quantity >= product.minWholesaleQuantity
+    ? product.wholesalePrice
+    : product?.price;
+
   const fetchProduct = async () => {
     try {
       // Try specific endpoint first
@@ -54,7 +63,9 @@ export default function ProductDetailPage() {
       const res = await api.post('/api/orders', {
         productId: product._id,
         buyerId: (session.user as any).id || session.user.email, // Use real session ID
-        quantity: quantity
+        quantity: quantity,
+        price: currentPrice, // Send the calculated price
+        isWholesale: isWholesaleEligible && quantity >= product.minWholesaleQuantity
       });
 
       if (res.status === 201) {
@@ -148,8 +159,15 @@ export default function ProductDetailPage() {
               <div className="mb-auto">
                 <div className="flex items-start justify-between mb-4">
                   <h1 className="text-3xl lg:text-4xl font-bold text-[#1F2937]">{product.name}</h1>
-                  <div className="text-2xl lg:text-3xl font-bold text-[#1B4332]">
-                    {product.price} Ft <span className="text-lg text-gray-500 font-normal">/ {product.unit}</span>
+                  <div className="flex flex-col items-end">
+                    <div className="text-2xl lg:text-3xl font-bold text-[#1B4332]">
+                      {currentPrice} Ft <span className="text-lg text-gray-500 font-normal">/ {product.unit}</span>
+                    </div>
+                    {isWholesaleEligible && (
+                      <div className="text-sm text-green-600 font-bold bg-green-50 px-2 py-1 rounded-lg mt-1">
+                        Nagyker ár elérhető {product.minWholesaleQuantity} {product.unit} felett! ({product.wholesalePrice} Ft)
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -239,7 +257,9 @@ export default function ProductDetailPage() {
                     ) : (
                       <ShoppingCart size={20} />
                     )}
-                    {!isOutOfStock ? 'Megrendelem' : 'ELFOGYOTT'}
+                    {!isOutOfStock
+                      ? (isWholesaleEligible && quantity >= product.minWholesaleQuantity ? 'B2B Előrendelés Leadása' : 'Megrendelem')
+                      : 'ELFOGYOTT'}
                   </button>
                   <Link
                     href={`/messages?recipient=${product.sellerEmail || ''}&product=${product._id}`}

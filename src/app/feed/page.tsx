@@ -238,6 +238,13 @@ export default function FeedPage() {
                         </div>
                       )}
 
+                      {product.isWholesaleAvailable && (
+                        <div className="bg-green-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-green-800 shadow-sm flex items-center gap-1">
+                          <Package size={12} />
+                          Nagyker ár
+                        </div>
+                      )}
+
                       {/* Discount Badge */}
                       {product.originalPrice && product.originalPrice > product.price && (
                         <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
