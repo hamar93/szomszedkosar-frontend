@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import api from '@/lib/api';
 import {
   ShoppingBasket,
   Search,
@@ -16,7 +17,8 @@ import {
   Check,
   Clock,
   Tag,
-  Flame
+  Flame,
+  Loader2
 } from 'lucide-react';
 
 // Termék kategóriák és típusok
@@ -47,91 +49,22 @@ const categories = [
   }
 ];
 
-// Mock termékek
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Friss meggy',
-    category: 'perishable',
-    subcategory: 'Gyümölcs',
-    price: 800,
-    unit: 'kg',
-    seller: 'Marika Néni',
-    location: 'Balatonfüred',
-    distance: '2 km',
-    rating: 4.9,
-    reviews: 23,
-    description: 'Frissen szedett házi meggy, vegyszermentes.',
-    quantity: '15 kg elérhető',
-    delivery: ['pickup', 'local_delivery'],
-    urgent: true,
-    organic: true,
-    icon: Leaf,
-    color: 'bg-red-100 text-red-600'
-  },
-  {
-    id: '2',
-    name: 'Bio tojás',
-    category: 'perishable',
-    subcategory: 'Tojás',
-    price: 60,
-    unit: 'db',
-    seller: 'Kovács Gazda',
-    location: 'Veszprém',
-    distance: '5 km',
-    rating: 4.8,
-    reviews: 45,
-    description: 'Szabadtartású tyúkok tojásai.',
-    quantity: '50 db készleten',
-    delivery: ['pickup'],
-    organic: true,
-    icon: Users,
-    color: 'bg-orange-100 text-orange-600'
-  },
-  {
-    id: '4',
-    name: 'Házi meggylekvár',
-    category: 'preserved',
-    subcategory: 'Lekvár',
-    price: 1200,
-    unit: 'üveg',
-    seller: 'Kiss Margit',
-    location: 'Jaszberény',
-    distance: '12 km',
-    rating: 4.7,
-    reviews: 34,
-    description: 'Cukor nélkül főzött, steviával édesített.',
-    quantity: '20 üveg készleten',
-    delivery: ['pickup', 'local_delivery', 'shipping'],
-    organic: true,
-    icon: ShoppingBasket,
-    color: 'bg-purple-100 text-purple-600'
-  },
-  {
-    id: '6',
-    name: 'Túlérett almák - AKCIÓ!',
-    category: 'perishable',
-    subcategory: 'Gyümölcs',
-    price: 250,
-    originalPrice: 400,
-    unit: 'kg',
-    seller: 'Szabó Kert',
-    location: 'Esztergom',
-    distance: '7 km',
-    rating: 4.5,
-    reviews: 12,
-    description: 'Túlérett, de még kiváló befőzéshez!',
-    quantity: '30 kg - gyorsan elkel',
-    delivery: ['pickup'],
-    discount: true,
-    discountPercent: 37,
-    urgent: true,
-    icon: Leaf,
-    color: 'bg-green-100 text-green-600'
-  }
-];
+const MOCK_IMAGES: Record<string, string> = {
+  "Gyümölcs": "https://images.unsplash.com/photo-1528821128474-27f963b062bf?q=80&w=800&auto=format&fit=crop", // Cseresznye
+  "Tojás & Tej": "https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=800&auto=format&fit=crop", // Tej
+  "Zöldség": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop", // Zöldség
+  "Hús & Húskészítmények": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=800&auto=format&fit=crop", // Hús (Generic)
+  "Pékáru": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop", // Kenyér (Generic)
+  "default": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop" // Fallback (Zöldség)
+};
+
+const getMockImage = (category: string) => {
+  return MOCK_IMAGES[category] || MOCK_IMAGES["default"];
+};
 
 export default function SearchPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSubcategory, setSelectedSubcategory] = useState('all');
@@ -146,29 +79,55 @@ export default function SearchPage() {
     discount: false
   });
 
-  // Szűrés és rendezés logika (megtartva az eredetit, csak tisztítva)
-  const filteredProducts = mockProducts
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get('/api/products');
+        setProducts(res.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Szűrés és rendezés logika
+  const filteredProducts = products
     .filter(product => {
       if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !product.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      if (selectedCategory !== 'all' && product.category !== selectedCategory) return false;
-      if (selectedSubcategory !== 'all' && product.subcategory !== selectedSubcategory) return false;
 
-      const distance = parseInt(product.distance.replace(' km', ''));
-      if (distance > filters.maxDistance) return false;
+      // Category mapping logic (simplified for now as backend categories might differ from frontend UI categories)
+      // In a real app, we would map backend categories to these UI categories
+      if (selectedCategory !== 'all') {
+        // This is a simplification. Ideally backend returns 'type' or we map 'category' to these groups.
+        // For now, we skip strict category checking or implement a basic mapping if needed.
+        // Let's assume 'category' in product matches one of the subcategories for simplicity or we just filter by text if no direct match.
+      }
+
+      if (selectedSubcategory !== 'all' && product.category !== selectedSubcategory) return false;
+
+      // Distance logic would require user location, skipping for now or using mock distance
+      // const distance = parseInt(product.distance.replace(' km', ''));
+      // if (distance > filters.maxDistance) return false;
+
       if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) return false;
-      if (filters.organic && !product.organic) return false;
-      if (filters.urgent && !product.urgent) return false;
-      if (filters.discount && !product.discount) return false;
+      // if (filters.organic && !product.organic) return false;
+      // if (filters.urgent && !product.urgent) return false;
+      // if (filters.discount && !product.discount) return false;
 
       return true;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'distance': return parseInt(a.distance) - parseInt(b.distance);
+        // case 'distance': return parseInt(a.distance) - parseInt(b.distance);
         case 'price_low': return a.price - b.price;
         case 'price_high': return b.price - a.price;
-        case 'rating': return b.rating - a.rating;
+        // case 'rating': return b.rating - a.rating;
         default: return 0;
       }
     });
@@ -346,70 +305,80 @@ export default function SearchPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="animate-spin text-[#1B4332] w-10 h-10" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <Link key={product._id} href={`/product/${product._id}`} className="group">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group h-full flex flex-col">
 
-              {/* Card Image Area */}
-              <div className={`h-48 ${product.color.split(' ')[0]} flex items-center justify-center relative`}>
-                <div className={`w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
-                  <product.icon size={40} className={product.color.split(' ')[1]} />
-                </div>
+                  {/* Card Image Area */}
+                  <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
+                    <img
+                      src={product.imageUrl || getMockImage(product.category)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col gap-2">
-                  {product.urgent && (
-                    <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
-                      SÜRGŐS
-                    </span>
-                  )}
-                  {product.discount && (
-                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
-                      -{product.discountPercent}%
-                    </span>
-                  )}
-                </div>
-              </div>
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                      {product.isShippable && (
+                        <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                          Szállítás
+                        </span>
+                      )}
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Card Content */}
-              <div className="p-5">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">
-                    {product.name}
-                  </h3>
-                  <div className="text-right">
-                    {product.discount && (
-                      <span className="block text-xs text-gray-400 line-through">
-                        {product.originalPrice} Ft
-                      </span>
-                    )}
-                    <span className="text-[#1B4332] font-bold">
-                      {product.price} Ft
-                      <span className="text-xs font-normal text-gray-500">/{product.unit}</span>
-                    </span>
+                  {/* Card Content */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">
+                        {product.name}
+                      </h3>
+                      <div className="text-right shrink-0 ml-2">
+                        {product.originalPrice && product.originalPrice > product.price && (
+                          <span className="block text-xs text-gray-400 line-through">
+                            {product.originalPrice} Ft
+                          </span>
+                        )}
+                        <span className="text-[#1B4332] font-bold whitespace-nowrap">
+                          {product.price} Ft
+                          <span className="text-xs font-normal text-gray-500">/{product.unit}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-grow">
+                      {product.description}
+                    </p>
+
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 bg-gray-50 p-2 rounded-lg mt-auto">
+                      <Users size={14} />
+                      <span className="font-medium truncate">{product.sellerName || 'Termelő'}</span>
+                      <span className="mx-1">•</span>
+                      <MapPin size={14} />
+                      <span className="truncate">{product.user?.city || 'Helyszín'}</span>
+                    </div>
+
+                    <button className="w-full bg-white border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-bold hover:bg-[#1B4332] hover:text-white transition flex items-center justify-center gap-2 group-hover:shadow-md">
+                      Részletek
+                      <ArrowRight size={16} />
+                    </button>
                   </div>
                 </div>
-
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[40px]">
-                  {product.description}
-                </p>
-
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 bg-gray-50 p-2 rounded-lg">
-                  <Users size={14} />
-                  <span className="font-medium truncate">{product.seller}</span>
-                  <span className="mx-1">•</span>
-                  <MapPin size={14} />
-                  <span className="truncate">{product.distance}</span>
-                </div>
-
-                <button className="w-full bg-white border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-bold hover:bg-[#1B4332] hover:text-white transition flex items-center justify-center gap-2 group-hover:shadow-md">
-                  Részletek
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
 
     </div>

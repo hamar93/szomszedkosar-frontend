@@ -63,12 +63,10 @@ export default function Header() {
                     <div className="hidden md:flex items-center gap-4">
 
                         {/* Location Badge */}
-                        {userLocation && (
-                            <div className="flex items-center gap-2 text-sm text-[#1B4332] font-bold bg-[#E8ECE9] px-3 py-1.5 rounded-full">
-                                <MapPin size={14} />
-                                {userLocation.city}
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2 text-sm text-[#1B4332] font-bold bg-[#E8ECE9] px-3 py-1.5 rounded-full">
+                            <MapPin size={14} />
+                            {userLocation ? userLocation.city : 'Helymeghatározás...'}
+                        </div>
 
                         {session ? (
                             <div className="flex items-center gap-4">
