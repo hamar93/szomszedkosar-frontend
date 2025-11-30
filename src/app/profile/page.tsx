@@ -477,10 +477,18 @@ export default function ProfilePage() {
                 ) : products.length > 0 ? (
                   <div className="grid gap-4">
                     {products.map((product) => (
-                      <div key={product._id} className="flex items-center gap-4 p-4 border border-gray-100 rounded-xl hover:border-[#1B4332] transition group">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <div key={product._id} className={`flex items-center gap-4 p-4 border rounded-xl transition group relative ${product.stock === 0 ? 'border-red-200 bg-red-50' : 'border-gray-100 hover:border-[#1B4332]'}`}>
+
+                        {/* Sold Out Overlay/Badge */}
+                        {product.stock === 0 && (
+                          <div className="absolute top-2 right-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                            🔴 ELFOGYOTT (Inaktív)
+                          </div>
+                        )}
+
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                           {product.imageUrl ? (
-                            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                            <img src={product.imageUrl} alt={product.name} className={`w-full h-full object-cover ${product.stock === 0 ? 'grayscale' : ''}`} />
                           ) : (
                             <ShoppingBasket className="text-gray-400" />
                           )}
@@ -493,8 +501,35 @@ export default function ProfilePage() {
                               <span className="text-gray-400 text-xs line-through ml-2">{product.originalPrice} Ft</span>
                             )}
                           </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Készlet: <span className={`font-bold ${product.stock === 0 ? 'text-red-600' : 'text-gray-700'}`}>{product.stock || 0} {product.unit}</span>
+                          </p>
                         </div>
+
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
+
+                          {/* Restock Button */}
+                          <button
+                            onClick={() => {
+                              const newStock = prompt(`Készlet feltöltése (${product.unit}):`, '10');
+                              if (newStock && !isNaN(Number(newStock)) && Number(newStock) > 0) {
+                                api.put(`/api/products/${product._id}`, { stock: Number(newStock) })
+                                  .then(() => {
+                                    alert('Sikeres készletfeltöltés!');
+                                    fetchUserProducts();
+                                  })
+                                  .catch(err => {
+                                    console.error(err);
+                                    alert('Hiba történt a feltöltés során.');
+                                  });
+                              }
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                            title="Készlet feltöltése"
+                          >
+                            <Plus size={18} />
+                          </button>
+
                           <button
                             onClick={() => {
                               const salePrice = prompt('Add meg az akciós árat (Ft):', product.price);
@@ -530,6 +565,7 @@ export default function ProfilePage() {
                               }
                             }}
                             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                            title="Törlés"
                           >
                             <Trash2 size={18} />
                           </button>

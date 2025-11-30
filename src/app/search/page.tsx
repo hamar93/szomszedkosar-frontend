@@ -18,7 +18,9 @@ import {
   Clock,
   Tag,
   Flame,
-  Loader2
+  Loader2,
+  Package,
+  User
 } from 'lucide-react';
 
 // Termék kategóriák és típusok
@@ -313,68 +315,72 @@ export default function SearchPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <Link key={product._id} href={`/product/${product._id}`} className="group">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group h-full flex flex-col">
-
-                  {/* Card Image Area */}
+                <article className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
                   <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
+                    {/* IMAGE OR FALLBACK */}
                     <img
                       src={product.imageUrl || getMockImage(product.category)}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
 
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    {/* BADGES */}
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                       {product.isShippable && (
-                        <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
-                          Szállítás
-                        </span>
+                        <div className="bg-blue-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-blue-700 shadow-sm flex items-center gap-1">
+                          <Package size={12} />
+                          Országos szállítás
+                        </div>
                       )}
+
+                      {product.isWholesaleAvailable && (
+                        <div className="bg-green-100 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-green-800 shadow-sm flex items-center gap-1">
+                          <Package size={12} />
+                          Nagyker ár
+                        </div>
+                      )}
+
+                      {/* Discount Badge */}
                       {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
                           -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                        </span>
+                        </div>
                       )}
+
+                      <div className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-[#1B4332] shadow-sm">
+                        {product.category}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Card Content */}
-                  <div className="p-5 flex flex-col flex-grow">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">
-                        {product.name}
-                      </h3>
-                      <div className="text-right shrink-0 ml-2">
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span className="block text-xs text-gray-400 line-through">
-                            {product.originalPrice} Ft
-                          </span>
-                        )}
-                        <span className="text-[#1B4332] font-bold whitespace-nowrap">
-                          {product.price} Ft
-                          <span className="text-xs font-normal text-gray-500">/{product.unit}</span>
-                        </span>
-                      </div>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-[#1F2937] group-hover:text-[#1B4332] transition line-clamp-1">{product.name}</h3>
+                      <span className="text-lg font-bold text-[#1B4332] whitespace-nowrap ml-2">{product.price} Ft/{product.unit}</span>
                     </div>
 
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-grow">
+                    <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">
                       {product.description}
                     </p>
 
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 bg-gray-50 p-2 rounded-lg mt-auto">
-                      <Users size={14} />
-                      <span className="font-medium truncate">{product.sellerName || 'Termelő'}</span>
-                      <span className="mx-1">•</span>
-                      <MapPin size={14} />
-                      <span className="truncate">{product.user?.city || 'Helyszín'}</span>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <User size={14} className="text-gray-600" />
+                        </div>
+                        <div className="text-xs">
+                          <p className="font-bold text-gray-900 line-clamp-1">{product.sellerName || product.user?.name || 'Termelő'}</p>
+                          <p className="text-gray-500">
+                            {product.user?.city || 'Helyszín'}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[#1B4332] font-bold text-sm hover:underline">
+                        Részletek
+                      </span>
                     </div>
-
-                    <button className="w-full bg-white border-2 border-[#1B4332] text-[#1B4332] py-2.5 rounded-xl font-bold hover:bg-[#1B4332] hover:text-white transition flex items-center justify-center gap-2 group-hover:shadow-md">
-                      Részletek
-                      <ArrowRight size={16} />
-                    </button>
                   </div>
-                </div>
+                </article>
               </Link>
             ))}
           </div>
