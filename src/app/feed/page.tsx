@@ -51,6 +51,62 @@ const getMockImage = (category: string) => {
   return MOCK_IMAGES[category] || MOCK_IMAGES["default"];
 };
 
+const LocationPrompt = ({
+  locating,
+  handleGeolocation,
+  manualCity,
+  setManualCity,
+  handleManualLocation
+}: {
+  locating: boolean;
+  handleGeolocation: () => void;
+  manualCity: string;
+  setManualCity: (value: string) => void;
+  handleManualLocation: (e: React.FormEvent) => void;
+}) => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full border border-gray-100">
+      <div className="w-20 h-20 bg-[#F0F4F1] rounded-full flex items-center justify-center mx-auto mb-6">
+        <MapPin className="text-[#1B4332] w-10 h-10" />
+      </div>
+      <h2 className="text-2xl font-bold text-[#1F2937] mb-3">Hol vagy most?</h2>
+      <p className="text-gray-600 mb-8 leading-relaxed">
+        Add meg a címedet vagy engedélyezd a helymeghatározást, hogy láthasd a környékbeli termelőket!
+      </p>
+      <button
+        onClick={handleGeolocation}
+        disabled={locating}
+        className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 mb-6"
+      >
+        {locating ? <Loader2 className="animate-spin" /> : <MapPin size={20} />}
+        {locating ? 'Helymeghatározás...' : 'Helyzetem megosztása'}
+      </button>
+
+      <div className="relative flex py-2 items-center mb-6">
+        <div className="flex-grow border-t border-gray-200"></div>
+        <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">vagy</span>
+        <div className="flex-grow border-t border-gray-200"></div>
+      </div>
+
+      <form onSubmit={handleManualLocation} className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Város neve (pl. Budapest)"
+          className="flex-grow px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
+          value={manualCity}
+          onChange={(e) => setManualCity(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition"
+        >
+          Mehet
+        </button>
+      </form>
+    </div>
+  </div>
+);
+
 export default function FeedPage() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -164,50 +220,6 @@ export default function FeedPage() {
       .finally(() => setLoading(false));
   };
 
-  const LocationPrompt = () => (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-      <div className="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full border border-gray-100">
-        <div className="w-20 h-20 bg-[#F0F4F1] rounded-full flex items-center justify-center mx-auto mb-6">
-          <MapPin className="text-[#1B4332] w-10 h-10" />
-        </div>
-        <h2 className="text-2xl font-bold text-[#1F2937] mb-3">Hol vagy most?</h2>
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          Add meg a címedet vagy engedélyezd a helymeghatározást, hogy láthasd a környékbeli termelőket!
-        </p>
-        <button
-          onClick={handleGeolocation}
-          disabled={locating}
-          className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 mb-6"
-        >
-          {locating ? <Loader2 className="animate-spin" /> : <MapPin size={20} />}
-          {locating ? 'Helymeghatározás...' : 'Helyzetem megosztása'}
-        </button>
-
-        <div className="relative flex py-2 items-center mb-6">
-          <div className="flex-grow border-t border-gray-200"></div>
-          <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">vagy</span>
-          <div className="flex-grow border-t border-gray-200"></div>
-        </div>
-
-        <form onSubmit={handleManualLocation} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Város neve (pl. Budapest)"
-            className="flex-grow px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
-            value={manualCity}
-            onChange={(e) => setManualCity(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition"
-          >
-            Mehet
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-
   // --- FILTERING LOGIC ---
   const filteredProducts = products.filter(product => {
     // 1. Category Filter
@@ -223,7 +235,13 @@ export default function FeedPage() {
     return (
       <div className="min-h-screen bg-[#F5F5F0] font-sans">
         <Header />
-        <LocationPrompt />
+        <LocationPrompt
+          locating={locating}
+          handleGeolocation={handleGeolocation}
+          manualCity={manualCity}
+          setManualCity={setManualCity}
+          handleManualLocation={handleManualLocation}
+        />
       </div>
     );
   }
