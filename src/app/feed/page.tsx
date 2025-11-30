@@ -22,21 +22,27 @@ interface UserLocation {
 }
 
 const CATEGORIES = [
-  "Minden termék",
+  "Összes",
   "Zöldség",
   "Gyümölcs",
-  "Húsáru",
-  "Tejtermék",
+  "Tojás & Tej",
+  "Hús & Húskészítmények",
   "Pékáru",
+  "Édesség & Méz",
+  "Italok",
   "Kamra",
-  "Egyéb"
+  "Házi kozmetikum",
+  "Kézműves & Otthon",
+  "Kert és növények",
+  "Állati termékek",
+  "Szezonális"
 ];
 
 export default function FeedPage() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("Minden termék");
+  const [selectedCategory, setSelectedCategory] = useState("Összes");
   const [locating, setLocating] = useState(false);
 
   useEffect(() => {
@@ -145,7 +151,7 @@ export default function FeedPage() {
   // --- FILTERING LOGIC ---
   const filteredProducts = products.filter(product => {
     // 1. Category Filter
-    if (selectedCategory !== "Minden termék" && product.category !== selectedCategory) {
+    if (selectedCategory !== "Összes" && product.category !== selectedCategory) {
       return false;
     }
     return true;
@@ -285,7 +291,7 @@ export default function FeedPage() {
                 Ebben a kategóriában jelenleg nincsenek termékek.
               </p>
               <button
-                onClick={() => setSelectedCategory("Minden termék")}
+                onClick={() => setSelectedCategory("Összes")}
                 className="mt-4 text-[#1B4332] font-bold hover:underline"
               >
                 Szűrők törlése

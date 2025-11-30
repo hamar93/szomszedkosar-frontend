@@ -10,11 +10,17 @@ import api from '@/lib/api';
 const CATEGORIES = [
   "Zöldség",
   "Gyümölcs",
-  "Húsáru",
-  "Tejtermék",
+  "Tojás & Tej",
+  "Hús & Húskészítmények",
   "Pékáru",
+  "Édesség & Méz",
+  "Italok",
   "Kamra",
-  "Egyéb"
+  "Házi kozmetikum",
+  "Kézműves & Otthon",
+  "Kert és növények",
+  "Állati termékek",
+  "Szezonális"
 ];
 
 export default function AddProductPage() {

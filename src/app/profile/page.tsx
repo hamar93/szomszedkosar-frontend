@@ -45,6 +45,10 @@ export default function ProfilePage() {
   const [pushLoading, setPushLoading] = useState(false);
   const [pushMessage, setPushMessage] = useState('');
 
+  // Chef Upgrade State
+  const [showChefModal, setShowChefModal] = useState(false);
+  const [chefData, setChefData] = useState({ companyName: '', taxNumber: '' });
+
   // Local user state
   const [displayUser, setDisplayUser] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -112,6 +116,37 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Failed to update profile:', error);
       alert('Hiba történt a mentés során.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChefUpgrade = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const payload = {
+        role: 'chef',
+        companyName: chefData.companyName,
+        taxNumber: chefData.taxNumber,
+        email: session?.user?.email
+      };
+
+      await api.put('/api/users/profile', payload);
+
+      // Update session and local state
+      const updatedUser = { ...session?.user, ...payload, role: 'chef' };
+      setDisplayUser(updatedUser);
+      await update({
+        ...session,
+        user: updatedUser
+      });
+
+      setShowChefModal(false);
+      alert('Sikeres regisztráció! Mostantól Séf fiókkal rendelkezel.');
+    } catch (error: any) {
+      console.error('Failed to upgrade to chef:', error);
+      alert(error.response?.data?.message || 'Hiba történt a frissítés során.');
     } finally {
       setLoading(false);
     }
@@ -206,6 +241,7 @@ export default function ProfilePage() {
 
   const user = displayUser || session.user as any;
   const isProducer = user.role === 'producer';
+  const isChef = user.role === 'chef';
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
@@ -227,9 +263,9 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold text-[#1F2937]">{user.name || 'Felhasználó'}</h2>
               <span className="text-sm text-gray-500">{user.email}</span>
               <div className="mt-4 flex justify-center">
-                <span className="bg-[#1B4332] text-white text-xs px-2 py-1 rounded-md font-bold flex items-center gap-1">
-                  <ShieldCheck size={12} />
-                  {isProducer ? 'Termelő' : 'Vásárló'}
+                <span className={`text-white text-xs px-2 py-1 rounded-md font-bold flex items-center gap-1 ${isChef ? 'bg-blue-600' : 'bg-[#1B4332]'}`}>
+                  {isChef ? '👨‍🍳 Séf (B2B)' : <ShieldCheck size={12} />}
+                  {!isChef && (isProducer ? 'Termelő' : 'Vásárló')}
                 </span>
               </div>
             </div>
@@ -248,7 +284,7 @@ export default function ProfilePage() {
               >
                 <Package size={18} /> Termékeim
               </button>
-              {isProducer && (
+              {(isProducer || isChef) && (
                 <button
                   onClick={() => setActiveTab('finance')}
                   className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'finance' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
@@ -377,6 +413,29 @@ export default function ProfilePage() {
                         )}
                       </div>
                     )}
+                  </div>
+
+                  {/* Account Type Section */}
+                  <div className="pt-6 border-t border-gray-100">
+                    <h3 className="text-lg font-bold text-[#1F2937] mb-4">Fiók Típusa</h3>
+                    <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+                      <div>
+                        <p className="font-bold text-gray-900">
+                          {isChef ? '👨‍🍳 Séf / Étterem (B2B)' : isProducer ? 'Termelő' : 'Vásárló'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {isChef ? 'Kiemelt B2B funkciók elérhetőek.' : 'Alapvető vásárlói funkciók.'}
+                        </p>
+                      </div>
+                      {!isChef && !isProducer && (
+                        <button
+                          onClick={() => setShowChefModal(true)}
+                          className="bg-[#1B4332] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#2D6A4F] transition"
+                        >
+                          Regisztráció Étteremként / Séfként
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {isEditing && (
@@ -609,6 +668,58 @@ export default function ProfilePage() {
 
           </div>
         </div>
+
+        {/* CHEF UPGRADE MODAL */}
+        {showChefModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-[#1F2937]">Regisztráció Séfként</h2>
+                <button onClick={() => setShowChefModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <XIcon size={24} />
+                </button>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                Séfként vagy étteremként hozzáférhetsz a B2B funkciókhoz, nagy tételben vásárolhatsz és közvetlen kapcsolatba léphetsz a termelőkkel.
+              </p>
+
+              <form onSubmit={handleChefUpgrade} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Cégnév / Étterem neve</label>
+                  <input
+                    type="text"
+                    required
+                    value={chefData.companyName}
+                    onChange={(e) => setChefData({ ...chefData, companyName: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
+                    placeholder="Pl. Kisvendéglő Kft."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Adószám</label>
+                  <input
+                    type="text"
+                    required
+                    value={chefData.taxNumber}
+                    onChange={(e) => setChefData({ ...chefData, taxNumber: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
+                    placeholder="12345678-1-42"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 mt-4"
+                >
+                  {loading ? <Loader2 className="animate-spin" /> : <Check size={20} />}
+                  Regisztráció megerősítése
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
