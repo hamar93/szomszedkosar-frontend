@@ -241,40 +241,17 @@ export default function ProfilePage() {
     });
   };
 
-  // --- CONDITIONAL RENDERS (Must be after hooks) ---
-
   // Loading State for Session
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F0]">
-        <div className="text-center">
-          <Loader2 className="animate-spin text-[#1B4332] mx-auto mb-4" size={48} />
-          <p className="text-gray-600 font-medium">Profil betöltése...</p>
-        </div>
-      </div>
-    );
+    return <div className="text-center py-20">Betöltés...</div>;
+  }
+  if (status === 'unauthenticated') {
+    return <div className="text-center py-20">Kérjük, jelentkezzen be a profil eléréséhez.</div>;
   }
 
-  // Unauthenticated State
-  if (status === 'unauthenticated' || !session?.user) {
-    return (
-      <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Kérjük jelentkezz be a profilod megtekintéséhez!</h2>
-            <Link href="/login" className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md">
-              Bejelentkezés
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const user = displayUser || session.user as any;
-  const isProducer = user.role === 'producer';
-  const isChef = user.role === 'chef';
+  const user = displayUser || session?.user as any;
+  const isProducer = user?.role === 'producer';
+  const isChef = user?.role === 'chef';
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
@@ -282,7 +259,6 @@ export default function ProfilePage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-[300px_1fr]">
-
           {/* LEFT COLUMN - SIDEBAR */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
@@ -338,7 +314,6 @@ export default function ProfilePage() {
 
           {/* RIGHT COLUMN - CONTENT */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 min-h-[500px]">
-
             {/* TAB 1: ADATAIM */}
             {activeTab === 'details' && (
               <div>

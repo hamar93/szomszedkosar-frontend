@@ -1,7 +1,5 @@
-'use client';
-
 import './globals.css';
-import { SessionProvider } from 'next-auth/react';
+import SessionWrapper from '@/components/SessionWrapper';
 import Footer from '@/components/Footer';
 
 export default function RootLayout({
@@ -12,12 +10,12 @@ export default function RootLayout({
   return (
     <html lang="hu">
       <body className="flex flex-col min-h-screen">
-        <SessionProvider>
+        <SessionWrapper>
           <div className="flex-grow">
             {children}
           </div>
           <Footer />
-        </SessionProvider>
+        </SessionWrapper>
       </body>
     </html>
   );
