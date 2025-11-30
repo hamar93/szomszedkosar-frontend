@@ -24,12 +24,23 @@ export default function Header() {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const { isSubscribed, subscribeUser, loading } = usePush();
 
-    // Mock location for now, ideally this comes from a context or store
-    const [userLocation] = useState<{ city: string } | null>(
-        typeof window !== 'undefined' && localStorage.getItem('szomszedkosar_user_location')
-            ? JSON.parse(localStorage.getItem('szomszedkosar_user_location')!)
-            : null
-    );
+    // Safe location state initialization to prevent hydration mismatch
+    const [userLocation, setUserLocation] = useState<{ city: string } | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('szomszedkosar_user_location');
+                if (stored) {
+                    setUserLocation(JSON.parse(stored));
+                }
+            } catch (e) {
+                console.error('Failed to parse user location:', e);
+                // Clear invalid data
+                localStorage.removeItem('szomszedkosar_user_location');
+            }
+        }
+    }, []);
 
     return (
         <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
