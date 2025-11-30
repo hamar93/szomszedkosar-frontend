@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Header from '@/components/Header';
@@ -63,8 +64,19 @@ export default function ProfilePage() {
       hasHomeDelivery: false,
       deliveryRadius: 0,
       deliveryCost: 0,
-      hasShipping: false
+      hasShipping: false,
+      shippingCost: 0
+    },
+    location: {
+      latitude: 47.4979,
+      longitude: 19.0402
     }
+  });
+
+  // Dynamic Import for Map
+  const LocationPicker = dynamic(() => import('@/components/LocationPicker'), {
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 rounded-2xl flex items-center justify-center">Térkép betöltése...</div>
   });
 
   // Products State
@@ -88,8 +100,10 @@ export default function ProfilePage() {
           hasHomeDelivery: false,
           deliveryRadius: 0,
           deliveryCost: 0,
-          hasShipping: false
-        }
+          hasShipping: false,
+          shippingCost: 0
+        },
+        location: (session.user as any).location || { latitude: 47.4979, longitude: 19.0402 }
       });
     }
   }, [session, status]);
@@ -827,21 +841,86 @@ export default function ProfilePage() {
                   </div>
 
                   {/* 3. Shipping (Foxpost/GLS) */}
-                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 opacity-70 pointer-events-none">
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-400">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
                           <Package size={20} />
                         </div>
                         <div>
                           <h3 className="font-bold text-gray-900">Csomagküldés (Foxpost, GLS)</h3>
-                          <p className="text-sm text-gray-500">Hamarosan érkezik...</p>
+                          <p className="text-sm text-gray-500">Országos kiszállítás futárszolgálattal</p>
                         </div>
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-500">
-                        Hamarosan
-                      </span>
+                      {isEditing ? (
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.logistics.hasShipping}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, hasShipping: e.target.checked }
+                            })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+                        </label>
+                      ) : (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${formData.logistics.hasShipping ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                          {formData.logistics.hasShipping ? 'Engedélyezve' : 'Kikapcsolva'}
+                        </span>
+                      )}
                     </div>
+
+                    {formData.logistics.hasShipping && (
+                      <div className="ml-13 pl-3 border-l-2 border-gray-200">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Szállítási költség (Ft)</label>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            value={formData.logistics.shippingCost}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, shippingCost: Number(e.target.value) }
+                            })}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                          />
+                        ) : (
+                          <div className="text-gray-900 font-medium">{formData.logistics.shippingCost} Ft</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 4. Map Location */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
+                        <MapPin size={20} />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900">Pontos Helyszín</h3>
+                        <p className="text-sm text-gray-500">Jelöld be a térképen, hol találnak meg a vevők!</p>
+                      </div>
+                    </div>
+
+                    <div className="h-64 w-full rounded-xl overflow-hidden shadow-sm border border-gray-200 relative z-0">
+                      {isEditing ? (
+                        <LocationPicker
+                          center={[formData.location.latitude || 47.4979, formData.location.longitude || 19.0402]}
+                          onLocationSelect={(lat, lng) => setFormData({
+                            ...formData,
+                            location: { latitude: lat, longitude: lng }
+                          })}
+                        />
+                      ) : (
+                        <LocationPicker
+                          center={[formData.location.latitude || 47.4979, formData.location.longitude || 19.0402]}
+                          onLocationSelect={() => { }} // Read-only
+                        />
+                      )}
+                    </div>
+                    {isEditing && <p className="text-xs text-gray-500 mt-2 text-center">Kattints a térképre a pozíció módosításához!</p>}
                   </div>
 
                 </div>

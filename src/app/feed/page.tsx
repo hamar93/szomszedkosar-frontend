@@ -57,6 +57,7 @@ export default function FeedPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Összes");
   const [locating, setLocating] = useState(false);
+  const [manualCity, setManualCity] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,28 +135,33 @@ export default function FeedPage() {
       },
       (error) => {
         console.error("Geolocation error:", error);
-        alert('Nem sikerült lekérni a pozíciódat. Alapértelmezett helyszín (Budapest) beállítása.');
-
-        // Fallback to Budapest
-        const fallbackLocation: UserLocation = {
-          latitude: 47.4979,
-          longitude: 19.0402,
-          city: "Budapest",
-          zipCode: "1051"
-        };
-
-        localStorage.setItem('szomszedkosar_user_location', JSON.stringify(fallbackLocation));
-        setUserLocation(fallbackLocation);
+        alert('Nem sikerült lekérni a pozíciódat. Kérlek, add meg manuálisan a várost.');
         setLocating(false);
-
-        // Fetch products for Budapest
-        setLoading(true);
-        api.get('/api/products', { params: { city: "Budapest" } })
-          .then(res => setProducts(res.data))
-          .catch(e => console.error(e))
-          .finally(() => setLoading(false));
       }
     );
+  };
+
+  const handleManualLocation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualCity.trim()) return;
+
+    const city = manualCity.trim();
+    // Default coords for manual entry (Budapest center as fallback if no geocoding)
+    const newLocation: UserLocation = {
+      latitude: 47.4979,
+      longitude: 19.0402,
+      city: city,
+      zipCode: ""
+    };
+
+    localStorage.setItem('szomszedkosar_user_location', JSON.stringify(newLocation));
+    setUserLocation(newLocation);
+
+    setLoading(true);
+    api.get('/api/products', { params: { city: city } })
+      .then(res => setProducts(res.data))
+      .catch(e => console.error(e))
+      .finally(() => setLoading(false));
   };
 
   const LocationPrompt = () => (
@@ -171,11 +177,33 @@ export default function FeedPage() {
         <button
           onClick={handleGeolocation}
           disabled={locating}
-          className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
+          className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2 mb-6"
         >
           {locating ? <Loader2 className="animate-spin" /> : <MapPin size={20} />}
           {locating ? 'Helymeghatározás...' : 'Helyzetem megosztása'}
         </button>
+
+        <div className="relative flex py-2 items-center mb-6">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">vagy</span>
+          <div className="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <form onSubmit={handleManualLocation} className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Város neve (pl. Budapest)"
+            className="flex-grow px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none"
+            value={manualCity}
+            onChange={(e) => setManualCity(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition"
+          >
+            Mehet
+          </button>
+        </form>
       </div>
     </div>
   );
