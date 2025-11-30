@@ -20,18 +20,28 @@ import {
   Phone,
   Truck,
   ShoppingBasket,
-  Bell
+  Bell,
+  FileText,
+  Download
 } from 'lucide-react';
 import api from '@/lib/api';
 
+// Mock Invoices Data
+const MOCK_INVOICES = [
+  { id: 'INV-001', date: '2023. 11. 28.', item: '5 db Kredit', amount: '1 500 Ft', status: 'Fizetve' },
+  { id: 'INV-002', date: '2023. 11. 15.', item: 'Prémium Előfizetés', amount: '2 000 Ft', status: 'Fizetve' },
+  { id: 'INV-003', date: '2023. 10. 15.', item: 'Prémium Előfizetés', amount: '2 000 Ft', status: 'Fizetve' },
+];
+
 export default function ProfilePage() {
   const { data: session, update } = useSession();
-  const [activeTab, setActiveTab] = useState<'details' | 'products' | 'subscription'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'products' | 'finance'>('details');
 
   // Editing State
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [subLoading, setSubLoading] = useState(false);
+  const [creditLoading, setCreditLoading] = useState<number | null>(null); // Store quantity being purchased
   const [pushLoading, setPushLoading] = useState(false);
   const [pushMessage, setPushMessage] = useState('');
 
@@ -72,7 +82,6 @@ export default function ProfilePage() {
   const fetchUserProducts = async () => {
     setProductsLoading(true);
     try {
-      // Fix Privacy Leak: Pass sellerEmail to filter on backend
       const res = await api.get('/api/products', {
         params: { sellerEmail: session?.user?.email }
       });
@@ -87,7 +96,6 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Include email so backend knows who to update
       const payload = {
         ...formData,
         email: session?.user?.email
@@ -113,7 +121,7 @@ export default function ProfilePage() {
     setSubLoading(true);
     try {
       const response = await api.post('/api/payments/create-subscription-checkout', {
-        priceId: 'price_HelypenzBasic', // Fixed price ID
+        priceId: 'price_HelypenzBasic',
         userId: (session?.user as any).id || session?.user?.email,
         successUrl: window.location.origin + '/profile?status=success',
         cancelUrl: window.location.origin + '/profile?status=cancel'
@@ -129,7 +137,8 @@ export default function ProfilePage() {
     }
   };
 
-  const handleBuyCredits = async (quantity: number, amount: number) => {
+  const handleBuyCredits = async (quantity: number) => {
+    setCreditLoading(quantity);
     try {
       const response = await api.post('/api/payments/create-credits-checkout', {
         quantity,
@@ -143,6 +152,8 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Credits purchase error:', error);
       alert('Hiba történt a vásárlás indításakor.');
+    } finally {
+      setCreditLoading(null);
     }
   };
 
@@ -159,7 +170,6 @@ export default function ProfilePage() {
 
       alert('Sikeres küldés! A környékbeli vásárlók értesítést kaptak.');
       setPushMessage('');
-      // Force page reload to update credits or handle state update if needed
       window.location.reload();
     } catch (error: any) {
       console.error('Push send error:', error);
@@ -195,6 +205,7 @@ export default function ProfilePage() {
   }
 
   const user = displayUser || session.user as any;
+  const isProducer = user.role === 'producer';
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] font-sans text-[#1F2937]">
@@ -218,7 +229,7 @@ export default function ProfilePage() {
               <div className="mt-4 flex justify-center">
                 <span className="bg-[#1B4332] text-white text-xs px-2 py-1 rounded-md font-bold flex items-center gap-1">
                   <ShieldCheck size={12} />
-                  {user.role === 'producer' ? 'Termelő' : 'Vásárló'}
+                  {isProducer ? 'Termelő' : 'Vásárló'}
                 </span>
               </div>
             </div>
@@ -237,12 +248,12 @@ export default function ProfilePage() {
               >
                 <Package size={18} /> Termékeim
               </button>
-              {user.role === 'producer' && (
+              {isProducer && (
                 <button
-                  onClick={() => setActiveTab('subscription')}
-                  className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'subscription' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
+                  onClick={() => setActiveTab('finance')}
+                  className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'finance' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
-                  <CreditCard size={18} /> Előfizetés
+                  <CreditCard size={18} /> Pénzügy
                 </button>
               )}
             </div>
@@ -476,12 +487,13 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {/* TAB 3: ELŐFIZETÉS */}
-            {activeTab === 'subscription' && (
+            {/* TAB 3: PÉNZÜGY */}
+            {activeTab === 'finance' && (
               <div>
-                <h2 className="text-2xl font-bold text-[#1F2937] mb-6">Előfizetés</h2>
+                <h2 className="text-2xl font-bold text-[#1F2937] mb-6">Pénzügyek</h2>
 
-                <div className="bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] rounded-2xl p-8 text-white relative overflow-hidden max-w-xl">
+                {/* A) Subscription Section */}
+                <div className="bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] rounded-2xl p-8 text-white relative overflow-hidden max-w-xl mb-12">
                   <div className="absolute top-0 right-0 p-8 opacity-10">
                     <Star size={120} />
                   </div>
@@ -515,7 +527,7 @@ export default function ProfilePage() {
                       className="w-full bg-white text-[#1B4332] py-4 rounded-xl font-bold hover:bg-gray-100 transition shadow-lg flex items-center justify-center gap-2"
                     >
                       {subLoading ? <Loader2 size={20} className="animate-spin" /> : <CreditCard size={20} />}
-                      Előfizetés indítása
+                      Előfizetés indítása (2000 Ft/hó)
                     </button>
                     <p className="text-center text-xs text-green-200 mt-4">
                       Biztonságos fizetés Stripe-on keresztül
@@ -523,62 +535,71 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Push Notification Credits */}
-                <div className="mt-8">
-                  <h3 className="text-xl font-bold text-[#1F2937] mb-4">Push Értesítés Kredit Vásárlás</h3>
+                {/* B) Push Credits Section */}
+                <div className="mb-12">
+                  <h3 className="text-xl font-bold text-[#1F2937] mb-4">Hirdetés Kiemelés (Push Kredit)</h3>
+                  <p className="text-gray-500 mb-6">Jelenlegi egyenleg: <span className="font-bold text-[#1B4332]">{(user as any).pushCredits || 0} db</span></p>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
-                      onClick={() => handleBuyCredits(5, 1500)}
-                      className="bg-white border-2 border-[#1B4332] text-[#1B4332] p-6 rounded-2xl hover:bg-[#1B4332] hover:text-white transition group text-left"
+                      onClick={() => handleBuyCredits(5)}
+                      disabled={creditLoading !== null}
+                      className="bg-white border-2 border-[#1B4332] text-[#1B4332] p-6 rounded-2xl hover:bg-[#1B4332] hover:text-white transition group text-left relative"
                     >
                       <div className="font-bold text-lg mb-1">5 db Kredit</div>
                       <div className="text-2xl font-bold mb-2">1 500 Ft</div>
                       <p className="text-sm opacity-80 group-hover:text-green-100">Ideális kipróbáláshoz</p>
+                      {creditLoading === 5 && <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-2xl"><Loader2 className="animate-spin text-[#1B4332]" /></div>}
                     </button>
 
                     <button
-                      onClick={() => handleBuyCredits(10, 2500)}
-                      className="bg-[#1B4332] text-white p-6 rounded-2xl hover:bg-[#2D6A4F] transition text-left shadow-md"
+                      onClick={() => handleBuyCredits(10)}
+                      disabled={creditLoading !== null}
+                      className="bg-[#1B4332] text-white p-6 rounded-2xl hover:bg-[#2D6A4F] transition text-left shadow-md relative"
                     >
                       <div className="font-bold text-lg mb-1">10 db Kredit</div>
                       <div className="text-2xl font-bold mb-2">2 500 Ft</div>
                       <p className="text-sm text-green-100">Legnépszerűbb választás</p>
+                      {creditLoading === 10 && <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded-2xl"><Loader2 className="animate-spin text-white" /></div>}
                     </button>
                   </div>
                 </div>
 
-                {/* Send Push Notification Section */}
-                <div className="mt-8 pt-8 border-t border-gray-100">
-                  <h3 className="text-xl font-bold text-[#1F2937] mb-4 flex items-center gap-2">
-                    <Bell className="text-[#1B4332]" /> Sürgős Értesítés Küldése
-                  </h3>
-                  <div className="bg-orange-50 border border-orange-100 rounded-2xl p-6">
-                    <p className="text-sm text-orange-800 mb-4">
-                      Van valami, amit gyorsan el kell adnod? Küldj értesítést a 15 km-es körzetben lévő vásárlóknak!
-                      <br />
-                      <strong>Ár: 1 kredit / küldés</strong>
-                    </p>
-
-                    <textarea
-                      rows={3}
-                      value={pushMessage}
-                      onChange={(e) => setPushMessage(e.target.value)}
-                      placeholder="Pl. Ma 17:00-ig friss eper kapható féláron a Fő téren!"
-                      className="w-full px-4 py-3 rounded-xl border border-orange-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none bg-white mb-4"
-                    />
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-bold text-gray-500">
-                        Egyenleg: {(user as any).pushCredits || 0} kredit
-                      </span>
-                      <button
-                        onClick={handleSendPush}
-                        disabled={pushLoading || !pushMessage.trim()}
-                        className="bg-orange-500 text-white px-6 py-2 rounded-xl font-bold hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        {pushLoading ? <Loader2 size={18} className="animate-spin" /> : <Bell size={18} />}
-                        Küldés (1 kredit)
-                      </button>
+                {/* C) Invoices Section */}
+                <div>
+                  <h3 className="text-xl font-bold text-[#1F2937] mb-4">Számlák</h3>
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead className="bg-gray-50 border-b border-gray-100">
+                          <tr>
+                            <th className="px-6 py-4 font-bold text-gray-600">Dátum</th>
+                            <th className="px-6 py-4 font-bold text-gray-600">Tétel</th>
+                            <th className="px-6 py-4 font-bold text-gray-600">Összeg</th>
+                            <th className="px-6 py-4 font-bold text-gray-600">Státusz</th>
+                            <th className="px-6 py-4 font-bold text-gray-600 text-right">Letöltés</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {MOCK_INVOICES.map((invoice) => (
+                            <tr key={invoice.id} className="hover:bg-gray-50 transition">
+                              <td className="px-6 py-4 text-gray-900">{invoice.date}</td>
+                              <td className="px-6 py-4 font-medium text-gray-900">{invoice.item}</td>
+                              <td className="px-6 py-4 text-gray-900">{invoice.amount}</td>
+                              <td className="px-6 py-4">
+                                <span className="bg-green-100 text-green-700 px-2 py-1 rounded-md text-xs font-bold">
+                                  {invoice.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button className="text-gray-400 hover:text-[#1B4332] transition">
+                                  <FileText size={20} />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
