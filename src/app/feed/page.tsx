@@ -38,6 +38,19 @@ const CATEGORIES = [
   "Szezonális"
 ];
 
+const MOCK_IMAGES: Record<string, string> = {
+  "Gyümölcs": "https://images.unsplash.com/photo-1528821128474-27f963b062bf?q=80&w=800&auto=format&fit=crop", // Cseresznye
+  "Tojás & Tej": "https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=800&auto=format&fit=crop", // Tej
+  "Zöldség": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop", // Zöldség
+  "Hús & Húskészítmények": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=800&auto=format&fit=crop", // Hús (Generic)
+  "Pékáru": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop", // Kenyér (Generic)
+  "default": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop" // Fallback (Zöldség)
+};
+
+const getMockImage = (category: string) => {
+  return MOCK_IMAGES[category] || MOCK_IMAGES["default"];
+};
+
 export default function FeedPage() {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -223,11 +236,12 @@ export default function FeedPage() {
               <Link key={product._id} href={`/product/${product._id}`} className="group">
                 <article className="bg-white rounded-2xl p-0 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
                   <div className="h-48 bg-[#F0F4F1] flex items-center justify-center relative overflow-hidden shrink-0">
-                    {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                    ) : (
-                      <Leaf className="text-[#1B4332]/20 w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
-                    )}
+                    {/* IMAGE OR FALLBACK */}
+                    <img
+                      src={product.imageUrl || getMockImage(product.category)}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
 
                     {/* BADGES */}
                     <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">

@@ -27,8 +27,8 @@ export default function Footer() {
                     <div>
                         <h4 className="font-bold mb-4 text-[#dcfce7]">Információk</h4>
                         <ul className="space-y-2 text-sm text-gray-300">
-                            <li><Link href="/about" className="hover:text-white transition-colors">Rólunk</Link></li>
-                            <li><Link href="/contact" className="hover:text-white transition-colors">Kapcsolat</Link></li>
+                            <li><Link href="/rolunk" className="hover:text-white transition-colors">Rólunk</Link></li>
+                            <li><Link href="/kapcsolat" className="hover:text-white transition-colors">Kapcsolat</Link></li>
                             <li><Link href="/faq" className="hover:text-white transition-colors">Gyakori kérdések</Link></li>
                         </ul>
                     </div>
@@ -36,8 +36,8 @@ export default function Footer() {
                     <div>
                         <h4 className="font-bold mb-4 text-[#dcfce7]">Jogi nyilatkozat</h4>
                         <ul className="space-y-2 text-sm text-gray-300">
-                            <li><Link href="/terms" className="hover:text-white transition-colors">Általános Szerződési Feltételek</Link></li>
-                            <li><Link href="/privacy" className="hover:text-white transition-colors">Adatvédelmi tájékoztató</Link></li>
+                            <li><Link href="/aszf" className="hover:text-white transition-colors">Általános Szerződési Feltételek</Link></li>
+                            <li><Link href="/adatvedelem" className="hover:text-white transition-colors">Adatvédelmi tájékoztató</Link></li>
                             <li><Link href="/cookies" className="hover:text-white transition-colors">Süti kezelés</Link></li>
                         </ul>
                     </div>
