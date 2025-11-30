@@ -154,11 +154,13 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="flex items-center gap-3 mb-8 pb-8 border-b border-gray-100">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
-                    <User size={24} />
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
+                    {product.sellerAvatar ? <img src={product.sellerAvatar} className="w-full h-full object-cover" /> : <User size={24} />}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900">{product.sellerName || 'Termelő'}</p>
+                    <Link href={`/shop/${product.sellerEmail || product.sellerName}`} className="font-bold text-gray-900 hover:text-[#1B4332] hover:underline transition">
+                      {product.sellerName || 'Termelő'}
+                    </Link>
                     <div className="flex items-center gap-1 text-sm text-gray-500">
                       <MapPin size={14} /> {product.location || 'Helyszín'}
                     </div>
