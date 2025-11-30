@@ -13,13 +13,16 @@ import {
     Settings,
     Package,
     PlusCircle,
-    MessageCircle
+    MessageCircle,
+    Bell
 } from 'lucide-react';
+import { usePush } from '@/hooks/usePush';
 
 export default function Header() {
     const { data: session } = useSession();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const { isSubscribed, subscribeUser, loading } = usePush();
 
     // Mock location for now, ideally this comes from a context or store
     const [userLocation] = useState<{ city: string } | null>(
@@ -109,6 +112,17 @@ export default function Header() {
                                             <Link href="/add-product" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <PlusCircle size={16} /> Új termék
                                             </Link>
+
+                                            {!isSubscribed && (
+                                                <button
+                                                    onClick={() => subscribeUser()}
+                                                    disabled={loading}
+                                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-[#1B4332] hover:bg-green-50 text-left font-medium"
+                                                >
+                                                    <Bell size={16} />
+                                                    {loading ? 'Bekapcsolás...' : 'Értesítések bekapcsolása'}
+                                                </button>
+                                            )}
 
                                             <div className="border-t border-gray-100 mt-1 pt-1">
                                                 <button
