@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck, Minus, Plus, XIcon, Loader2, Check } from 'lucide-react';
+import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck, Minus, Plus, X, Loader2, Check } from 'lucide-react';
 import api from '@/lib/api';
 import { useSession } from 'next-auth/react';
 
@@ -319,7 +319,7 @@ export default function ProductDetailPage() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-[#1F2937]">Szállítási mód kiválasztása</h2>
                 <button onClick={() => setShowDeliveryModal(false)} className="text-gray-400 hover:text-gray-600">
-                  <XIcon size={24} />
+                  <X size={24} />
                 </button>
               </div>
 

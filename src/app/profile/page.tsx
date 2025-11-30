@@ -13,7 +13,7 @@ import {
   Edit,
   CreditCard,
   Check,
-  X as XIcon,
+  X,
   Loader2,
   Trash2,
   Plus,
@@ -444,7 +444,7 @@ export default function ProfilePage() {
                         onClick={() => setIsEditing(false)}
                         className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition flex items-center gap-2"
                       >
-                        <XIcon size={18} /> Mégse
+                        <X size={18} /> Mégse
                       </button>
                     </div>
                   )}
@@ -884,7 +884,7 @@ export default function ProfilePage() {
                         onClick={() => setIsEditing(false)}
                         className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition flex items-center gap-2"
                       >
-                        <XIcon size={18} /> Mégse
+                        <X size={18} /> Mégse
                       </button>
                     </div>
                   )}
@@ -903,7 +903,7 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-[#1F2937]">Regisztráció Séfként</h2>
                 <button onClick={() => setShowChefModal(false)} className="text-gray-400 hover:text-gray-600">
-                  <XIcon size={24} />
+                  <X size={24} />
                 </button>
               </div>
 

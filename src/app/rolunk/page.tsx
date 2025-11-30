@@ -1,7 +1,6 @@
 'use client';
 
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { Sprout, Users, Heart } from 'lucide-react';
 
 export default function RolunkPage() {
@@ -64,7 +63,6 @@ export default function RolunkPage() {
                     </div>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }
