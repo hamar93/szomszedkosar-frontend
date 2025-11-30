@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { ShoppingCart, MapPin, CreditCard, Loader2, ArrowRight } from 'lucide-react';
 import api from '@/lib/api';
 import { useSession } from 'next-auth/react';
 
-export default function CartPage() {
+function CartContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { data: session } = useSession();
@@ -199,5 +199,13 @@ export default function CartPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function CartPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">Betöltés...</div>}>
+            <CartContent />
+        </Suspense>
     );
 }
