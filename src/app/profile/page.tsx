@@ -35,7 +35,7 @@ const MOCK_INVOICES = [
 
 export default function ProfilePage() {
   const { data: session, update } = useSession();
-  const [activeTab, setActiveTab] = useState<'details' | 'products' | 'finance'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'products' | 'finance' | 'logistics'>('details');
 
   // Editing State
   const [isEditing, setIsEditing] = useState(false);
@@ -56,7 +56,15 @@ export default function ProfilePage() {
     city: '',
     bio: '',
     phone: '',
-    deliveryOptions: [] as string[]
+    deliveryOptions: [] as string[],
+    logistics: {
+      hasLocalPickup: true,
+      pickupAddress: '',
+      hasHomeDelivery: false,
+      deliveryRadius: 0,
+      deliveryCost: 0,
+      hasShipping: false
+    }
   });
 
   // Products State
@@ -71,7 +79,15 @@ export default function ProfilePage() {
         city: (session.user as any).city || '',
         bio: (session.user as any).bio || '',
         phone: (session.user as any).phone || '',
-        deliveryOptions: (session.user as any).deliveryOptions || []
+        deliveryOptions: (session.user as any).deliveryOptions || [],
+        logistics: (session.user as any).logistics || {
+          hasLocalPickup: true,
+          pickupAddress: '',
+          hasHomeDelivery: false,
+          deliveryRadius: 0,
+          deliveryCost: 0,
+          hasShipping: false
+        }
       });
     }
   }, [session]);
@@ -285,12 +301,20 @@ export default function ProfilePage() {
                 <Package size={18} /> Termékeim
               </button>
               {(isProducer || isChef) && (
-                <button
-                  onClick={() => setActiveTab('finance')}
-                  className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'finance' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
-                >
-                  <CreditCard size={18} /> Pénzügy
-                </button>
+                <>
+                  <button
+                    onClick={() => setActiveTab('finance')}
+                    className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'finance' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
+                  >
+                    <CreditCard size={18} /> Pénzügy
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('logistics')}
+                    className={`w-full text-left px-6 py-4 font-bold flex items-center gap-3 transition ${activeTab === 'logistics' ? 'bg-[#E8ECE9] text-[#1B4332] border-l-4 border-[#1B4332]' : 'text-gray-600 hover:bg-gray-50'}`}
+                  >
+                    <Truck size={18} /> Szállítási Beállítások
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -379,38 +403,6 @@ export default function ProfilePage() {
                     ) : (
                       <div className="text-gray-600 leading-relaxed">
                         {user.bio || 'Nincs még bemutatkozás.'}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Delivery Options */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Szállítási lehetőségek</label>
-                    {isEditing ? (
-                      <div className="space-y-2">
-                        {['Házhozszállítás', 'Személyes átvétel', 'Posta / Futár'].map(option => (
-                          <label key={option} className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.deliveryOptions.includes(option)}
-                              onChange={() => toggleDeliveryOption(option)}
-                              className="w-4 h-4 text-[#1B4332] rounded focus:ring-[#1B4332]"
-                            />
-                            <span className="text-gray-700">{option}</span>
-                          </label>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {user.deliveryOptions && user.deliveryOptions.length > 0 ? (
-                          user.deliveryOptions.map((opt: string) => (
-                            <span key={opt} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                              <Truck size={12} /> {opt}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-gray-400 text-sm">Nincs megadva</span>
-                        )}
                       </div>
                     )}
                   </div>
@@ -699,6 +691,205 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* TAB 4: LOGISTICS */}
+            {activeTab === 'logistics' && (
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-[#1F2937]">Szállítási Beállítások</h2>
+                  {!isEditing && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="text-[#1B4332] font-bold hover:underline flex items-center gap-1"
+                    >
+                      <Edit size={16} /> Szerkesztés
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-8 max-w-2xl">
+
+                  {/* 1. Local Pickup */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
+                          <MapPin size={20} />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">Személyes átvétel</h3>
+                          <p className="text-sm text-gray-500">A vevő eljön a termékért</p>
+                        </div>
+                      </div>
+                      {isEditing ? (
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.logistics.hasLocalPickup}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, hasLocalPickup: e.target.checked }
+                            })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+                        </label>
+                      ) : (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${formData.logistics.hasLocalPickup ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                          {formData.logistics.hasLocalPickup ? 'Engedélyezve' : 'Kikapcsolva'}
+                        </span>
+                      )}
+                    </div>
+
+                    {formData.logistics.hasLocalPickup && (
+                      <div className="ml-13 pl-3 border-l-2 border-gray-200">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Átvételi pont címe</label>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={formData.logistics.pickupAddress}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, pickupAddress: e.target.value }
+                            })}
+                            placeholder="Pl. 1052 Budapest, Deák Ferenc tér 1."
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                          />
+                        ) : (
+                          <div className="text-gray-900 font-medium">{formData.logistics.pickupAddress || 'A profil címed lesz használva.'}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 2. Home Delivery */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
+                          <Truck size={20} />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">Házhozszállítás</h3>
+                          <p className="text-sm text-gray-500">Te viszed ki a terméket</p>
+                        </div>
+                      </div>
+                      {isEditing ? (
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.logistics.hasHomeDelivery}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, hasHomeDelivery: e.target.checked }
+                            })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+                        </label>
+                      ) : (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${formData.logistics.hasHomeDelivery ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                          {formData.logistics.hasHomeDelivery ? 'Engedélyezve' : 'Kikapcsolva'}
+                        </span>
+                      )}
+                    </div>
+
+                    {formData.logistics.hasHomeDelivery && (
+                      <div className="ml-13 pl-3 border-l-2 border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-bold text-gray-700 mb-2">Szállítási sugár (km)</label>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={formData.logistics.deliveryRadius}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                logistics: { ...formData.logistics, deliveryRadius: Number(e.target.value) }
+                              })}
+                              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                            />
+                          ) : (
+                            <div className="text-gray-900 font-medium">{formData.logistics.deliveryRadius} km</div>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-bold text-gray-700 mb-2">Szállítási díj (Ft)</label>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={formData.logistics.deliveryCost}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                logistics: { ...formData.logistics, deliveryCost: Number(e.target.value) }
+                              })}
+                              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/20 outline-none bg-white"
+                            />
+                          ) : (
+                            <div className="text-gray-900 font-medium">{formData.logistics.deliveryCost} Ft</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 3. Shipping */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-[#1B4332]">
+                          <Package size={20} />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">Postai csomagküldés</h3>
+                          <p className="text-sm text-gray-500">Foxpost, Packeta, MPL, stb.</p>
+                        </div>
+                      </div>
+                      {isEditing ? (
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.logistics.hasShipping}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              logistics: { ...formData.logistics, hasShipping: e.target.checked }
+                            })}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332]"></div>
+                        </label>
+                      ) : (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${formData.logistics.hasShipping ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                          {formData.logistics.hasShipping ? 'Engedélyezve' : 'Kikapcsolva'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 ml-13">
+                      Ha bekapcsolod, a "Postázható" jelölésű termékeidnél megjelenik a csomagküldés opció a vevőknek.
+                    </p>
+                  </div>
+
+                  {isEditing && (
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="bg-[#1B4332] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2D6A4F] transition flex items-center gap-2"
+                      >
+                        {loading ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                        Mentés
+                      </button>
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition flex items-center gap-2"
+                      >
+                        <XIcon size={18} /> Mégse
+                      </button>
+                    </div>
+                  )}
+
+                </div>
               </div>
             )}
 

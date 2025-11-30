@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck, Minus, Plus } from 'lucide-react';
+import { MapPin, User, ArrowLeft, ShoppingCart, MessageCircle, Leaf, Package, Truck, Minus, Plus, XIcon, Loader2, Check } from 'lucide-react';
 import api from '@/lib/api';
 import { useSession } from 'next-auth/react';
 
@@ -15,28 +15,53 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [purchasing, setPurchasing] = useState(false);
+  const [showDeliveryModal, setShowDeliveryModal] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery' | 'shipping'>('pickup');
+  const [sellerLogistics, setSellerLogistics] = useState<any>(null);
 
   // Check if user is a chef
   const isChef = (session?.user as any)?.role === 'chef';
   // Check if wholesale is available and user is eligible
   const isWholesaleEligible = product?.isWholesaleAvailable && isChef;
   // Calculate current price based on quantity and eligibility
-  const currentPrice = isWholesaleEligible && quantity >= product.minWholesaleQuantity
+  const itemPrice = isWholesaleEligible && quantity >= product.minWholesaleQuantity
     ? product.wholesalePrice
     : product?.price;
+
+  const deliveryCost = deliveryMethod === 'delivery' ? (sellerLogistics?.deliveryCost || 0) : 0;
+  const totalPrice = (itemPrice * quantity) + deliveryCost;
 
   const fetchProduct = async () => {
     try {
       // Try specific endpoint first
+      let productData;
       try {
         const specificRes = await api.get(`/api/products/${params.id}`);
-        setProduct(specificRes.data);
+        productData = specificRes.data;
       } catch (e) {
-        // Fallback if specific endpoint not implemented in backend yet
+        // Fallback
         const allRes = await api.get('/api/products');
-        const found = allRes.data.find((p: any) => p._id === params.id);
-        setProduct(found);
+        productData = allRes.data.find((p: any) => p._id === params.id);
       }
+      setProduct(productData);
+
+      // Fetch seller logistics if we have seller email
+      if (productData?.sellerEmail) {
+        try {
+          const usersRes = await api.get('/api/users', { params: { role: 'producer' } });
+          const seller = usersRes.data.find((u: any) => u.email === productData.sellerEmail);
+          if (seller && seller.logistics) {
+            setSellerLogistics(seller.logistics);
+            // Set default method
+            if (seller.logistics.hasLocalPickup) setDeliveryMethod('pickup');
+            else if (seller.logistics.hasHomeDelivery) setDeliveryMethod('delivery');
+            else if (seller.logistics.hasShipping) setDeliveryMethod('shipping');
+          }
+        } catch (err) {
+          console.error('Failed to fetch seller logistics', err);
+        }
+      }
+
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {
@@ -50,27 +75,32 @@ export default function ProductDetailPage() {
     }
   }, [params.id]);
 
-  const handlePurchase = async () => {
+  const handlePurchaseClick = () => {
     if (!product || !product.stock || product.stock <= 0) return;
-
     if (!session?.user) {
       alert('A vásárláshoz be kell jelentkezned!');
       return;
     }
+    setShowDeliveryModal(true);
+  };
 
+  const confirmPurchase = async () => {
     setPurchasing(true);
     try {
       const res = await api.post('/api/orders', {
         productId: product._id,
-        buyerId: (session.user as any).id || session.user.email, // Use real session ID
+        buyerId: (session?.user as any).id || session?.user?.email,
         quantity: quantity,
-        price: currentPrice, // Send the calculated price
+        price: totalPrice, // Total including delivery
+        itemPrice: itemPrice,
+        deliveryMethod: deliveryMethod,
+        deliveryCost: deliveryCost,
         isWholesale: isWholesaleEligible && quantity >= product.minWholesaleQuantity
       });
 
       if (res.status === 201) {
         alert('Sikeres rendelés!');
-        // Refresh product to get new stock
+        setShowDeliveryModal(false);
         await fetchProduct();
         setQuantity(1);
       }
@@ -161,7 +191,7 @@ export default function ProductDetailPage() {
                   <h1 className="text-3xl lg:text-4xl font-bold text-[#1F2937]">{product.name}</h1>
                   <div className="flex flex-col items-end">
                     <div className="text-2xl lg:text-3xl font-bold text-[#1B4332]">
-                      {currentPrice} Ft <span className="text-lg text-gray-500 font-normal">/ {product.unit}</span>
+                      {itemPrice} Ft <span className="text-lg text-gray-500 font-normal">/ {product.unit}</span>
                     </div>
                     {isWholesaleEligible && (
                       <div className="text-sm text-green-600 font-bold bg-green-50 px-2 py-1 rounded-lg mt-1">
@@ -192,11 +222,19 @@ export default function ProductDetailPage() {
 
                 <div className="bg-gray-50 rounded-xl p-4 mb-8">
                   <h4 className="font-bold text-sm text-gray-700 mb-2 flex items-center gap-2">
-                    <Truck size={16} /> Átvételi lehetőségek
+                    <Truck size={16} /> Szállítási információk
                   </h4>
-                  <p className="text-sm text-gray-600">
-                    Egyeztetés az eladóval üzenetben.
-                  </p>
+                  {sellerLogistics ? (
+                    <div className="text-sm text-gray-600 space-y-1">
+                      {sellerLogistics.hasLocalPickup && <div>• Személyes átvétel: <span className="font-bold">{sellerLogistics.pickupAddress || 'Cím egyeztetése üzenetben'}</span></div>}
+                      {sellerLogistics.hasHomeDelivery && <div>• Házhozszállítás: <span className="font-bold">{sellerLogistics.deliveryRadius} km-ig ({sellerLogistics.deliveryCost} Ft)</span></div>}
+                      {sellerLogistics.hasShipping && product.isShippable && <div>• Postai csomagküldés elérhető</div>}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600">
+                      Egyeztetés az eladóval üzenetben.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -245,7 +283,7 @@ export default function ProductDetailPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
-                    onClick={handlePurchase}
+                    onClick={handlePurchaseClick}
                     disabled={isOutOfStock || purchasing}
                     className={`flex-1 py-4 rounded-xl font-bold text-lg transition shadow-md flex items-center justify-center gap-2 ${!isOutOfStock
                       ? 'bg-[#1B4332] text-white hover:bg-[#2D6A4F]'
@@ -273,6 +311,123 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* DELIVERY MODAL */}
+        {showDeliveryModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-[#1F2937]">Szállítási mód kiválasztása</h2>
+                <button onClick={() => setShowDeliveryModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <XIcon size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {/* 1. Pickup */}
+                {sellerLogistics?.hasLocalPickup && (
+                  <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition ${deliveryMethod === 'pickup' ? 'border-[#1B4332] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                    <input
+                      type="radio"
+                      name="delivery"
+                      checked={deliveryMethod === 'pickup'}
+                      onChange={() => setDeliveryMethod('pickup')}
+                      className="mt-1 w-4 h-4 text-[#1B4332] focus:ring-[#1B4332]"
+                    />
+                    <div>
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        <MapPin size={16} /> Személyes átvétel
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {sellerLogistics.pickupAddress || 'Cím egyeztetése üzenetben'}
+                      </div>
+                      <div className="text-[#1B4332] font-bold text-sm mt-1">Ingyenes</div>
+                    </div>
+                  </label>
+                )}
+
+                {/* 2. Home Delivery */}
+                {sellerLogistics?.hasHomeDelivery && (
+                  <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition ${deliveryMethod === 'delivery' ? 'border-[#1B4332] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                    <input
+                      type="radio"
+                      name="delivery"
+                      checked={deliveryMethod === 'delivery'}
+                      onChange={() => setDeliveryMethod('delivery')}
+                      className="mt-1 w-4 h-4 text-[#1B4332] focus:ring-[#1B4332]"
+                    />
+                    <div>
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        <Truck size={16} /> Házhozszállítás
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {sellerLogistics.deliveryRadius} km-es körzetben
+                      </div>
+                      <div className="text-[#1B4332] font-bold text-sm mt-1">+ {sellerLogistics.deliveryCost} Ft</div>
+                    </div>
+                  </label>
+                )}
+
+                {/* 3. Shipping */}
+                {sellerLogistics?.hasShipping && product.isShippable && (
+                  <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition ${deliveryMethod === 'shipping' ? 'border-[#1B4332] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                    <input
+                      type="radio"
+                      name="delivery"
+                      checked={deliveryMethod === 'shipping'}
+                      onChange={() => setDeliveryMethod('shipping')}
+                      className="mt-1 w-4 h-4 text-[#1B4332] focus:ring-[#1B4332]"
+                    />
+                    <div>
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        <Package size={16} /> Postai csomagküldés
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        Foxpost, Packeta, MPL
+                      </div>
+                      <div className="text-gray-500 text-xs mt-1">Díj egyeztetése utólag</div>
+                    </div>
+                  </label>
+                )}
+
+                {/* Fallback if no logistics set */}
+                {!sellerLogistics && (
+                  <div className="text-center text-gray-500 py-4">
+                    Az eladó nem állított be részletes szállítási módokat.
+                    <br />
+                    Kérjük egyeztess vele üzenetben!
+                  </div>
+                )}
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gray-50 p-4 rounded-xl mb-6">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-600">Termék ára ({quantity} db):</span>
+                  <span className="font-bold">{itemPrice * quantity} Ft</span>
+                </div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-600">Szállítás:</span>
+                  <span className="font-bold">{deliveryCost > 0 ? `+ ${deliveryCost} Ft` : 'Ingyenes / Egyeztetés'}</span>
+                </div>
+                <div className="border-t border-gray-200 my-2 pt-2 flex justify-between text-lg font-bold text-[#1B4332]">
+                  <span>Összesen:</span>
+                  <span>{totalPrice} Ft</span>
+                </div>
+              </div>
+
+              <button
+                onClick={confirmPurchase}
+                disabled={purchasing}
+                className="w-full bg-[#1B4332] text-white py-4 rounded-xl font-bold hover:bg-[#2D6A4F] transition shadow-md flex items-center justify-center gap-2"
+              >
+                {purchasing ? <Loader2 className="animate-spin" /> : <Check size={20} />}
+                Rendelés véglegesítése
+              </button>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
